@@ -967,62 +967,65 @@ export default function Home() {
 
         <section className="bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
           <div className="mx-auto max-w-7xl">
-            <motion.div {...fadeUp} className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-              <div>
-                <SectionLabel>Wanna boost your business?</SectionLabel>
-                <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
-                  Turn a quiet online presence into a customer-ready growth system.
-                </h2>
+            <motion.div
+              {...fadeUp}
+              className="relative overflow-hidden rounded-[2rem] bg-ink p-6 text-white sm:p-8 lg:p-10"
+            >
+              <div className="relative z-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-start">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.22em] text-mint">Wanna boost your business?</p>
+                  <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
+                    Boost your sales with me
+                  </h2>
+                </div>
+                <ContactButtons compact />
               </div>
-              <p className="max-w-2xl text-lg leading-8 text-ink/62">
-                I focus on the parts that make a business look trusted, get discovered and convert more visitors into calls, bookings, orders and sales.
-              </p>
+
+              <div className="relative z-10 mt-10 h-[260px] overflow-hidden rounded-[1.5rem] bg-white p-4 text-ink sm:h-[340px] sm:p-6">
+                <svg viewBox="0 0 900 340" className="h-full w-full" role="img" aria-label="Boost your sales with me uptrend graph">
+                  <defs>
+                    <linearGradient id="salesLine" x1="0" x2="1" y1="0" y2="0">
+                      <stop offset="0%" stopColor="#3024f5" />
+                      <stop offset="55%" stopColor="#8ad9c0" />
+                      <stop offset="100%" stopColor="#ef624f" />
+                    </linearGradient>
+                    <linearGradient id="salesArea" x1="0" x2="0" y1="0" y2="1">
+                      <stop offset="0%" stopColor="#8ad9c0" stopOpacity="0.34" />
+                      <stop offset="100%" stopColor="#8ad9c0" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {[70, 130, 190, 250, 310].map((y) => (
+                    <line key={y} x1="40" x2="860" y1={y} y2={y} stroke="#111111" strokeOpacity="0.08" strokeWidth="2" />
+                  ))}
+                  <path
+                    d="M60 280 C150 250 190 268 270 220 C350 170 405 200 485 138 C565 78 630 110 700 72 C760 42 815 34 850 24 L850 320 L60 320 Z"
+                    fill="url(#salesArea)"
+                  />
+                  <path
+                    d="M60 280 C150 250 190 268 270 220 C350 170 405 200 485 138 C565 78 630 110 700 72 C760 42 815 34 850 24"
+                    fill="none"
+                    stroke="url(#salesLine)"
+                    strokeWidth="12"
+                    strokeLinecap="round"
+                  />
+                  {[
+                    [60, 280],
+                    [270, 220],
+                    [485, 138],
+                    [700, 72],
+                    [850, 24]
+                  ].map(([x, y]) => (
+                    <circle key={`${x}-${y}`} cx={x} cy={y} r="10" fill="#111111" stroke="#ffffff" strokeWidth="5" />
+                  ))}
+                  <text x="62" y="78" fill="#111111" fontSize="32" fontWeight="900">
+                    Boost your sales with me
+                  </text>
+                  <text x="62" y="112" fill="#111111" fillOpacity="0.56" fontSize="18" fontWeight="700">
+                    Website + SEO + Ads + Ecommerce
+                  </text>
+                </svg>
+              </div>
             </motion.div>
-
-            <div className="mt-8 grid gap-5 lg:grid-cols-2">
-              {boostCards.map((item, index) => (
-                <motion.article
-                  key={item.title}
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: index * 0.06 }}
-                  className="overflow-hidden rounded-[1.6rem] border border-ink/8 bg-white shadow-card"
-                >
-                  <div className="border-b border-ink/6 px-6 py-5">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-cobalt">{item.title}</p>
-                  </div>
-                  <div className="grid gap-0 md:grid-cols-2">
-                    <div className="border-b border-ink/6 p-6 md:border-b-0 md:border-r">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-[0.18em] text-ink/38">Before</p>
-                          <h3 className="mt-2 text-2xl font-black tracking-[-0.03em] text-ink">{item.beforeLabel}</h3>
-                        </div>
-                        <span className="rounded-full bg-coral/10 px-3 py-1 text-xs font-black text-coral">Down</span>
-                      </div>
-                      <div className="mt-6 text-coral">
-                        <TrendChart values={item.before} tone="down" />
-                      </div>
-                    </div>
-                    <div className="bg-ink p-6 text-white">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-xs font-black uppercase tracking-[0.18em] text-mint">After</p>
-                          <h3 className="mt-2 text-2xl font-black tracking-[-0.03em]">{item.afterLabel}</h3>
-                        </div>
-                        <span className="rounded-full bg-mint/18 px-3 py-1 text-xs font-black text-mint">Up</span>
-                      </div>
-                      <div className="mt-6 text-mint">
-                        <TrendChart values={item.after} tone="up" />
-                      </div>
-                    </div>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-
-            <div className="mt-8">
-              <ContactButtons />
-            </div>
           </div>
         </section>
 
