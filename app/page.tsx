@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Globe2,
   Mail,
-  MapPin,
   MessageCircle,
   MousePointerClick,
   Search,
@@ -1303,42 +1302,19 @@ export default function Home() {
             {...fadeUp}
             className="mx-auto max-w-7xl rounded-[2rem] bg-ink p-7 text-white shadow-soft sm:p-10 lg:p-14"
           >
-            <div className="grid gap-10 lg:grid-cols-[1fr_0.75fr] lg:items-end">
-              <div>
-                <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-white/70">
-                  <MousePointerClick className="h-3.5 w-3.5 text-mint" />
-                  Ready to grow?
-                </div>
-                <h2 className="max-w-4xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
-                  Tell me what you sell. I will help you turn it into a stronger online business.
-                </h2>
-                <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">
-                  Send your business type, location, current website if you have one and the result you want next: more calls, more orders, better Google ranking or ecommerce sales.
-                </p>
-                <div className="mt-8">
-                  <ContactButtons compact />
-                </div>
+            <div>
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.24em] text-white/70">
+                <MousePointerClick className="h-3.5 w-3.5 text-mint" />
+                Ready to grow?
               </div>
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-6">
-                <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-mint" />
-                  <span className="text-sm font-black uppercase tracking-[0.18em] text-white/62">Serving</span>
-                </div>
-                <p className="mt-3 text-2xl font-black">USA first, Europe next</p>
-                <div className="mt-6 space-y-3 text-sm font-bold text-white/68">
-                  <a href={`mailto:${contact.email}`} className="flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/12">
-                    {contact.email}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a href={contact.instagram} className="flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/12">
-                    Instagram
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a href={contact.linkedin} className="flex items-center justify-between rounded-2xl bg-white/8 px-4 py-3 transition hover:bg-white/12">
-                    LinkedIn
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                </div>
+              <h2 className="max-w-4xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
+                Tell me what you sell. I will help you turn it into a stronger online business.
+              </h2>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">
+                Send your business type, current website if you have one and the result you want next: more calls, more orders, better Google ranking or ecommerce sales.
+              </p>
+              <div className="mt-8">
+                <ContactButtons compact />
               </div>
             </div>
           </motion.div>
