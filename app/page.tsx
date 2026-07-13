@@ -141,33 +141,6 @@ const tools = [
   }
 ];
 
-const projects = [
-  {
-    title: "Spice Route Kitchen",
-    category: "Restaurant website and local SEO",
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80",
-    result: "Built to increase table bookings, catering leads and Google discovery.",
-    tags: ["Menu SEO", "Booking CTA", "Local rankings"]
-  },
-  {
-    title: "Crave Cart Market",
-    category: "Food ecommerce launch",
-    image:
-      "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80",
-    result: "A clean online store concept for packaged food, bundles and repeat orders.",
-    tags: ["Store setup", "Product pages", "Checkout copy"]
-  },
-  {
-    title: "Bloom Local Studio",
-    category: "Service business growth system",
-    image:
-      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
-    result: "Lead-focused landing page, keyword map and ad-ready service sections.",
-    tags: ["Lead funnel", "SEO pages", "Meta Ads"]
-  }
-];
-
 const liveReferences = [
   {
     title: "Aesop",
@@ -203,7 +176,7 @@ const showcaseCards = [
     color: "bg-[#3a1d14] text-white",
     background: "linear-gradient(135deg, #2a1712 0%, #6f3b25 48%, #f3c37a 100%)",
     accent: "#f3c37a",
-    image: "/portfolio-cards/cocoa-crafted.png"
+    image: "/portfolio-cards/light/cocoa-crafted-mixed.jpg"
   },
   {
     title: "Blade & Brush",
@@ -212,7 +185,7 @@ const showcaseCards = [
     color: "bg-ink text-white",
     background: "linear-gradient(135deg, #111111 0%, #373737 55%, #d7b98c 100%)",
     accent: "#d7b98c",
-    image: "/portfolio-cards/blade-brush.png"
+    image: "/portfolio-cards/light/blade-brush-mixed.jpg"
   },
   {
     title: "Spice Table",
@@ -221,7 +194,7 @@ const showcaseCards = [
     color: "bg-coral text-white",
     background: "linear-gradient(135deg, #b63225 0%, #ef624f 50%, #ffd86b 100%)",
     accent: "#ffd86b",
-    image: "/portfolio-cards/spice-table.png"
+    image: "/portfolio-cards/light/spice-table-mixed.jpg"
   },
   {
     title: "Pulse Fit",
@@ -230,7 +203,7 @@ const showcaseCards = [
     color: "bg-cobalt text-white",
     background: "linear-gradient(135deg, #101537 0%, #3024f5 55%, #8ad9c0 100%)",
     accent: "#8ad9c0",
-    image: "/portfolio-cards/pulse-fit.png"
+    image: "/portfolio-cards/light/pulse-fit-mixed.jpg"
   },
   {
     title: "Nest Realty",
@@ -238,7 +211,8 @@ const showcaseCards = [
     metric: "Buyer leads",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #f7fbf8 0%, #8ad9c0 45%, #173f35 100%)",
-    accent: "#173f35"
+    accent: "#173f35",
+    image: "/portfolio-cards/light/nest-realty-mixed.jpg"
   },
   {
     title: "Mode Market",
@@ -246,7 +220,8 @@ const showcaseCards = [
     metric: "Store sales",
     color: "bg-butter text-ink",
     background: "linear-gradient(135deg, #f8f8f8 0%, #f4d84e 48%, #111111 100%)",
-    accent: "#111111"
+    accent: "#111111",
+    image: "/portfolio-cards/light/mode-market-mixed.jpg"
   },
   {
     title: "Glow Dental",
@@ -254,7 +229,8 @@ const showcaseCards = [
     metric: "Patient leads",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #f8ffff 0%, #8ad9c0 48%, #3024f5 100%)",
-    accent: "#3024f5"
+    accent: "#3024f5",
+    image: "/portfolio-cards/light/glow-dental-mixed.jpg"
   },
   {
     title: "Urban Auto",
@@ -262,7 +238,8 @@ const showcaseCards = [
     metric: "More calls",
     color: "bg-ink text-white",
     background: "linear-gradient(135deg, #0f0f0f 0%, #424242 46%, #ef624f 100%)",
-    accent: "#ef624f"
+    accent: "#ef624f",
+    image: "/portfolio-cards/light/urban-auto-mixed.jpg"
   },
   {
     title: "Paw Palace",
@@ -271,7 +248,7 @@ const showcaseCards = [
     color: "bg-butter text-ink",
     background: "linear-gradient(135deg, #fff8e1 0%, #f4d84e 44%, #8ad9c0 100%)",
     accent: "#8ad9c0",
-    image: "/portfolio-cards/paw-palace.png"
+    image: "/portfolio-cards/light/paw-palace-mixed.jpg"
   },
   {
     title: "Cafe Noir",
@@ -279,7 +256,8 @@ const showcaseCards = [
     metric: "Daily orders",
     color: "bg-[#3a1d14] text-white",
     background: "linear-gradient(135deg, #1a100d 0%, #5b3426 52%, #f4d84e 100%)",
-    accent: "#f4d84e"
+    accent: "#f4d84e",
+    image: "/portfolio-cards/light/cafe-noir-mixed.jpg"
   },
   {
     title: "EduPro",
@@ -287,7 +265,8 @@ const showcaseCards = [
     metric: "Enrollments",
     color: "bg-cobalt text-white",
     background: "linear-gradient(135deg, #eff2ff 0%, #3024f5 48%, #111111 100%)",
-    accent: "#111111"
+    accent: "#111111",
+    image: "/portfolio-cards/light/edupro-mixed.jpg"
   },
   {
     title: "FreshFold",
@@ -295,7 +274,8 @@ const showcaseCards = [
     metric: "Pickup leads",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #ffffff 0%, #8ad9c0 50%, #173f35 100%)",
-    accent: "#173f35"
+    accent: "#173f35",
+    image: "/portfolio-cards/light/freshfold-mixed.jpg"
   }
 ];
 
@@ -324,37 +304,6 @@ const packages = [
     title: "Ecommerce Launch",
     bestFor: "For shops, food brands and product businesses ready to sell online.",
     includes: ["Storefront design", "Product page copy", "Conversion sections", "SEO-ready collections"]
-  }
-];
-
-const boostCards = [
-  {
-    title: "Website",
-    beforeLabel: "Lost visitors",
-    afterLabel: "More inquiries",
-    before: [82, 70, 56, 42, 31],
-    after: [34, 45, 58, 74, 90]
-  },
-  {
-    title: "Google Visibility",
-    beforeLabel: "Low ranking",
-    afterLabel: "More discovery",
-    before: [76, 64, 50, 39, 28],
-    after: [30, 41, 55, 70, 88]
-  },
-  {
-    title: "Ads Funnel",
-    beforeLabel: "Wasted clicks",
-    afterLabel: "Better leads",
-    before: [74, 60, 48, 34, 25],
-    after: [28, 44, 57, 73, 86]
-  },
-  {
-    title: "Ecommerce",
-    beforeLabel: "Cart drop-off",
-    afterLabel: "More orders",
-    before: [80, 68, 52, 40, 30],
-    after: [32, 48, 63, 79, 92]
   }
 ];
 
@@ -593,142 +542,6 @@ function ContactButtons({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function TrendChart({
-  values,
-  tone
-}: {
-  values: number[];
-  tone: "down" | "up";
-}) {
-  const points = values
-    .map((value, index) => {
-      const x = 12 + index * 24;
-      const y = 100 - value;
-      return `${x},${y}`;
-    })
-    .join(" ");
-  const color = tone === "up" ? "#8ad9c0" : "#ef624f";
-
-  return (
-    <svg viewBox="0 0 120 100" className="h-28 w-full overflow-visible" role="img" aria-label={`${tone} trend chart`}>
-      <path d="M12 88H108" stroke="currentColor" strokeOpacity="0.12" strokeWidth="2" />
-      <path d="M12 64H108" stroke="currentColor" strokeOpacity="0.08" strokeWidth="2" />
-      <path d="M12 40H108" stroke="currentColor" strokeOpacity="0.08" strokeWidth="2" />
-      <polyline
-        points={points}
-        fill="none"
-        stroke={color}
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      {values.map((value, index) => (
-        <circle
-          key={`${value}-${index}`}
-          cx={12 + index * 24}
-          cy={100 - value}
-          r="4.5"
-          fill={color}
-          stroke="white"
-          strokeWidth="2"
-        />
-      ))}
-    </svg>
-  );
-}
-
-function DemoWebsiteMockup({
-  card,
-  compact = false
-}: {
-  card: (typeof showcaseCards)[number];
-  compact?: boolean;
-}) {
-  if ("image" in card && card.image) {
-    return (
-      <div className="relative h-full w-full overflow-hidden bg-white">
-        <img
-          src={card.image}
-          alt={`${card.title} ${card.eyebrow} poster visual`}
-          className="h-full w-full object-cover"
-          loading="lazy"
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="relative h-full w-full overflow-hidden"
-      style={{ background: card.background }}
-    >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.34),transparent_30%),radial-gradient(circle_at_85%_15%,rgba(255,255,255,0.22),transparent_26%)]" />
-      <div className="relative flex h-full flex-col p-4 text-white sm:p-5">
-        <div className="mb-4 flex items-center justify-between rounded-full bg-white/18 px-3 py-2 backdrop-blur">
-          <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
-          </div>
-          <div className="h-2 w-20 rounded-full bg-white/55" />
-        </div>
-
-        <div className="grid flex-1 grid-rows-[auto_1fr_auto] gap-3">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.18em] text-white/70">
-              {card.eyebrow}
-            </p>
-            <h3 className="mt-1 max-w-[12rem] text-2xl font-black leading-none tracking-[-0.04em] sm:text-3xl">
-              {card.title}
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-[1fr_0.72fr] gap-3">
-            <div className="rounded-[1.25rem] bg-white/92 p-3 text-ink shadow-card">
-              <div className="h-3 w-20 rounded-full" style={{ backgroundColor: card.accent }} />
-              <div className="mt-3 space-y-2">
-                <div className="h-3 rounded-full bg-ink/12" />
-                <div className="h-3 w-4/5 rounded-full bg-ink/12" />
-                <div className="h-3 w-3/5 rounded-full bg-ink/12" />
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {[0, 1, 2].map((item) => (
-                  <div
-                    key={item}
-                    className="aspect-square rounded-2xl"
-                    style={{ backgroundColor: item === 1 ? card.accent : "rgba(17,17,17,0.10)" }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="aspect-square rounded-full bg-white/20 p-3 backdrop-blur">
-                <div className="h-full w-full rounded-full bg-white/80" />
-              </div>
-              <div className="rounded-2xl bg-white/18 p-3 backdrop-blur">
-                <div className="h-2 w-full rounded-full bg-white/60" />
-                <div className="mt-2 h-2 w-2/3 rounded-full bg-white/35" />
-              </div>
-            </div>
-          </div>
-
-          {!compact && (
-            <div className="flex items-center justify-between gap-3">
-              <div className="rounded-full bg-white px-4 py-2 text-xs font-black text-ink">
-                View demo
-              </div>
-              <div className="text-right text-[10px] font-black uppercase tracking-[0.16em] text-white/70">
-                SEO ready
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
   if ("image" in card && card.image) {
     return (
@@ -864,12 +677,20 @@ export default function Home() {
             </div>
           </motion.div>
 
+          <motion.h2
+            id="projects"
+            {...fadeUp}
+            className="mt-12 scroll-mt-28 text-center text-3xl font-black leading-none tracking-[-0.035em] text-ink sm:mt-16 sm:text-5xl"
+          >
+            My Projects
+          </motion.h2>
+
           <motion.div
             ref={heroScrollerRef}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: "easeOut" }}
-            className="manual-hero-scroll relative -mx-5 mt-8 h-[300px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[370px] sm:py-10 lg:-mx-12 lg:h-[430px] lg:py-12"
+            className="manual-hero-scroll relative -mx-5 mt-2 h-[300px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[370px] sm:py-10 lg:-mx-12 lg:h-[430px] lg:py-12"
             onScroll={(event) => handleHeroScroll(event.currentTarget)}
             onPointerDown={startDragScroll}
             onPointerMove={dragScroll}
@@ -899,46 +720,6 @@ export default function Home() {
           </motion.div>
         </section>
 
-        <section className="px-5 pb-12 sm:px-8 sm:pb-16 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.24em] text-cobalt">Horizontal showcase</p>
-                <h2 className="mt-2 text-3xl font-black tracking-[-0.035em] sm:text-5xl">
-                  Growth cards for the services people need.
-                </h2>
-              </div>
-              <p className="max-w-sm text-sm leading-6 text-ink/58">
-                Swipe on mobile or scroll horizontally to see website, SEO, ecommerce and ads examples.
-              </p>
-            </div>
-
-            <div className="mt-7 flex snap-x gap-4 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {showcaseCards.map((card, index) => (
-                <motion.article
-                  key={card.title}
-                  initial={{ opacity: 0, x: 40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-80px" }}
-                  transition={{ duration: 0.55, delay: index * 0.05, ease: "easeOut" }}
-                  className="group min-w-[78%] snap-center overflow-hidden rounded-[1.6rem] bg-white shadow-card sm:min-w-[360px]"
-                >
-                  <div className="relative h-64 overflow-hidden transition duration-700 group-hover:scale-[1.015]">
-                    <DemoWebsiteMockup card={card} />
-                  </div>
-                  <div className="p-5">
-                    <p className="text-xs font-black uppercase tracking-[0.18em] text-ink/45">{card.eyebrow}</p>
-                    <h3 className="mt-2 text-2xl font-black tracking-[-0.03em]">{card.title}</h3>
-                    <p className="mt-3 text-sm leading-6 text-ink/60">
-                      Built to help small businesses look trusted, get found and turn visitors into paying customers.
-                    </p>
-                  </div>
-                </motion.article>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section className="bg-white py-10">
           <div className="marquee overflow-hidden py-2">
             <div className="marquee-track hover:[animation-play-state:paused] flex w-max gap-6 px-5">
@@ -961,70 +742,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-
-        <section className="bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <motion.div
-              {...fadeUp}
-              className="relative overflow-hidden rounded-[2rem] bg-ink p-6 text-white sm:p-8 lg:p-10"
-            >
-              <div className="relative z-10 flex flex-col justify-between gap-8 lg:flex-row lg:items-start">
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.22em] text-mint">Wanna boost your business?</p>
-                  <h2 className="mt-4 max-w-3xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
-                    Boost your sales with me
-                  </h2>
-                </div>
-                <ContactButtons compact />
-              </div>
-
-              <div className="relative z-10 mt-10 h-[260px] overflow-hidden rounded-[1.5rem] bg-white p-4 text-ink sm:h-[340px] sm:p-6">
-                <svg viewBox="0 0 900 340" className="h-full w-full" role="img" aria-label="Boost your sales with me uptrend graph">
-                  <defs>
-                    <linearGradient id="salesLine" x1="0" x2="1" y1="0" y2="0">
-                      <stop offset="0%" stopColor="#3024f5" />
-                      <stop offset="55%" stopColor="#8ad9c0" />
-                      <stop offset="100%" stopColor="#ef624f" />
-                    </linearGradient>
-                    <linearGradient id="salesArea" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#8ad9c0" stopOpacity="0.34" />
-                      <stop offset="100%" stopColor="#8ad9c0" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  {[70, 130, 190, 250, 310].map((y) => (
-                    <line key={y} x1="40" x2="860" y1={y} y2={y} stroke="#111111" strokeOpacity="0.08" strokeWidth="2" />
-                  ))}
-                  <path
-                    d="M60 280 C150 250 190 268 270 220 C350 170 405 200 485 138 C565 78 630 110 700 72 C760 42 815 34 850 24 L850 320 L60 320 Z"
-                    fill="url(#salesArea)"
-                  />
-                  <path
-                    d="M60 280 C150 250 190 268 270 220 C350 170 405 200 485 138 C565 78 630 110 700 72 C760 42 815 34 850 24"
-                    fill="none"
-                    stroke="url(#salesLine)"
-                    strokeWidth="12"
-                    strokeLinecap="round"
-                  />
-                  {[
-                    [60, 280],
-                    [270, 220],
-                    [485, 138],
-                    [700, 72],
-                    [850, 24]
-                  ].map(([x, y]) => (
-                    <circle key={`${x}-${y}`} cx={x} cy={y} r="10" fill="#111111" stroke="#ffffff" strokeWidth="5" />
-                  ))}
-                  <text x="62" y="78" fill="#111111" fontSize="32" fontWeight="900">
-                    Boost your sales with me
-                  </text>
-                  <text x="62" y="112" fill="#111111" fillOpacity="0.56" fontSize="18" fontWeight="700">
-                    Website + SEO + Ads + Ecommerce
-                  </text>
-                </svg>
-              </div>
-            </motion.div>
           </div>
         </section>
 
@@ -1086,55 +803,6 @@ export default function Home() {
                   <h3 className="mt-6 text-2xl font-black">{title}</h3>
                   <p className="mt-3 text-sm leading-7 text-white/62">{text}</p>
                 </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="projects" className="px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <motion.div {...fadeUp} className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-              <div className="max-w-3xl">
-                <SectionLabel>Demo Projects</SectionLabel>
-                <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
-                  Professional sample work for the kind of businesses I help.
-                </h2>
-              </div>
-              <p className="max-w-md text-sm leading-7 text-ink/58">
-                These are portfolio concepts built to show strategy, layout and conversion thinking for real-world business needs.
-              </p>
-            </motion.div>
-            <div className="mt-7 grid gap-5 sm:mt-10 lg:grid-cols-3">
-              {projects.map((project, index) => (
-                <motion.article
-                  key={project.title}
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: index * 0.08 }}
-                    className="group overflow-hidden rounded-[1.8rem] border border-ink/8 bg-white shadow-card"
-                >
-                  <div className="relative h-72 overflow-hidden">
-                    <img
-                      src={project.image}
-                      alt={`${project.title} ${project.category}`}
-                      className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute left-4 top-4 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em]">
-                      Concept
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <p className="text-sm font-black text-cobalt">{project.category}</p>
-                    <h3 className="mt-2 text-2xl font-black tracking-[-0.02em]">{project.title}</h3>
-                    <p className="mt-4 text-sm leading-7 text-ink/62">{project.result}</p>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      {project.tags.map((tag) => (
-                        <span key={tag} className="rounded-full bg-white px-3 py-2 text-xs font-bold text-ink/62">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.article>
               ))}
             </div>
           </div>
