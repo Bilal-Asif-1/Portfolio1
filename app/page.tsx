@@ -581,18 +581,18 @@ function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
         <div className="absolute inset-0 bg-gradient-to-b from-black/32 via-transparent to-black/38" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
           <div>
-            <p
-              className="hero-card-copy text-[8px] font-black uppercase tracking-[0.16em] text-white sm:text-[9px] lg:text-[10px]"
-            >
-              {card.eyebrow}
-            </p>
-            <span className="mt-3 block h-px w-10 bg-white shadow-[0_1px_3px_#000] sm:w-12" />
-            <h3 className="hero-card-title mt-4 font-serif text-2xl font-normal leading-[0.94] text-white sm:text-3xl lg:text-[2.2rem]">
+            <h3 className="hero-card-title font-serif text-2xl font-normal leading-[0.94] text-white sm:text-3xl lg:text-[2.2rem]">
               {card.title}
             </h3>
           </div>
 
-          <div className="flex items-end justify-end">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <span className="mb-2 block h-px w-10 bg-white shadow-[0_1px_3px_#000] sm:w-12" />
+              <p className="hero-card-copy text-[8px] font-black uppercase tracking-[0.16em] text-white sm:text-[9px] lg:text-[10px]">
+                {card.eyebrow}
+              </p>
+            </div>
             <span
               className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#c98270] text-white sm:h-9 sm:w-9"
             >
@@ -738,7 +738,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: "easeOut" }}
-            className="manual-hero-scroll relative -mx-5 mt-2 h-[390px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[480px] sm:py-10 lg:-mx-12 lg:h-[560px] lg:py-12"
+            className="manual-hero-scroll relative -mx-5 mt-2 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
             onScroll={(event) => handleHeroScroll(event.currentTarget)}
             onPointerDown={startDragScroll}
             onPointerMove={dragScroll}
@@ -752,7 +752,7 @@ export default function Home() {
                   <div
                     key={`${item.cardIndex}-${index}`}
                     data-hero-card-id={`${item.cardIndex}-${index}`}
-                    className={`hero-card relative h-[270px] w-[176px] shrink-0 overflow-hidden rounded-[1.4rem] sm:h-[345px] sm:w-[218px] lg:h-[410px] lg:w-[258px] ${item.hide}`}
+                    className={`hero-card relative h-[255px] w-[176px] shrink-0 overflow-hidden rounded-[1.4rem] sm:h-[325px] sm:w-[218px] lg:h-[380px] lg:w-[258px] ${item.hide}`}
                     style={{
                       "--card-y": `${item.top}px`,
                       "--card-rotate": `${item.rotate}deg`,
@@ -965,27 +965,51 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
-          <motion.div
-            {...fadeUp}
-            className="mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-coral text-white shadow-soft"
-          >
-            <div className="max-w-4xl p-7 sm:p-10 lg:p-12">
-              <SectionLabel>About Bilal</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
-                A personal freelancer who thinks like a growth partner.
-              </h2>
-              <p className="mt-6 text-lg leading-8 text-white/78">
-                I build websites with the business goal in mind first: more visibility, more trust and more customers. My background in web development helps me make fast, clean and SEO-ready pages, while my focus for this portfolio is helping business owners grow online.
-              </p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                {["Next.js", "SEO", "Ads strategy", "Ecommerce"].map((skill) => (
-                  <span key={skill} className="rounded-full bg-white/16 px-4 py-2 text-sm font-black">
-                    {skill}
-                  </span>
-                ))}
-              </div>
+        <section
+          id="about"
+          className="relative isolate min-h-[740px] overflow-hidden bg-[#f7edcf] px-5 pt-10 sm:min-h-[820px] sm:px-8 sm:pt-14 lg:min-h-[790px] lg:px-12"
+        >
+          <motion.div {...fadeUp} className="relative mx-auto min-h-[700px] max-w-7xl sm:min-h-[760px] lg:min-h-[740px]">
+            <h2 className="absolute inset-x-0 top-2 z-0 text-center font-serif text-6xl font-normal italic leading-none text-ink sm:top-0 sm:text-8xl lg:text-[9rem]">
+              Hey, there
+            </h2>
+
+            <div className="absolute left-0 top-32 z-30 inline-flex items-center gap-3 rounded-full bg-white px-4 py-3 text-xs font-bold shadow-card sm:top-52 sm:text-sm lg:top-64">
+              <span className="relative flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-coral opacity-40" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-coral" />
+              </span>
+              Available for new projects
             </div>
+
+            <p className="absolute right-0 top-48 z-30 max-w-[12rem] text-right text-xs font-bold leading-5 text-ink/72 sm:top-60 sm:max-w-[15rem] sm:text-sm sm:leading-6 lg:top-64 lg:text-left">
+              Websites, SEO, ecommerce and ads built to help ambitious businesses get found and grow.
+            </p>
+
+            <img
+              src="/bilal-asif-portrait.jpg"
+              alt="Bilal Asif, freelance website designer and digital growth partner"
+              className="absolute -bottom-2 left-1/2 z-10 w-[480px] max-w-[112vw] -translate-x-1/2 object-contain mix-blend-multiply sm:-bottom-10 sm:w-[650px] lg:-bottom-16 lg:w-[690px]"
+              loading="lazy"
+            />
+
+            <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
+
+            <div className="absolute bottom-8 left-0 z-30 max-w-[15rem] sm:bottom-12 sm:max-w-[23rem] lg:bottom-16">
+              <p className="text-4xl font-black uppercase leading-[0.82] text-ink sm:text-6xl lg:text-7xl">
+                I am
+                <br />
+                Bilal Asif
+              </p>
+            </div>
+
+            <p className="absolute bottom-9 right-0 z-30 max-w-[9rem] text-right text-xl font-black uppercase leading-[0.88] text-ink sm:bottom-14 sm:max-w-[13rem] sm:text-3xl lg:bottom-16 lg:text-4xl">
+              Website
+              <br />
+              SEO &amp; Growth
+              <br />
+              Partner
+            </p>
           </motion.div>
         </section>
 
