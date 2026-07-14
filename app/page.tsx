@@ -4,7 +4,6 @@ import type { CSSProperties, PointerEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  ArrowDownRight,
   ArrowRight,
   Check,
   ChevronRight,
@@ -175,6 +174,7 @@ const showcaseCards = [
     eyebrow: "Chocolate Website",
     metric: "Online sweets",
     description: "A warm ecommerce experience crafted to turn chocolate lovers into loyal customers.",
+    textTone: "dark",
     color: "bg-[#3a1d14] text-white",
     background: "linear-gradient(135deg, #2a1712 0%, #6f3b25 48%, #f3c37a 100%)",
     accent: "#f3c37a",
@@ -185,6 +185,7 @@ const showcaseCards = [
     eyebrow: "Barber Booking",
     metric: "More bookings",
     description: "A premium booking website designed for effortless appointments and local discovery.",
+    textTone: "light",
     color: "bg-ink text-white",
     background: "linear-gradient(135deg, #111111 0%, #373737 55%, #d7b98c 100%)",
     accent: "#d7b98c",
@@ -195,6 +196,7 @@ const showcaseCards = [
     eyebrow: "Restaurant Site",
     metric: "Table orders",
     description: "A vibrant restaurant website built to make every dish irresistible and easy to order.",
+    textTone: "dark",
     color: "bg-coral text-white",
     background: "linear-gradient(135deg, #b63225 0%, #ef624f 50%, #ffd86b 100%)",
     accent: "#ffd86b",
@@ -205,6 +207,7 @@ const showcaseCards = [
     eyebrow: "Fitness Landing",
     metric: "New members",
     description: "A focused fitness landing page that turns motivation into memberships and enquiries.",
+    textTone: "dark",
     color: "bg-cobalt text-white",
     background: "linear-gradient(135deg, #101537 0%, #3024f5 55%, #8ad9c0 100%)",
     accent: "#8ad9c0",
@@ -215,6 +218,7 @@ const showcaseCards = [
     eyebrow: "Real Estate Leads",
     metric: "Buyer leads",
     description: "A polished property experience that helps serious buyers find their perfect home.",
+    textTone: "dark",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #f7fbf8 0%, #8ad9c0 45%, #173f35 100%)",
     accent: "#173f35",
@@ -225,6 +229,7 @@ const showcaseCards = [
     eyebrow: "Fashion Ecommerce",
     metric: "Store sales",
     description: "A clean fashion storefront made for smooth browsing, stronger trust and more sales.",
+    textTone: "dark",
     color: "bg-butter text-ink",
     background: "linear-gradient(135deg, #f8f8f8 0%, #f4d84e 48%, #111111 100%)",
     accent: "#111111",
@@ -235,6 +240,7 @@ const showcaseCards = [
     eyebrow: "Clinic Website",
     metric: "Patient leads",
     description: "A calm clinic website that builds patient confidence before their first appointment.",
+    textTone: "dark",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #f8ffff 0%, #8ad9c0 48%, #3024f5 100%)",
     accent: "#3024f5",
@@ -245,6 +251,7 @@ const showcaseCards = [
     eyebrow: "Auto Service",
     metric: "More calls",
     description: "A sharp automotive website engineered to generate service calls and qualified leads.",
+    textTone: "light",
     color: "bg-ink text-white",
     background: "linear-gradient(135deg, #0f0f0f 0%, #424242 46%, #ef624f 100%)",
     accent: "#ef624f",
@@ -255,6 +262,7 @@ const showcaseCards = [
     eyebrow: "Pet Care Booking",
     metric: "New clients",
     description: "A friendly pet care experience that makes trusted grooming simple to discover and book.",
+    textTone: "dark",
     color: "bg-butter text-ink",
     background: "linear-gradient(135deg, #fff8e1 0%, #f4d84e 44%, #8ad9c0 100%)",
     accent: "#8ad9c0",
@@ -265,6 +273,7 @@ const showcaseCards = [
     eyebrow: "Coffee Shop Site",
     metric: "Daily orders",
     description: "An inviting cafe website that brings the atmosphere online and encourages daily orders.",
+    textTone: "dark",
     color: "bg-[#3a1d14] text-white",
     background: "linear-gradient(135deg, #1a100d 0%, #5b3426 52%, #f4d84e 100%)",
     accent: "#f4d84e",
@@ -275,6 +284,7 @@ const showcaseCards = [
     eyebrow: "Course Landing",
     metric: "Enrollments",
     description: "A clear course platform that helps learners understand the value and enroll faster.",
+    textTone: "dark",
     color: "bg-cobalt text-white",
     background: "linear-gradient(135deg, #eff2ff 0%, #3024f5 48%, #111111 100%)",
     accent: "#111111",
@@ -285,6 +295,7 @@ const showcaseCards = [
     eyebrow: "Laundry Service",
     metric: "Pickup leads",
     description: "A fresh local service website designed for quick pickup requests and repeat customers.",
+    textTone: "dark",
     color: "bg-mint text-ink",
     background: "linear-gradient(135deg, #ffffff 0%, #8ad9c0 50%, #173f35 100%)",
     accent: "#173f35",
@@ -557,39 +568,35 @@ function ContactButtons({ compact = false }: { compact?: boolean }) {
 
 function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
   if ("image" in card && card.image) {
+    const useDarkText = card.textTone === "dark";
+
     return (
-      <div className="group relative h-full w-full overflow-hidden bg-ink text-white">
+      <div className={`group relative h-full w-full overflow-hidden ${useDarkText ? "bg-white text-ink" : "bg-ink text-white"}`}>
         <img
           src={card.image}
           alt={`${card.title} ${card.eyebrow} poster visual`}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/72 via-black/10 to-black/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/32 via-transparent to-black/38" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
           <div>
-            <p className="text-[8px] font-black uppercase tracking-[0.16em] text-white/75 sm:text-[9px] lg:text-[10px]">
+            <p
+              className="hero-card-copy text-[8px] font-black uppercase tracking-[0.16em] text-white sm:text-[9px] lg:text-[10px]"
+            >
               {card.eyebrow}
             </p>
-            <h3 className="mt-2 text-xl font-black leading-none sm:text-2xl lg:text-[1.7rem]">
+            <span className="mt-3 block h-px w-10 bg-white shadow-[0_1px_3px_#000] sm:w-12" />
+            <h3 className="hero-card-title mt-4 font-serif text-2xl font-normal leading-[0.94] text-white sm:text-3xl lg:text-[2.2rem]">
               {card.title}
             </h3>
-            <p className="mt-3 max-w-[15rem] text-[10px] font-medium leading-[1.45] text-white/85 sm:text-[11px] lg:text-xs">
-              {card.description}
-            </p>
           </div>
 
-          <div className="flex items-end justify-between gap-2">
-            <div className="flex min-w-0 flex-wrap gap-1.5">
-              <span className="rounded-full bg-white/88 px-2.5 py-1 text-[8px] font-bold text-ink backdrop-blur-sm sm:text-[9px] lg:px-3 lg:text-[10px]">
-                {card.eyebrow.replace(" Website", "").replace(" Landing", "")}
-              </span>
-              <span className="rounded-full bg-white/88 px-2.5 py-1 text-[8px] font-bold text-ink backdrop-blur-sm sm:text-[9px] lg:px-3 lg:text-[10px]">
-                {card.metric}
-              </span>
-            </div>
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white text-ink sm:h-9 sm:w-9">
-              <ArrowDownRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          <div className="flex items-end justify-end">
+            <span
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#c98270] text-white sm:h-9 sm:w-9"
+            >
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </span>
           </div>
         </div>
@@ -731,7 +738,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: "easeOut" }}
-            className="manual-hero-scroll relative -mx-5 mt-2 h-[340px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[420px] sm:py-10 lg:-mx-12 lg:h-[490px] lg:py-12"
+            className="manual-hero-scroll relative -mx-5 mt-2 h-[390px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[480px] sm:py-10 lg:-mx-12 lg:h-[560px] lg:py-12"
             onScroll={(event) => handleHeroScroll(event.currentTarget)}
             onPointerDown={startDragScroll}
             onPointerMove={dragScroll}
@@ -745,7 +752,7 @@ export default function Home() {
                   <div
                     key={`${item.cardIndex}-${index}`}
                     data-hero-card-id={`${item.cardIndex}-${index}`}
-                    className={`hero-card relative h-[225px] w-[176px] shrink-0 overflow-hidden rounded-[1.4rem] sm:h-[288px] sm:w-[218px] lg:h-[338px] lg:w-[258px] ${item.hide}`}
+                    className={`hero-card relative h-[270px] w-[176px] shrink-0 overflow-hidden rounded-[1.4rem] sm:h-[345px] sm:w-[218px] lg:h-[410px] lg:w-[258px] ${item.hide}`}
                     style={{
                       "--card-y": `${item.top}px`,
                       "--card-rotate": `${item.rotate}deg`,

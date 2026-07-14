@@ -91,6 +91,18 @@ a {
     z-index 0ms;
 }
 
+.hero-card-copy {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    0 3px 8px rgba(0, 0, 0, 0.75);
+}
+
+.hero-card-title {
+  text-shadow:
+    0 2px 3px rgba(0, 0, 0, 0.9),
+    0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
 .hero-card.is-neighbor-card {
   z-index: 70;
   transform: translate3d(0, 18px, 0) rotate(0deg) scale(1);
