@@ -7,7 +7,6 @@ import { Petrona } from "next/font/google";
 import {
   ArrowRight,
   Check,
-  ChevronRight,
   Globe2,
   Mail,
   MessageCircle,
@@ -32,7 +31,7 @@ const contact = {
   linkedin: "https://www.linkedin.com/in/bilal-asif/"
 };
 
-const navItems = ["Services", "Projects", "Packages", "Process", "Contact"];
+const navItems = ["Services", "Projects", "Packages", "Process"];
 
 const services = [
   {
@@ -693,64 +692,58 @@ export default function Home() {
       />
 
       <div className="relative z-10 bg-white">
-        <header className="sticky top-4 z-40 px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-4 z-40 px-4 py-4 sm:px-6 lg:px-12">
           <nav
-            className="mx-auto flex max-w-4xl items-center justify-between gap-5 rounded-full border border-ink/8 bg-white/90 px-4 py-3 shadow-card backdrop-blur-xl sm:px-5"
+            className="relative mx-auto flex max-w-7xl items-center justify-end gap-5"
             aria-label="Main navigation"
           >
-            <a href="#" className="flex items-center gap-3 font-black">
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-mint text-ink">
-                <span className="h-3 w-3 rounded-full bg-ink" />
-              </span>
-            </a>
-            <div className="hidden items-center gap-7 text-sm font-bold text-ink/70 lg:flex">
+            <div className="hidden items-center gap-9 text-sm font-bold text-ink lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
               {navItems.map((item) => (
-                <a key={item} href={`#${item.toLowerCase()}`} className="transition hover:text-ink">
+                <a key={item} href={`#${item.toLowerCase()}`} className="transition hover:opacity-60">
                   {item}
                 </a>
               ))}
             </div>
             <a
               href="#contact"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-black text-white transition hover:bg-cobalt"
+              className="inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-sm font-black text-white transition hover:bg-cobalt"
             >
-              Get Started
-              <ChevronRight className="h-4 w-4" />
+              Contact
             </a>
           </nav>
         </header>
 
         <section
           id="about"
-          className="relative isolate -mt-24 min-h-[620px] overflow-hidden px-5 pt-[136px] sm:min-h-[660px] sm:px-8 sm:pt-[152px] lg:min-h-[680px] lg:px-12"
-          style={{
-            background:
-              "radial-gradient(45% 65% at 4% 45%, #f6cf6e 0%, #f8db8e 22%, #fbe8b8 45%, rgba(255,255,255,0) 78%), radial-gradient(45% 65% at 96% 45%, #f6cf6e 0%, #f8db8e 22%, #fbe8b8 45%, rgba(255,255,255,0) 78%), #ffffff"
-          }}
+          className="relative isolate -mt-24 min-h-[620px] overflow-hidden bg-white px-5 pt-[136px] sm:min-h-[660px] sm:px-8 sm:pt-[152px] lg:min-h-[680px] lg:px-12"
         >
           <motion.div {...fadeUp} className="relative mx-auto min-h-[580px] max-w-7xl sm:min-h-[600px] lg:min-h-[630px]">
             <h2
-              className={`${petrona.className} pointer-events-none absolute inset-x-0 top-16 z-20 flex items-center justify-between pl-[19%] pr-[13%] text-6xl italic leading-none text-ink sm:top-14 sm:pl-[21%] sm:pr-[15%] sm:text-8xl lg:pl-[23%] lg:pr-[17%] lg:text-[9rem]`}
+              className={`${petrona.className} pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[19%] pr-[13%] text-6xl italic leading-none text-ink sm:top-8 sm:pl-[21%] sm:pr-[15%] sm:text-8xl lg:pl-[23%] lg:pr-[17%] lg:text-[9rem]`}
             >
               <span>Hey,</span>
               <span>there</span>
             </h2>
 
             <img
-              src="/bilal-asif-portrait-2.png"
+              src="/bilal-asif-portrait-3.png"
               alt="Bilal Asif, freelance website designer and digital growth partner"
-              className="absolute bottom-2 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 object-contain mix-blend-multiply sm:bottom-0 sm:w-[560px] lg:-bottom-2 lg:w-[620px]"
+              className="absolute bottom-6 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 object-contain mix-blend-multiply sm:bottom-4 sm:w-[560px] lg:bottom-2 lg:w-[620px]"
               loading="lazy"
             />
 
             <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
 
             <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
-              <p className="whitespace-nowrap text-4xl font-black uppercase leading-[0.78] tracking-tight text-ink sm:text-7xl lg:text-9xl">
+              <p
+                className={`${petrona.className} whitespace-nowrap text-4xl italic leading-[0.9] tracking-tight text-ink sm:text-6xl lg:text-7xl`}
+              >
                 I am
               </p>
-              <p className="-mt-4 whitespace-nowrap text-6xl font-black uppercase leading-[0.78] tracking-tight text-ink sm:-mt-8 sm:text-9xl lg:-mt-12 lg:text-[13rem]">
-                Bilal
+              <p
+                className={`${petrona.className} whitespace-nowrap text-4xl italic leading-[0.9] tracking-tight text-ink sm:text-6xl lg:text-7xl`}
+              >
+                Bilal Asif
               </p>
             </div>
           </motion.div>
@@ -758,7 +751,9 @@ export default function Home() {
 
         <section className="relative overflow-x-hidden px-5 pb-10 pt-10 sm:px-8 sm:pb-16 sm:pt-16 lg:px-12">
           <motion.div {...fadeUp} className="mx-auto max-w-6xl text-center">
-            <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1
+              className={`${petrona.className} mx-auto max-w-5xl text-5xl italic leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl md:text-7xl lg:text-8xl`}
+            >
               Scale your business online with me.
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-ink/68 sm:text-xl sm:leading-8">
