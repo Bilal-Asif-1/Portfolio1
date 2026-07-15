@@ -3,6 +3,7 @@
 import type { CSSProperties, PointerEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { Petrona } from "next/font/google";
 import {
   ArrowRight,
   Check,
@@ -16,6 +17,13 @@ import {
   Sparkles,
   Target
 } from "lucide-react";
+
+const petrona = Petrona({
+  subsets: ["latin"],
+  weight: "100",
+  style: "italic",
+  display: "swap"
+});
 
 const contact = {
   email: "bilalasif1024@gmail.com",
@@ -712,6 +720,42 @@ export default function Home() {
           </nav>
         </header>
 
+        <section
+          id="about"
+          className="relative isolate -mt-24 min-h-[620px] overflow-hidden px-5 pt-[136px] sm:min-h-[660px] sm:px-8 sm:pt-[152px] lg:min-h-[680px] lg:px-12"
+          style={{
+            background:
+              "radial-gradient(45% 65% at 4% 45%, #f6cf6e 0%, #f8db8e 22%, #fbe8b8 45%, rgba(255,255,255,0) 78%), radial-gradient(45% 65% at 96% 45%, #f6cf6e 0%, #f8db8e 22%, #fbe8b8 45%, rgba(255,255,255,0) 78%), #ffffff"
+          }}
+        >
+          <motion.div {...fadeUp} className="relative mx-auto min-h-[580px] max-w-7xl sm:min-h-[600px] lg:min-h-[630px]">
+            <h2
+              className={`${petrona.className} pointer-events-none absolute inset-x-0 top-16 z-20 flex items-center justify-between pl-[19%] pr-[13%] text-6xl italic leading-none text-ink sm:top-14 sm:pl-[21%] sm:pr-[15%] sm:text-8xl lg:pl-[23%] lg:pr-[17%] lg:text-[9rem]`}
+            >
+              <span>Hey,</span>
+              <span>there</span>
+            </h2>
+
+            <img
+              src="/bilal-asif-portrait-2.png"
+              alt="Bilal Asif, freelance website designer and digital growth partner"
+              className="absolute bottom-2 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 object-contain mix-blend-multiply sm:bottom-0 sm:w-[560px] lg:-bottom-2 lg:w-[620px]"
+              loading="lazy"
+            />
+
+            <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
+
+            <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
+              <p className="whitespace-nowrap text-4xl font-black uppercase leading-[0.78] tracking-tight text-ink sm:text-7xl lg:text-9xl">
+                I am
+              </p>
+              <p className="-mt-4 whitespace-nowrap text-6xl font-black uppercase leading-[0.78] tracking-tight text-ink sm:-mt-8 sm:text-9xl lg:-mt-12 lg:text-[13rem]">
+                Bilal
+              </p>
+            </div>
+          </motion.div>
+        </section>
+
         <section className="relative overflow-x-hidden px-5 pb-10 pt-10 sm:px-8 sm:pb-16 sm:pt-16 lg:px-12">
           <motion.div {...fadeUp} className="mx-auto max-w-6xl text-center">
             <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl md:text-7xl lg:text-8xl">
@@ -963,54 +1007,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
-
-        <section
-          id="about"
-          className="relative isolate min-h-[740px] overflow-hidden bg-[#f7edcf] px-5 pt-10 sm:min-h-[820px] sm:px-8 sm:pt-14 lg:min-h-[790px] lg:px-12"
-        >
-          <motion.div {...fadeUp} className="relative mx-auto min-h-[700px] max-w-7xl sm:min-h-[760px] lg:min-h-[740px]">
-            <h2 className="absolute inset-x-0 top-2 z-0 text-center font-serif text-6xl font-normal italic leading-none text-ink sm:top-0 sm:text-8xl lg:text-[9rem]">
-              Hey, there
-            </h2>
-
-            <div className="absolute left-0 top-32 z-30 inline-flex items-center gap-3 rounded-full bg-white px-4 py-3 text-xs font-bold shadow-card sm:top-52 sm:text-sm lg:top-64">
-              <span className="relative flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-coral opacity-40" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-coral" />
-              </span>
-              Available for new projects
-            </div>
-
-            <p className="absolute right-0 top-48 z-30 max-w-[12rem] text-right text-xs font-bold leading-5 text-ink/72 sm:top-60 sm:max-w-[15rem] sm:text-sm sm:leading-6 lg:top-64 lg:text-left">
-              Websites, SEO, ecommerce and ads built to help ambitious businesses get found and grow.
-            </p>
-
-            <img
-              src="/bilal-asif-portrait.jpg"
-              alt="Bilal Asif, freelance website designer and digital growth partner"
-              className="absolute -bottom-2 left-1/2 z-10 w-[480px] max-w-[112vw] -translate-x-1/2 object-contain mix-blend-multiply sm:-bottom-10 sm:w-[650px] lg:-bottom-16 lg:w-[690px]"
-              loading="lazy"
-            />
-
-            <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
-
-            <div className="absolute bottom-8 left-0 z-30 max-w-[15rem] sm:bottom-12 sm:max-w-[23rem] lg:bottom-16">
-              <p className="text-4xl font-black uppercase leading-[0.82] text-ink sm:text-6xl lg:text-7xl">
-                I am
-                <br />
-                Bilal Asif
-              </p>
-            </div>
-
-            <p className="absolute bottom-9 right-0 z-30 max-w-[9rem] text-right text-xl font-black uppercase leading-[0.88] text-ink sm:bottom-14 sm:max-w-[13rem] sm:text-3xl lg:bottom-16 lg:text-4xl">
-              Website
-              <br />
-              SEO &amp; Growth
-              <br />
-              Partner
-            </p>
-          </motion.div>
         </section>
 
         <section className="bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
