@@ -2,24 +2,28 @@
 
 import type { CSSProperties, PointerEvent } from "react";
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion, useScroll } from "framer-motion";
 import { Petrona } from "next/font/google";
 import {
   ArrowRight,
   Check,
-  Globe2,
   Mail,
   MessageCircle,
   MousePointerClick,
-  Search,
-  ShoppingBag,
   Sparkles,
-  Target
+  X
 } from "lucide-react";
 
 const petrona = Petrona({
   subsets: ["latin"],
   weight: "100",
+  style: "italic",
+  display: "swap"
+});
+
+const petronaStrong = Petrona({
+  subsets: ["latin"],
+  weight: "500",
   style: "italic",
   display: "swap"
 });
@@ -35,25 +39,37 @@ const navItems = ["Services", "Projects", "Packages", "Process"];
 
 const services = [
   {
-    icon: Globe2,
+    logos: [
+      { name: "Next.js", src: "https://cdn.simpleicons.org/nextdotjs/111111" },
+      { name: "React", src: "https://cdn.simpleicons.org/react/61DAFB" }
+    ],
     title: "Business Websites",
     description:
       "Fast, mobile-first websites for restaurants, food brands, local shops and service businesses that need trust, calls and orders."
   },
   {
-    icon: Search,
+    logos: [
+      { name: "Google Search Console", src: "https://cdn.simpleicons.org/googlesearchconsole/458CF5" },
+      { name: "Google Analytics", src: "https://cdn.simpleicons.org/googleanalytics/E37400" }
+    ],
     title: "Local SEO",
     description:
       "Google-friendly pages, keywords, location content and technical SEO so customers can find your business before competitors."
   },
   {
-    icon: Target,
+    logos: [
+      { name: "Google Ads", src: "https://cdn.simpleicons.org/googleads/4285F4" },
+      { name: "Meta", src: "https://cdn.simpleicons.org/meta/0866FF" }
+    ],
     title: "Google and Meta Ads",
     description:
       "Campaign structure, landing pages and keyword strategy for paid traffic that is built around real leads, not vanity clicks."
   },
   {
-    icon: ShoppingBag,
+    logos: [
+      { name: "Shopify", src: "https://cdn.simpleicons.org/shopify/7AB55C" },
+      { name: "WooCommerce", src: "https://cdn.simpleicons.org/woocommerce/96588A" }
+    ],
     title: "Ecommerce Launch",
     description:
       "Product pages, checkout flow, store structure and conversion copy for businesses ready to sell online in the USA or Europe."
@@ -148,33 +164,6 @@ const tools = [
   }
 ];
 
-const liveReferences = [
-  {
-    title: "Aesop",
-    category: "Premium skincare ecommerce",
-    url: "https://www.aesop.com/",
-    note: "Reference for calm luxury product pages, strong typography and premium brand trust."
-  },
-  {
-    title: "Sweetgreen",
-    category: "Restaurant and food ordering",
-    url: "https://www.sweetgreen.com/",
-    note: "Reference for clean restaurant storytelling, menu flow and order-focused calls to action."
-  },
-  {
-    title: "Floyd's 99 Barbershop",
-    category: "Barber booking website",
-    url: "https://www.floydsbarbershop.com/",
-    note: "Reference for local service booking, location pages and customer conversion flow."
-  },
-  {
-    title: "Dominique Ansel",
-    category: "Bakery and luxury food brand",
-    url: "https://www.dominiqueansel.com/",
-    note: "Reference for premium food photography, product desirability and brand presentation."
-  }
-];
-
 const showcaseCards = [
   {
     title: "Cocoa Crafted",
@@ -188,15 +177,15 @@ const showcaseCards = [
     image: "/portfolio-cards/light/cocoa-crafted-mixed.jpg"
   },
   {
-    title: "Blade & Brush",
-    eyebrow: "Barber Booking",
-    metric: "More bookings",
-    description: "A premium booking website designed for effortless appointments and local discovery.",
-    textTone: "light",
-    color: "bg-ink text-white",
-    background: "linear-gradient(135deg, #111111 0%, #373737 55%, #d7b98c 100%)",
-    accent: "#d7b98c",
-    image: "/portfolio-cards/light/blade-brush-mixed.jpg"
+    title: "Aqua Gallery",
+    eyebrow: "Aquarium Website",
+    metric: "Visitor journeys",
+    description: "A bright aquarium experience designed around discovery, calm and effortless visits.",
+    textTone: "dark",
+    color: "bg-mint text-ink",
+    background: "linear-gradient(135deg, #ffffff 0%, #dff8f6 55%, #8ad9c0 100%)",
+    accent: "#4eb9b2",
+    image: "/portfolio-cards/light/aqua-gallery-v2.jpg"
   },
   {
     title: "Spice Table",
@@ -254,15 +243,15 @@ const showcaseCards = [
     image: "/portfolio-cards/light/glow-dental-mixed.jpg"
   },
   {
-    title: "Urban Auto",
-    eyebrow: "Auto Service",
-    metric: "More calls",
-    description: "A sharp automotive website engineered to generate service calls and qualified leads.",
-    textTone: "light",
-    color: "bg-ink text-white",
-    background: "linear-gradient(135deg, #0f0f0f 0%, #424242 46%, #ef624f 100%)",
-    accent: "#ef624f",
-    image: "/portfolio-cards/light/urban-auto-mixed.jpg"
+    title: "Azure Coast",
+    eyebrow: "Ocean Retreat",
+    metric: "Luxury stays",
+    description: "An airy coastal experience created to turn peaceful escapes into premium bookings.",
+    textTone: "dark",
+    color: "bg-white text-ink",
+    background: "linear-gradient(135deg, #ffffff 0%, #eaf7ff 55%, #9fdcf2 100%)",
+    accent: "#74c4df",
+    image: "/portfolio-cards/light/azure-coast-v2.jpg"
   },
   {
     title: "Paw Palace",
@@ -319,6 +308,87 @@ const heroCards = [
   { cardIndex: 4, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden md:block" },
   { cardIndex: 7, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden lg:block" }
 ];
+
+const projectDetails: Record<
+  string,
+  {
+    problem: string;
+    requirements: string;
+    solution: string;
+    result: string;
+  }
+> = {
+  "Cocoa Crafted": {
+    problem:
+      "The chocolate brand needed to feel premium online while making gifting and product discovery simple.",
+    requirements:
+      "A mobile-first store, clear gift categories, delivery information and product pages that build trust.",
+    solution:
+      "An editorial ecommerce experience with collection-led navigation, product storytelling and strong purchase calls to action.",
+    result:
+      "A clearer path from discovery to checkout, stronger premium positioning and better repeat-order potential."
+  },
+  "Aqua Gallery": {
+    problem:
+      "Visitors needed an easier way to discover exhibits, plan a visit and understand the aquarium experience.",
+    requirements:
+      "Simple visit planning, exhibit highlights, ticket calls to action and a calm visual experience across devices.",
+    solution:
+      "A bright content system that prioritizes key attractions, visit information and conversion-focused ticket journeys.",
+    result:
+      "Faster access to essential information, stronger visitor confidence and a smoother route to ticket booking."
+  },
+  "Spice Table": {
+    problem:
+      "The restaurant needed its food quality and atmosphere to translate online without slowing down ordering.",
+    requirements:
+      "A visual menu, location details, mobile ordering, reservations and search-friendly restaurant pages.",
+    solution:
+      "A vibrant restaurant experience with dish-led storytelling and direct paths to orders and table bookings.",
+    result:
+      "More appetizing product discovery, fewer steps to order and stronger local search visibility."
+  },
+  "Pulse Fit": {
+    problem:
+      "Potential members were interested but lacked a clear reason and simple next step to join the fitness program.",
+    requirements:
+      "Clear membership value, class information, trainer trust signals and an easy mobile enquiry flow.",
+    solution:
+      "A focused landing experience that connects fitness goals with programs, proof and high-intent membership calls to action.",
+    result:
+      "A more persuasive membership journey with clearer choices and stronger enquiry potential."
+  },
+  "Nest Realty": {
+    problem:
+      "Property buyers needed a polished way to explore listings and contact the right agent without friction.",
+    requirements:
+      "Searchable properties, clear location context, agent credibility and fast lead capture on mobile.",
+    solution:
+      "A clean property experience with focused listing content, lifestyle imagery and strategically placed enquiry actions.",
+    result:
+      "Higher-quality buyer journeys, stronger agent trust and easier conversion from browsing to enquiry."
+  },
+  "Azure Coast": {
+    problem:
+      "The retreat needed to communicate its premium atmosphere while making availability and booking feel effortless.",
+    requirements:
+      "Immersive accommodation pages, amenities, location context, availability prompts and mobile-first booking.",
+    solution:
+      "An airy hospitality experience combining editorial imagery with concise information and clear booking pathways.",
+    result:
+      "Stronger luxury positioning, better-informed guests and a shorter path from inspiration to reservation."
+  },
+  "Paw Palace": {
+    problem:
+      "Pet owners needed reassurance, transparent service choices and a convenient way to request grooming appointments.",
+    requirements:
+      "Service details, trust signals, pet-friendly branding, location information and quick appointment requests.",
+    solution:
+      "A warm booking experience that presents services clearly and keeps the appointment action visible throughout.",
+    result:
+      "Greater customer confidence, easier service selection and more direct booking opportunities."
+  }
+};
 
 const packages = [
   {
@@ -461,7 +531,15 @@ function IntroSplash() {
 
 function startDragScroll(event: PointerEvent<HTMLDivElement>) {
   const slider = event.currentTarget;
+  const target = event.target as HTMLElement;
+  if (target.closest("[data-project-trigger]")) {
+    slider.dataset.dragging = "false";
+    slider.dataset.didDrag = "false";
+    return;
+  }
+
   slider.dataset.dragging = "true";
+  slider.dataset.didDrag = "false";
   slider.dataset.startX = String(event.clientX);
   slider.dataset.scrollLeft = String(slider.scrollLeft);
   slider.setPointerCapture(event.pointerId);
@@ -474,7 +552,11 @@ function dragScroll(event: PointerEvent<HTMLDivElement>) {
   event.preventDefault();
   const startX = Number(slider.dataset.startX ?? 0);
   const scrollLeft = Number(slider.dataset.scrollLeft ?? 0);
-  slider.scrollLeft = scrollLeft - (event.clientX - startX);
+  const dragDistance = event.clientX - startX;
+  if (Math.abs(dragDistance) > 6) {
+    slider.dataset.didDrag = "true";
+  }
+  slider.scrollLeft = scrollLeft - dragDistance;
 }
 
 function stopDragScroll(event: PointerEvent<HTMLDivElement>) {
@@ -573,7 +655,13 @@ function ContactButtons({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
+function FastHeroMockup({
+  card,
+  onOpen
+}: {
+  card: (typeof showcaseCards)[number];
+  onOpen: (card: (typeof showcaseCards)[number]) => void;
+}) {
   if ("image" in card && card.image) {
     const useDarkText = card.textTone === "dark";
 
@@ -587,25 +675,28 @@ function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/32 via-transparent to-black/38" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
-          <div>
-            <h3 className="hero-card-title font-serif text-2xl font-normal leading-[0.94] text-white sm:text-3xl lg:text-[2.2rem]">
-              {card.title}
-            </h3>
-          </div>
-
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <span className="mb-2 block h-px w-10 bg-white shadow-[0_1px_3px_#000] sm:w-12" />
-              <p className="hero-card-copy text-[8px] font-black uppercase tracking-[0.16em] text-white sm:text-[9px] lg:text-[10px]">
-                {card.eyebrow}
-              </p>
-            </div>
-            <span
-              className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#c98270] text-white sm:h-9 sm:w-9"
-            >
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          <h3
+            className={`${petrona.className} project-card-heading max-w-[85%] text-xl italic leading-none tracking-[-0.02em] text-white sm:text-2xl`}
+          >
+            {card.title}
+          </h3>
+          <button
+            type="button"
+            data-project-trigger="true"
+            className="pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-3 py-2 text-left text-[9px] font-black uppercase tracking-[0.1em] text-ink shadow-[0_6px_18px_rgba(17,17,17,0.16)] transition hover:bg-white/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white sm:px-3.5 sm:text-[10px]"
+            aria-label={`Open ${card.title} project details`}
+            onPointerDown={(event) => event.stopPropagation()}
+            onPointerUp={(event) => event.stopPropagation()}
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpen(card);
+            }}
+          >
+            <span>Details</span>
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#c98270] text-white">
+              <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </span>
-          </div>
+          </button>
         </div>
       </div>
     );
@@ -645,8 +736,122 @@ function FastHeroMockup({ card }: { card: (typeof showcaseCards)[number] }) {
   );
 }
 
+function ProjectDetailModal({
+  card,
+  onClose
+}: {
+  card: (typeof showcaseCards)[number];
+  onClose: () => void;
+}) {
+  const details = projectDetails[card.title] ?? {
+    problem: `The business needed a clearer digital experience that could communicate its value and convert attention into ${card.metric.toLowerCase()}.`,
+    requirements:
+      "A fast mobile experience, clear information architecture, strong trust signals and an obvious next action.",
+    solution:
+      "A focused website concept combining premium visual direction, conversion-led content and an SEO-ready page structure.",
+    result:
+      "A stronger first impression, a simpler customer journey and more opportunities for qualified enquiries."
+  };
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[150] flex items-center justify-center bg-ink/65 p-3 backdrop-blur-sm sm:p-6 lg:p-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18, ease: "easeOut" }}
+      onClick={onClose}
+    >
+      <motion.article
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-detail-title"
+        className="relative grid max-h-full w-full max-w-6xl overflow-y-auto bg-white shadow-2xl lg:grid-cols-[0.88fr_1.12fr]"
+        initial={{ opacity: 0, scale: 0.94, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 18 }}
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full bg-white text-ink shadow-card transition hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-cobalt"
+          aria-label="Close project details"
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="relative min-h-[280px] overflow-hidden bg-paper sm:min-h-[380px] lg:min-h-[680px]">
+          <img
+            src={card.image}
+            alt={`${card.title} project visual`}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+          <p className="absolute bottom-6 left-6 text-xs font-black uppercase tracking-[0.18em] text-white drop-shadow-md">
+            {card.eyebrow}
+          </p>
+        </div>
+
+        <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
+          <p className="text-xs font-black uppercase tracking-[0.22em] text-coral">Project case study</p>
+          <h2
+            id="project-detail-title"
+            className={`${petrona.className} mt-3 text-5xl italic leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl`}
+          >
+            {card.title}
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-ink/62">{card.description}</p>
+
+          <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+            {[
+              ["Problem statement", details.problem],
+              ["User requirements", details.requirements],
+              ["Solution", details.solution],
+              ["Results", details.result]
+            ].map(([title, copy]) => (
+              <section key={title} className="border-t border-ink/12 pt-4">
+                <h3 className="text-xs font-black uppercase tracking-[0.16em] text-ink">{title}</h3>
+                <p className="mt-3 text-sm leading-6 text-ink/62">{copy}</p>
+              </section>
+            ))}
+          </div>
+        </div>
+      </motion.article>
+    </motion.div>
+  );
+}
+
 export default function Home() {
   const heroScrollerRef = useRef<HTMLDivElement>(null);
+  const aboutSectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress: aboutScrollProgress } = useScroll({
+    target: aboutSectionRef,
+    offset: ["start start", "end start"]
+  });
+  const [nameOpacity, setNameOpacity] = useState(1);
+  const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
+  useEffect(() => {
+    return aboutScrollProgress.on("change", (v) => {
+      setNameOpacity(Math.max(0, Math.min(1, 1 - v / 0.2)));
+    });
+  }, [aboutScrollProgress]);
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSelectedProject(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [selectedProject]);
   const schema = {
     "@context": "https://schema.org",
     "@type": "ProfessionalService",
@@ -685,6 +890,11 @@ export default function Home() {
   return (
     <main className="relative min-h-screen bg-white text-ink">
       <IntroSplash />
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetailModal card={selectedProject} onClose={() => setSelectedProject(null)} />
+        )}
+      </AnimatePresence>
       <div className="noise" />
       <script
         type="application/ld+json"
@@ -697,7 +907,9 @@ export default function Home() {
             className="relative mx-auto flex max-w-7xl items-center justify-end gap-5"
             aria-label="Main navigation"
           >
-            <div className="hidden items-center gap-9 text-sm font-bold text-ink lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+            <div
+              className={`${petronaStrong.className} hidden items-center gap-9 text-sm italic text-ink opacity-100 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2`}
+            >
               {navItems.map((item) => (
                 <a key={item} href={`#${item.toLowerCase()}`} className="transition hover:opacity-60">
                   {item}
@@ -706,7 +918,7 @@ export default function Home() {
             </div>
             <a
               href="#contact"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-sm font-black text-white transition hover:bg-cobalt"
+              className={`${petronaStrong.className} inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-sm italic text-white opacity-100 transition hover:bg-cobalt`}
             >
               Contact
             </a>
@@ -715,6 +927,7 @@ export default function Home() {
 
         <section
           id="about"
+          ref={aboutSectionRef}
           className="relative isolate -mt-24 min-h-[620px] overflow-hidden bg-white px-5 pt-[136px] sm:min-h-[660px] sm:px-8 sm:pt-[152px] lg:min-h-[680px] lg:px-12"
         >
           <motion.div {...fadeUp} className="relative mx-auto min-h-[580px] max-w-7xl sm:min-h-[600px] lg:min-h-[630px]">
@@ -726,15 +939,18 @@ export default function Home() {
             </h2>
 
             <img
-              src="/bilal-asif-portrait-3.png"
+              src="/bilal-asif-portrait-light.webp"
               alt="Bilal Asif, freelance website designer and digital growth partner"
-              className="absolute bottom-6 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 object-contain mix-blend-multiply sm:bottom-4 sm:w-[560px] lg:bottom-2 lg:w-[620px]"
+              className="absolute bottom-6 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 object-contain sm:bottom-4 sm:w-[560px] lg:bottom-2 lg:w-[620px]"
               loading="lazy"
             />
 
             <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
 
-            <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
+            <motion.div
+              style={{ opacity: nameOpacity }}
+              className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8"
+            >
               <p
                 className={`${petrona.className} whitespace-nowrap text-4xl italic leading-[0.9] tracking-tight text-ink sm:text-6xl lg:text-7xl`}
               >
@@ -745,7 +961,7 @@ export default function Home() {
               >
                 Bilal Asif
               </p>
-            </div>
+            </motion.div>
           </motion.div>
         </section>
 
@@ -767,7 +983,7 @@ export default function Home() {
           <motion.h2
             id="projects"
             {...fadeUp}
-            className="mt-12 scroll-mt-28 text-center text-3xl font-black leading-none tracking-[-0.035em] text-ink sm:mt-16 sm:text-5xl"
+            className={`${petrona.className} mt-16 scroll-mt-28 text-center text-4xl italic leading-none tracking-[-0.04em] text-ink sm:mt-24 sm:text-6xl`}
           >
             My Projects
           </motion.h2>
@@ -777,7 +993,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: "easeOut" }}
-            className="manual-hero-scroll relative -mx-5 mt-2 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
+            className="manual-hero-scroll relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
             onScroll={(event) => handleHeroScroll(event.currentTarget)}
             onPointerDown={startDragScroll}
             onPointerMove={dragScroll}
@@ -791,7 +1007,7 @@ export default function Home() {
                   <div
                     key={`${item.cardIndex}-${index}`}
                     data-hero-card-id={`${item.cardIndex}-${index}`}
-                    className={`hero-card relative h-[255px] w-[176px] shrink-0 overflow-hidden rounded-[1.4rem] sm:h-[325px] sm:w-[218px] lg:h-[380px] lg:w-[258px] ${item.hide}`}
+                    className={`hero-card relative h-[255px] w-[176px] shrink-0 overflow-hidden rounded-none sm:h-[325px] sm:w-[218px] lg:h-[380px] lg:w-[258px] ${item.hide}`}
                     style={{
                       "--card-y": `${item.top}px`,
                       "--card-rotate": `${item.rotate}deg`,
@@ -799,7 +1015,10 @@ export default function Home() {
                       "--card-z": item.z
                     } as CSSProperties}
                   >
-                    <FastHeroMockup card={showcaseCards[item.cardIndex]} />
+                    <FastHeroMockup
+                      card={showcaseCards[item.cardIndex]}
+                      onOpen={setSelectedProject}
+                    />
                   </div>
                 );
               })}
@@ -836,28 +1055,36 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <motion.div {...fadeUp} className="max-w-3xl">
               <SectionLabel>Services</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+              <h2 className={`${petrona.className} text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
                 Everything a small business needs to get found, trusted and chosen.
               </h2>
             </motion.div>
             <div className="mt-7 grid gap-4 sm:mt-10 md:grid-cols-2 xl:grid-cols-4">
-              {services.map((service, index) => {
-                const Icon = service.icon;
-                return (
+              {services.map((service, index) => (
                   <motion.article
                     key={service.title}
                     {...fadeUp}
                     transition={{ ...fadeUp.transition, delay: index * 0.06 }}
-                    className="rounded-[1.6rem] border border-ink/8 bg-white p-6 shadow-card"
+                    className="rounded-none border border-ink/8 bg-white p-6 shadow-card"
                   >
-                    <div className="grid h-12 w-12 place-items-center rounded-2xl border border-ink/5 bg-white">
-                      <Icon className="h-5 w-5 text-cobalt" />
+                    <div className="flex h-12 items-center gap-4">
+                      {service.logos.map((logo) => (
+                        <img
+                          key={logo.name}
+                          src={logo.src}
+                          alt={`${logo.name} logo`}
+                          title={logo.name}
+                          className="h-8 w-8 object-contain"
+                          loading="lazy"
+                        />
+                      ))}
                     </div>
-                    <h3 className="mt-7 text-2xl font-black tracking-[-0.02em]">{service.title}</h3>
+                    <h3 className={`${petrona.className} mt-7 text-2xl italic leading-tight tracking-[-0.02em]`}>
+                      {service.title}
+                    </h3>
                     <p className="mt-4 text-sm leading-7 text-ink/62">{service.description}</p>
                   </motion.article>
-                );
-              })}
+                ))}
             </div>
           </div>
         </section>
@@ -866,7 +1093,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
             <motion.div {...fadeUp}>
               <SectionLabel>Why it works</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+              <h2 className={`${petrona.className} text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
                 Your website should not just sit there. It should sell your business.
               </h2>
               <p className="mt-6 text-lg leading-8 text-white/64">
@@ -895,49 +1122,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-white px-5 pb-14 sm:px-8 sm:pb-20 lg:px-12">
-          <div className="mx-auto max-w-7xl">
-            <motion.div {...fadeUp} className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-              <div className="max-w-3xl">
-                <SectionLabel>Live References</SectionLabel>
-                <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
-                  Real websites I study for premium business inspiration.
-                </h2>
-              </div>
-              <p className="max-w-md text-sm leading-7 text-ink/58">
-                These are public websites for style reference only. They show the level of polish, trust and conversion flow I can design toward.
-              </p>
-            </motion.div>
-
-            <div className="mt-7 grid gap-4 sm:mt-10 md:grid-cols-2 xl:grid-cols-4">
-              {liveReferences.map((reference, index) => (
-                <motion.a
-                  key={reference.title}
-                  href={reference.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: index * 0.06 }}
-                  className="group rounded-[1.5rem] border border-ink/8 bg-white p-6 shadow-card transition hover:-translate-y-1 hover:border-ink/18"
-                >
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-cobalt">{reference.category}</p>
-                  <h3 className="mt-4 text-2xl font-black tracking-[-0.025em]">{reference.title}</h3>
-                  <p className="mt-4 text-sm leading-7 text-ink/62">{reference.note}</p>
-                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-ink">
-                    Visit website
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
-                  </div>
-                </motion.a>
-              ))}
-            </div>
-          </div>
-        </section>
-
         <section id="packages" className="bg-white px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <motion.div {...fadeUp} className="max-w-3xl">
               <SectionLabel>Packages</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+              <h2 className={`${petrona.className} text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
                 No fixed prices. Just the right package for your next stage.
               </h2>
             </motion.div>
@@ -976,7 +1165,7 @@ export default function Home() {
           <div className="mx-auto grid max-w-7xl gap-8 sm:gap-12 lg:grid-cols-[0.85fr_1.15fr]">
             <motion.div {...fadeUp}>
               <SectionLabel>Process</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+              <h2 className={`${petrona.className} text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
                 Simple, clear and focused on growth from day one.
               </h2>
               <p className="mt-6 text-lg leading-8 text-ink/62">
@@ -1008,7 +1197,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <motion.div {...fadeUp} className="max-w-3xl">
               <SectionLabel>FAQ</SectionLabel>
-              <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+              <h2 className={`${petrona.className} text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
                 Questions business owners usually ask before starting.
               </h2>
             </motion.div>
@@ -1038,7 +1227,7 @@ export default function Home() {
                 <MousePointerClick className="h-3.5 w-3.5 text-mint" />
                 Ready to grow?
               </div>
-              <h2 className="max-w-4xl text-4xl font-black leading-tight tracking-[-0.04em] sm:text-6xl">
+              <h2 className={`${petrona.className} max-w-4xl text-4xl italic leading-[0.95] tracking-[-0.04em] sm:text-6xl`}>
                 Tell me what you sell. I will help you turn it into a stronger online business.
               </h2>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-white/62">

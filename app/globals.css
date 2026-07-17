@@ -85,7 +85,9 @@ a {
   transform: translate3d(0, var(--card-y), 0) rotate(var(--card-rotate)) scale(var(--card-scale));
   transform-origin: center bottom;
   backface-visibility: hidden;
-  box-shadow: none;
+  box-shadow:
+    0 10px 24px rgba(17, 17, 17, 0.13),
+    0 2px 6px rgba(17, 17, 17, 0.08);
   transition:
     transform 80ms ease-out,
     z-index 0ms;
@@ -101,6 +103,14 @@ a {
   text-shadow:
     0 2px 3px rgba(0, 0, 0, 0.9),
     0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.project-card-heading {
+  text-shadow:
+    0 0 3px rgba(255, 255, 255, 1),
+    0 0 10px rgba(255, 255, 255, 0.92),
+    0 0 18px rgba(255, 255, 255, 0.65),
+    0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .hero-card.is-neighbor-card {
@@ -121,7 +131,9 @@ a {
 .hero-card.is-center-card {
   z-index: 90;
   transform: translate3d(0, 0, 0) rotate(0deg) scale(1.08);
-  box-shadow: none;
+  box-shadow:
+    0 16px 34px rgba(17, 17, 17, 0.17),
+    0 3px 8px rgba(17, 17, 17, 0.1);
 }
 
 @keyframes marquee {
