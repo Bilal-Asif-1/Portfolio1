@@ -1,21 +1,31 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   color-scheme: light;
-  --radius: 24px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+/* clip (not hidden) so horizontal overflow is cut without creating a scroll
+   container — a scroll container here would break position: sticky, which
+   the stacked-section effect depends on. */
 html {
-  scroll-behavior: smooth;
   overflow-x: hidden;
+  overflow-x: clip;
+}
+
+/* Lenis drives scrolling; native smooth behavior must stay off to avoid double-easing. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
 }
 
 body {
@@ -23,6 +33,7 @@ body {
   background: #ffffff;
   color: #111111;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -30,29 +41,56 @@ a {
   text-decoration: none;
 }
 
-.intro-final-line {
-  font-family: "Nunito", ui-sans-serif, system-ui, sans-serif;
+h1,
+h2,
+h3 {
+  text-wrap: balance;
 }
 
 ::selection {
-  background: #3024f5;
+  background: #111111;
   color: #ffffff;
+}
+
+:where(a, button, [role="button"], summary):focus-visible {
+  outline: 2px solid rgba(17, 17, 17, 0.65);
+  outline-offset: 3px;
+}
+
+.on-dark :where(a, button):focus-visible {
+  outline-color: rgba(255, 255, 255, 0.75);
 }
 
 .noise {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
-  opacity: 0;
+  z-index: 90;
+  opacity: 0.22;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
 }
 
-.glass-panel {
-  background: rgba(255, 255, 255, 0.82);
-  border: 1px solid rgba(17, 17, 17, 0.08);
-  box-shadow: 0 35px 120px rgba(17, 17, 17, 0.09);
-  backdrop-filter: blur(18px);
+.link-underline {
+  position: relative;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-underline:hover::after,
+.link-underline:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .marquee {
@@ -60,12 +98,35 @@ a {
 }
 
 .marquee-track {
-  animation: marquee 28s linear infinite;
+  animation: marquee 40s linear infinite;
   will-change: transform;
 }
 
-.logo-wave {
-  animation: logoWave 2.8s ease-in-out infinite;
+.stacked-scene-track,
+.stacked-scene {
+  position: relative;
+  width: 100%;
+}
+
+.stacked-scene-track {
+  position: relative;
+  isolation: isolate;
+  z-index: var(--scene-layer);
+}
+
+@media (min-width: 1024px) {
+  .stacked-scene-track {
+    min-height: 200svh;
+    margin-bottom: -100svh;
+  }
+
+  .stacked-scene {
+    position: sticky;
+    top: 0;
+    isolation: isolate;
+    min-height: 100svh;
+    z-index: var(--scene-layer);
+  }
 }
 
 .manual-hero-scroll {
@@ -86,31 +147,12 @@ a {
   transform-origin: center bottom;
   backface-visibility: hidden;
   box-shadow:
-    0 10px 24px rgba(17, 17, 17, 0.13),
-    0 2px 6px rgba(17, 17, 17, 0.08);
+    0 10px 24px rgba(17, 17, 17, 0.12),
+    0 2px 6px rgba(17, 17, 17, 0.07);
   transition:
-    transform 80ms ease-out,
+    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 240ms cubic-bezier(0.16, 1, 0.3, 1),
     z-index 0ms;
-}
-
-.hero-card-copy {
-  text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.9),
-    0 3px 8px rgba(0, 0, 0, 0.75);
-}
-
-.hero-card-title {
-  text-shadow:
-    0 2px 3px rgba(0, 0, 0, 0.9),
-    0 4px 12px rgba(0, 0, 0, 0.8);
-}
-
-.project-card-heading {
-  text-shadow:
-    0 0 3px rgba(255, 255, 255, 1),
-    0 0 10px rgba(255, 255, 255, 0.92),
-    0 0 18px rgba(255, 255, 255, 0.65),
-    0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .hero-card.is-neighbor-card {
@@ -132,8 +174,14 @@ a {
   z-index: 90;
   transform: translate3d(0, 0, 0) rotate(0deg) scale(1.08);
   box-shadow:
-    0 16px 34px rgba(17, 17, 17, 0.17),
-    0 3px 8px rgba(17, 17, 17, 0.1);
+    0 18px 40px rgba(17, 17, 17, 0.16),
+    0 3px 8px rgba(17, 17, 17, 0.09);
+}
+
+.project-card-heading {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes marquee {
@@ -142,16 +190,6 @@ a {
   }
   to {
     transform: translateX(-50%);
-  }
-}
-
-@keyframes logoWave {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-12px) rotate(-2deg);
   }
 }
 

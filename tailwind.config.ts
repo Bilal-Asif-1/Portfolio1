@@ -10,18 +10,30 @@ const config: Config = {
     extend: {
       colors: {
         ink: "#111111",
-        paper: "#f4f3ef",
-        mint: "#8ad9c0",
-        coral: "#ef624f",
-        cobalt: "#3024f5",
-        butter: "#f4d84e"
+        paper: "#f4f3ef"
+      },
+      borderRadius: {
+        card: "1.25rem",
+        panel: "1.75rem"
       },
       boxShadow: {
-        soft: "0 30px 90px rgba(17, 17, 17, 0.10)",
-        card: "0 18px 45px rgba(17, 17, 17, 0.08)"
+        card: "0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 24px rgba(17, 17, 17, 0.05)",
+        lift: "0 2px 4px rgba(17, 17, 17, 0.04), 0 20px 48px rgba(17, 17, 17, 0.10)",
+        deck: "0 10px 24px rgba(17, 17, 17, 0.12), 0 2px 6px rgba(17, 17, 17, 0.07)"
       },
       fontFamily: {
-        sans: ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+        sans: [
+          "var(--font-inter)",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "sans-serif"
+        ]
+      },
+      transitionTimingFunction: {
+        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)"
       }
     }
   },
