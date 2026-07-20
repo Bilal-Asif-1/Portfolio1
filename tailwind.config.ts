@@ -23,7 +23,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "var(--font-inter)",
+          "var(--font-hanken-grotesk)",
           "ui-sans-serif",
           "system-ui",
           "-apple-system",

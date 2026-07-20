@@ -4,8 +4,10 @@ import type { CSSProperties, PointerEvent, ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
+  animate,
   motion,
   MotionConfig,
+  useInView,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -13,7 +15,16 @@ import {
   useTransform
 } from "framer-motion";
 import { Petrona } from "next/font/google";
-import { ArrowDown, ArrowRight, Check, Mail, MessageCircle, Plus, X } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  Mail,
+  MessageCircle,
+  Plus,
+  X
+} from "lucide-react";
 import {
   EASE,
   getLenis,
@@ -21,8 +32,7 @@ import {
   Reveal,
   ScrollProgress,
   SmoothScroll,
-  TextReveal,
-  Tilt
+  TextReveal
 } from "@/components/motion";
 
 const petrona = Petrona({
@@ -48,61 +58,52 @@ const navItems = ["Services", "Projects", "Packages", "Process"];
 
 const services = [
   {
-    logos: [
-      { name: "Next.js", src: "https://cdn.simpleicons.org/nextdotjs/111111" },
-      { name: "React", src: "https://cdn.simpleicons.org/react/61DAFB" }
-    ],
-    title: "Business Websites",
+    title: "Website Development",
     description:
-      "Fast, mobile-first websites for restaurants, food brands, local shops and service businesses that need trust, calls and orders."
+      "Fast, responsive, SEO-friendly websites engineered to turn visitors into customers."
   },
   {
-    logos: [
-      { name: "Google Search Console", src: "https://cdn.simpleicons.org/googlesearchconsole/458CF5" },
-      { name: "Google Analytics", src: "https://cdn.simpleicons.org/googleanalytics/E37400" }
-    ],
-    title: "Local SEO",
+    title: "Mobile App Development",
     description:
-      "Google-friendly pages, keywords, location content and technical SEO so customers can find your business before competitors."
+      "FlutterFlow-powered Android and iOS applications designed to scale with your business."
   },
   {
-    logos: [
-      { name: "Google Ads", src: "https://cdn.simpleicons.org/googleads/4285F4" },
-      { name: "Meta", src: "https://cdn.simpleicons.org/meta/0866FF" }
-    ],
-    title: "Google and Meta Ads",
+    title: "SEO Services",
     description:
-      "Campaign structure, landing pages and keyword strategy for paid traffic that is built around real leads, not vanity clicks."
+      "Improve search rankings, increase visibility and generate qualified leads."
   },
   {
-    logos: [
-      { name: "Shopify", src: "https://cdn.simpleicons.org/shopify/7AB55C" },
-      { name: "WooCommerce", src: "https://cdn.simpleicons.org/woocommerce/96588A" }
-    ],
-    title: "Ecommerce Launch",
+    title: "Digital Marketing",
     description:
-      "Product pages, checkout flow, store structure and conversion copy for businesses ready to sell online in the USA or Europe."
+      "Data-driven campaigns across Google, Facebook, Instagram, LinkedIn and YouTube."
+  },
+  {
+    title: "Paid Advertising",
+    description:
+      "Google Ads and Meta Ads management focused relentlessly on return on investment."
+  },
+  {
+    title: "Email Marketing & Automation",
+    description:
+      "Email automation, customer journeys, lead nurturing and CRM integration."
+  },
+  {
+    title: "Branding & Strategy",
+    description:
+      "Brand identity, positioning, digital strategy and practical growth planning."
+  },
+  {
+    title: "UI/UX Design",
+    description:
+      "Clear, intuitive interfaces that make websites and digital products easier to use and convert."
   }
 ];
 
-const tools = [
-  { name: "Next.js", logo: "https://cdn.simpleicons.org/nextdotjs/111111" },
-  { name: "React", logo: "https://cdn.simpleicons.org/react/61DAFB" },
-  { name: "Node.js", logo: "https://cdn.simpleicons.org/nodedotjs/5FA04E" },
-  { name: "Express.js", logo: "https://cdn.simpleicons.org/express/111111" },
-  { name: "MongoDB", logo: "https://cdn.simpleicons.org/mongodb/47A248" },
-  { name: "JavaScript", logo: "https://cdn.simpleicons.org/javascript/F7DF1E" },
-  { name: "TypeScript", logo: "https://cdn.simpleicons.org/typescript/3178C6" },
-  { name: "Tailwind CSS", logo: "https://cdn.simpleicons.org/tailwindcss/06B6D4" },
-  { name: "HTML5", logo: "https://cdn.simpleicons.org/html5/E34F26" },
-  { name: "CSS3", logo: "https://cdn.simpleicons.org/css/663399" },
-  { name: "Framer Motion", logo: "https://cdn.simpleicons.org/framer/0055FF" },
-  { name: "shadcn/ui", logo: "https://cdn.simpleicons.org/shadcnui/111111" },
-  { name: "Google Ads", logo: "https://cdn.simpleicons.org/googleads/4285F4" },
-  { name: "Meta Ads", logo: "https://cdn.simpleicons.org/meta/0467DF" },
-  { name: "Search Console", logo: "https://cdn.simpleicons.org/googlesearchconsole/458CF5" },
-  { name: "Vercel", logo: "https://cdn.simpleicons.org/vercel/111111" },
-  { name: "GitHub", logo: "https://cdn.simpleicons.org/github/111111" }
+const projectMetrics = [
+  { value: "10+", label: "Projects delivered" },
+  { value: "95+", label: "Avg. Lighthouse score" },
+  { value: "4.9/5", label: "Client satisfaction" },
+  { value: "3yrs", label: "Digital growth experience" }
 ];
 
 const showcaseCards = [
@@ -362,9 +363,9 @@ const approachSteps = [
 
 const faqs = [
   {
-    question: "Do you build websites for restaurants and food businesses?",
+    question: "How long does a typical project take?",
     answer:
-      "Yes. I create restaurant websites, food brand landing pages, menu pages, booking sections and order-focused layouts built to help customers take action quickly."
+      "Most business websites take around 2–6 weeks, while ecommerce stores and larger digital products may take longer. You will receive a clear timeline once the scope, content and required features are confirmed."
   },
   {
     question: "Can you help my business rank on Google?",
@@ -372,14 +373,14 @@ const faqs = [
       "I can build the SEO foundation with keyword research, page structure, headings, metadata, local content and technical improvements that make your site easier for Google and customers to understand."
   },
   {
-    question: "Do you work with clients in the USA and Europe?",
+    question: "Can I mix services across plans?",
     answer:
-      "Yes. The portfolio is focused on USA and European small businesses, especially restaurants, local shops, ecommerce stores and service providers."
+      "Yes. Packages are flexible, so we can combine the website, SEO, advertising, ecommerce or automation work that best matches your goals and current stage."
   },
   {
-    question: "Do you show prices on the website?",
+    question: "Who owns the work you produce?",
     answer:
-      "No fixed prices are listed because every business needs a different mix of website, SEO, ecommerce and ads support. Message me and I can suggest the right package."
+      "You own the approved final website, design assets and project files after the agreed payment is complete. Third-party tools, fonts and licensed assets remain subject to their own terms."
   }
 ];
 
@@ -391,16 +392,6 @@ function useMotionValueSpring(initial: number) {
     spring
   };
 }
-
-const buttonBase =
-  "group inline-flex min-h-12 items-center justify-center gap-2.5 rounded-full px-7 py-3 text-sm font-semibold transition-all duration-300 ease-out-expo active:scale-[0.97] focus:outline-none";
-
-const buttonStyles = {
-  primary: `${buttonBase} bg-ink text-white hover:scale-[1.02] hover:bg-ink/85 focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2`,
-  secondary: `${buttonBase} border border-ink/15 bg-white text-ink hover:scale-[1.02] hover:border-ink/40 focus-visible:ring-2 focus-visible:ring-ink/20 focus-visible:ring-offset-2`,
-  primaryOnDark: `${buttonBase} bg-white text-ink hover:scale-[1.02] hover:bg-white/85 focus-visible:ring-2 focus-visible:ring-white/50`,
-  secondaryOnDark: `${buttonBase} border border-white/20 bg-transparent text-white hover:scale-[1.02] hover:border-white/60 focus-visible:ring-2 focus-visible:ring-white/40`
-};
 
 const introCooldownMs = 20 * 60 * 1000;
 const introPhrases = [
@@ -615,18 +606,78 @@ function SectionLabel({
   );
 }
 
+function AnimatedMetricValue({ value, delay = 0 }: { value: string; delay?: number }) {
+  const valueRef = useRef<HTMLElement>(null);
+  const inView = useInView(valueRef, { once: true, amount: 0.6 });
+  const reducedMotion = useReducedMotion();
+  const [displayValue, setDisplayValue] = useState("0");
+
+  useEffect(() => {
+    if (!inView) return;
+    if (reducedMotion) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const numberMatch = value.match(/\d+(?:\.\d+)?/);
+    if (!numberMatch) {
+      setDisplayValue(value);
+      return;
+    }
+
+    const target = Number(numberMatch[0]);
+    const prefix = value.slice(0, numberMatch.index);
+    const suffix = value.slice((numberMatch.index ?? 0) + numberMatch[0].length);
+    const hasDecimal = !Number.isInteger(target);
+    const controls = animate(0, target, {
+      duration: 1.35,
+      delay,
+      ease: EASE,
+      onUpdate: (latest) => {
+        const formatted = hasDecimal ? latest.toFixed(1) : Math.round(latest).toString();
+        setDisplayValue(`${prefix}${formatted}${suffix}`);
+      }
+    });
+
+    return () => controls.stop();
+  }, [delay, inView, reducedMotion, value]);
+
+  return (
+    <dd
+      ref={valueRef}
+      className="metric-value order-1 text-4xl font-extrabold leading-none tracking-normal text-black sm:text-5xl lg:text-6xl"
+    >
+      {displayValue}
+    </dd>
+  );
+}
+
 function StackedScene({
   children,
   className,
   id,
-  layer
+  layer,
+  long = false,
+  liftIn = false,
+  overlapNext = false,
+  solidEntry = false,
+  pinAtEnd = false
 }: {
   children: ReactNode;
   className: string;
   id?: string;
   layer: number;
+  long?: boolean;
+  liftIn?: boolean;
+  overlapNext?: boolean;
+  solidEntry?: boolean;
+  pinAtEnd?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<HTMLElement>(null);
+  const pinContentRef = useRef<HTMLDivElement>(null);
+  const [pinContentHeight, setPinContentHeight] = useState(0);
+  const [pinViewportHeight, setPinViewportHeight] = useState(0);
   const reducedMotion = useReducedMotion();
   const { scrollYProgress: entryProgress } = useScroll({
     target: trackRef,
@@ -634,65 +685,86 @@ function StackedScene({
   });
   const { scrollYProgress: exitProgress } = useScroll({
     target: trackRef,
-    offset: ["start start", "center start"]
+    offset: long ? ["end end", "end start"] : ["start start", "center start"]
+  });
+  const { scrollYProgress: pinProgress } = useScroll({
+    target: trackRef,
+    offset: ["start start", "end end"]
   });
   const entryOpacity = useTransform(
     entryProgress,
     [0, 0.2, 1],
-    reducedMotion ? [1, 1, 1] : [0.08, 0.75, 1]
+    reducedMotion || solidEntry ? [1, 1, 1] : [0.08, 0.75, 1]
+  );
+  const entryY = useTransform(
+    entryProgress,
+    [0, 0.45, 1],
+    reducedMotion ? [0, 0, 0] : [88, 24, 0]
   );
   const exitOpacity = useTransform(
     exitProgress,
     [0, 0.15, 0.3, 0.6, 1],
-    reducedMotion ? [1, 1, 1, 1, 1] : [1, 0.92, 0.3, 0, 0]
+    reducedMotion || pinAtEnd ? [1, 1, 1, 1, 1] : [1, 0.92, 0.3, 0, 0]
   );
   const opacity = useTransform(() => Math.min(entryOpacity.get(), exitOpacity.get()));
+  const pinTravel = Math.max(0, pinContentHeight - pinViewportHeight);
+  const pinY = useTransform(pinProgress, [0, 1], [0, -pinTravel]);
+
+  useEffect(() => {
+    if (!pinAtEnd || !pinContentRef.current) return;
+
+    const updateHeight = () => {
+      setPinViewportHeight(window.innerHeight);
+      if (pinContentRef.current) setPinContentHeight(pinContentRef.current.offsetHeight);
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(pinContentRef.current);
+    window.addEventListener("resize", updateHeight);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", updateHeight);
+    };
+  }, [pinAtEnd]);
+
+  const pinHeightStyle = pinAtEnd && pinContentHeight
+    ? ({ "--pin-scene-height": `${pinContentHeight}px` } as CSSProperties)
+    : {};
+  const trackStyle = {
+    "--scene-layer": layer,
+    ...pinHeightStyle
+  } as CSSProperties;
 
   return (
     <div
       ref={trackRef}
-      className="stacked-scene-track"
-      style={{ "--scene-layer": layer } as CSSProperties}
+      className={`stacked-scene-track ${long ? "stacked-scene-track--long" : ""} ${
+        overlapNext ? "stacked-scene-track--overlap-next" : ""
+      } ${
+        pinAtEnd ? "stacked-scene-track--pin-end" : ""
+      }`}
+      style={trackStyle}
     >
       <motion.section
+        ref={sceneRef}
         id={id}
-        className={`stacked-scene ${className}`}
-        style={{ opacity }}
+        className={`stacked-scene ${pinAtEnd ? "stacked-scene--pin-viewport" : ""} ${className}`}
+        style={{
+          opacity,
+          y: liftIn ? entryY : 0,
+          ...pinHeightStyle
+        }}
       >
-        {children}
+        {pinAtEnd ? (
+          <motion.div ref={pinContentRef} className="stacked-scene-pin-content" style={{ y: pinY }}>
+            {children}
+          </motion.div>
+        ) : (
+          children
+        )}
       </motion.section>
-    </div>
-  );
-}
-
-function ContactButtons({
-  compact = false,
-  tone = "light"
-}: {
-  compact?: boolean;
-  tone?: "light" | "dark";
-}) {
-  const primary = tone === "dark" ? buttonStyles.primaryOnDark : buttonStyles.primary;
-  const secondary = tone === "dark" ? buttonStyles.secondaryOnDark : buttonStyles.secondary;
-
-  return (
-    <div className={`flex flex-col gap-3 sm:flex-row ${compact ? "sm:justify-start" : "justify-center"}`}>
-      <Magnetic>
-        <a href={contact.whatsapp} className={primary} aria-label="Contact Bilal Asif on WhatsApp">
-          <MessageCircle className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:scale-110" />
-          Start on WhatsApp
-        </a>
-      </Magnetic>
-      <Magnetic>
-        <a
-          href={`mailto:${contact.email}?subject=Business%20growth%20project%20with%20Bilal`}
-          className={secondary}
-          aria-label="Email Bilal Asif"
-        >
-          <Mail className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:scale-110" />
-          Email my project
-        </a>
-      </Magnetic>
     </div>
   );
 }
@@ -870,28 +942,122 @@ function ProjectDetailModal({
   );
 }
 
+function PackagesModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      className="fixed inset-0 z-[160] overflow-y-auto bg-ink/45 p-2 backdrop-blur-sm sm:p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      onClick={onClose}
+    >
+      <motion.section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="packages-dialog-title"
+        className="relative mx-auto min-h-full w-full max-w-7xl overflow-hidden rounded-panel bg-white px-5 py-16 shadow-lift sm:px-8 sm:py-20 lg:px-12"
+        initial={{ opacity: 0, y: 54, scale: 0.985 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 38, scale: 0.99 }}
+        transition={{ duration: 0.35, ease: EASE }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-300 hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 sm:right-6 sm:top-6"
+          aria-label="Close packages"
+          onClick={onClose}
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <div className="max-w-3xl pr-14">
+          <SectionLabel>Packages</SectionLabel>
+          <h2
+            id="packages-dialog-title"
+            className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-6xl`}
+          >
+            No fixed prices. Just the right package for your next stage.
+          </h2>
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:mt-14 lg:grid-cols-3">
+          {packages.map((item, index) => {
+            const featured = index === 1;
+            return (
+              <article
+                key={item.title}
+                className={`flex h-full flex-col rounded-card border p-7 sm:p-8 ${
+                  featured
+                    ? "on-dark border-ink bg-ink text-white shadow-lift"
+                    : "border-ink/10 bg-white text-ink"
+                }`}
+              >
+                <h3 className={`${serifDisplay} text-3xl tracking-[-0.02em]`}>{item.title}</h3>
+                <p className={`mt-3 text-sm leading-7 ${featured ? "text-white/60" : "text-ink/60"}`}>
+                  {item.bestFor}
+                </p>
+                <a
+                  href={contact.whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={`my-7 block rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors duration-300 ${
+                    featured
+                      ? "border-white/15 bg-white/[0.06] text-white hover:bg-white hover:text-ink"
+                      : "border-ink/10 bg-ink/[0.03] text-ink hover:bg-ink hover:text-white"
+                  }`}
+                >
+                  Contact for a custom package
+                </a>
+                <ul className="mt-auto space-y-3">
+                  {item.includes.map((feature) => (
+                    <li
+                      key={feature}
+                      className={`flex gap-3 text-sm font-medium ${
+                        featured ? "text-white/85" : "text-ink/75"
+                      }`}
+                    >
+                      <Check
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${
+                          featured ? "text-white/60" : "text-ink/50"
+                        }`}
+                      />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            );
+          })}
+        </div>
+      </motion.section>
+    </motion.div>
+  );
+}
+
 function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(index === 0);
 
   return (
     <Reveal delay={index * 0.05}>
-      <div className="border-b border-ink/10">
+      <div className="border-b border-white/15">
         <button
           type="button"
-          className="flex w-full items-center justify-between gap-6 py-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/20"
+          className="flex w-full items-center justify-between gap-6 py-7 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
         >
-          <span className={`${serifAccent} text-lg tracking-[-0.01em] text-ink sm:text-xl`}>
+          <span className="font-sans text-xl font-bold leading-tight tracking-normal text-white sm:text-2xl">
             {faq.question}
           </span>
           <motion.span
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: 0.3, ease: EASE }}
-            className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-ink/12 text-ink/60"
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 text-white/60"
             aria-hidden="true"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-5 w-5" />
           </motion.span>
         </button>
         <AnimatePresence initial={false}>
@@ -903,7 +1069,9 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
               transition={{ duration: 0.4, ease: EASE }}
               className="overflow-hidden"
             >
-              <p className="max-w-2xl pb-6 text-sm leading-7 text-ink/60 sm:text-base">{faq.answer}</p>
+              <p className="max-w-3xl pb-7 text-sm leading-7 text-white/50 sm:text-base sm:leading-8">
+                {faq.answer}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -916,18 +1084,23 @@ export default function Home() {
   const heroScrollerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
+  const [packagesOpen, setPackagesOpen] = useState(false);
+  const [navOnDark, setNavOnDark] = useState(false);
 
   const portraitX = useMotionValueSpring(0);
   const portraitY = useMotionValueSpring(0);
 
   useEffect(() => {
-    if (!selectedProject) return;
+    if (!selectedProject && !packagesOpen) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     getLenis()?.stop();
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedProject(null);
+      if (event.key === "Escape") {
+        setSelectedProject(null);
+        setPackagesOpen(false);
+      }
     };
     window.addEventListener("keydown", closeOnEscape);
 
@@ -936,7 +1109,44 @@ export default function Home() {
       getLenis()?.start();
       window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [selectedProject]);
+  }, [selectedProject, packagesOpen]);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const updateNavTone = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const navLine = 36;
+        const activeScene = Array.from(
+          document.querySelectorAll<HTMLElement>(".stacked-scene")
+        )
+          .filter((scene) => {
+            const bounds = scene.getBoundingClientRect();
+            const opacity = Number.parseFloat(window.getComputedStyle(scene).opacity);
+            return bounds.top <= navLine && bounds.bottom > navLine && opacity > 0.12;
+          })
+          .sort((first, second) => {
+            const firstLayer = Number.parseInt(window.getComputedStyle(first).zIndex || "0", 10);
+            const secondLayer = Number.parseInt(window.getComputedStyle(second).zIndex || "0", 10);
+            return firstLayer - secondLayer;
+          })
+          .at(-1);
+
+        setNavOnDark(Boolean(activeScene?.classList.contains("on-dark")));
+      });
+    };
+
+    updateNavTone();
+    window.addEventListener("scroll", updateNavTone, { passive: true });
+    window.addEventListener("resize", updateNavTone);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateNavTone);
+      window.removeEventListener("resize", updateNavTone);
+    };
+  }, []);
 
   const schema = {
     "@context": "https://schema.org",
@@ -983,6 +1193,7 @@ export default function Home() {
           {selectedProject && (
             <ProjectDetailModal card={selectedProject} onClose={() => setSelectedProject(null)} />
           )}
+          {packagesOpen && <PackagesModal onClose={() => setPackagesOpen(false)} />}
         </AnimatePresence>
         <div className="noise" aria-hidden="true" />
         <script
@@ -990,37 +1201,44 @@ export default function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
 
-        <header className="fixed inset-x-0 top-0 z-40 px-4 pt-4 sm:px-6">
+        <header className="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-4 sm:px-6">
             <motion.nav
               initial={{ y: -16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
-              className="mx-auto flex h-14 max-w-4xl items-center justify-between rounded-full border border-ink/10 bg-white/75 pl-6 pr-2 backdrop-blur-xl"
+              className={`pointer-events-auto mx-auto flex h-12 items-center justify-center gap-3 font-sans transition-colors duration-300 sm:gap-8 ${
+                navOnDark ? "text-white" : "text-black"
+              }`}
               aria-label="Main navigation"
             >
-              <a href="#about" className={`${serifAccent} text-base tracking-[-0.01em]`}>
-                Bilal Asif
-              </a>
-              <div className="hidden items-center gap-8 md:flex">
-                {navItems.map((item, index) => (
-                  <motion.a
-                    key={item}
-                    href={`#${item.toLowerCase()}`}
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
-                    className="link-underline text-sm font-medium text-ink/60 transition-colors duration-300 hover:text-ink"
-                  >
-                    {item}
-                  </motion.a>
-                ))}
+              <div className="flex items-center justify-center gap-3 sm:gap-8">
+                {[...navItems, "Contact"].map((item, index) =>
+                  item === "Packages" ? (
+                    <motion.button
+                      key={item}
+                      type="button"
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
+                      className="link-underline text-[11px] font-semibold transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      onClick={() => setPackagesOpen(true)}
+                    >
+                      {item}
+                    </motion.button>
+                  ) : (
+                    <motion.a
+                      key={item}
+                      href={`#${item.toLowerCase()}`}
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
+                      className="link-underline text-[11px] font-semibold transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                    >
+                      {item}
+                    </motion.a>
+                  )
+                )}
               </div>
-              <a
-                href="#contact"
-                className="inline-flex h-10 items-center justify-center rounded-full bg-ink px-5 text-sm font-semibold text-white transition-all duration-300 ease-out-expo hover:scale-[1.03] hover:bg-ink/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 focus-visible:ring-offset-2"
-              >
-                Contact
-              </a>
             </motion.nav>
         </header>
 
@@ -1044,7 +1262,7 @@ export default function Home() {
               }}
             >
               <h2
-                className={`${serifDisplay} pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[19%] pr-[13%] text-6xl leading-none text-ink sm:top-8 sm:pl-[21%] sm:pr-[15%] sm:text-8xl lg:pl-[23%] lg:pr-[17%] lg:text-[9rem]`}
+                className={`${serifDisplay} pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[10%] pr-[7%] text-6xl leading-none text-ink sm:top-8 sm:pl-[13%] sm:pr-[9%] sm:text-8xl lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]`}
               >
                 <span className="inline-block">Hey,</span>
                 <span className="inline-block">there</span>
@@ -1084,7 +1302,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.7 }}
                 transition={{ duration: 0.7, ease: EASE }}
-                className="mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
+                className="font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
               >
                 Freelance Digital Growth Partner
               </motion.p>
@@ -1102,7 +1320,7 @@ export default function Home() {
                 </span>
                 <span className="block overflow-hidden pb-3">
                   <motion.span
-                    className="block text-ink/30"
+                    className="block text-ink/40"
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
                     transition={{ duration: 1, ease: EASE, delay: 0.18 }}
@@ -1162,23 +1380,25 @@ export default function Home() {
           <StackedScene
             id="projects"
             layer={3}
-            className="min-h-[100svh] overflow-x-hidden bg-transparent px-5 pb-10 pt-20 sm:px-8 sm:pt-24 lg:px-12"
+            long
+            overlapNext
+            className="min-h-[100svh] overflow-x-hidden bg-white px-5 pb-10 pt-20 sm:px-8 sm:pt-24 lg:px-12 lg:pb-[calc(2.5rem+30svh)]"
           >
             <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <Reveal y={24} blur={3}>
-                <p className="mb-5 text-[10px] font-medium uppercase tracking-normal text-ink/45 sm:text-xs">
-                  Featured Work
+                <p className="font-jetbrains mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-black/55 sm:text-xs">
+                  ( Selected Work )
                 </p>
-                <h2 className="scroll-mt-28 font-sans text-4xl font-semibold leading-[0.95] tracking-normal text-ink sm:text-6xl lg:text-7xl">
-                  <span className="block">Real results for</span>
-                  <span className="block">real businesses</span>
+                <h2 className="scroll-mt-28 font-sans text-5xl font-extrabold leading-[0.86] tracking-normal text-black sm:text-7xl lg:text-8xl">
+                  <span className="block">Proof, not</span>
+                  <span className="block">promises</span>
                 </h2>
               </Reveal>
 
               <Reveal delay={0.15} y={18} blur={2}>
                 <a
                   href="#contact"
-                  className="group inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-normal text-ink/55 transition-colors duration-300 hover:text-ink sm:text-sm"
+                  className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-normal text-ink/55 transition-colors duration-300 hover:text-ink sm:text-sm"
                 >
                   Start Your Project
                   <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1.5" />
@@ -1223,207 +1443,118 @@ export default function Home() {
                 })}
               </div>
             </motion.div>
+
+            <Reveal y={18} blur={2}>
+              <dl className="-mx-5 grid grid-cols-2 bg-white py-8 sm:-mx-8 sm:py-10 lg:-mx-12 lg:grid-cols-4 lg:py-12">
+                {projectMetrics.map((metric, index) => (
+                  <div
+                    key={metric.label}
+                    className="flex min-h-28 flex-col items-center justify-center px-5 py-5 text-center sm:min-h-32 sm:px-8 lg:min-h-36 lg:px-12"
+                  >
+                    <dt className="order-2 mt-2 text-center text-xs font-semibold uppercase tracking-normal text-black/55 sm:text-sm">
+                      {metric.label}
+                    </dt>
+                    <AnimatedMetricValue value={metric.value} delay={index * 0.1} />
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
           </StackedScene>
 
           <StackedScene
             id="services"
             layer={4}
-            className="min-h-[100svh] scroll-mt-24 bg-transparent px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+            long
+            pinAtEnd
+            solidEntry
+            className="on-dark min-h-[100svh] scroll-mt-24 bg-black pb-0 pt-16 text-white sm:pt-20"
           >
-            <div className="mx-auto max-w-7xl">
-              <Reveal y={24} blur={3}>
-                <p className="mb-5 text-[10px] font-medium uppercase tracking-normal text-ink/45 sm:text-xs">
-                  What I Do
-                </p>
-                <h2 className="font-sans text-5xl font-semibold leading-none tracking-normal text-ink sm:text-7xl lg:text-8xl">
-                  Services
-                </h2>
-              </Reveal>
-              <div className="mt-10 grid gap-4 sm:mt-14 md:grid-cols-2 xl:grid-cols-4">
+            <div className="w-full">
+              <div className="grid gap-8 border-b border-white/15 px-5 pb-10 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-12 lg:pb-12">
+                <Reveal y={24} blur={3}>
+                  <p className="font-jetbrains mb-6 text-[10px] font-medium uppercase tracking-normal text-white sm:text-xs">
+                    What I Do
+                  </p>
+                  <h2 className="font-sans text-5xl font-extrabold leading-[0.9] tracking-normal text-white sm:text-7xl lg:text-8xl">
+                    Services
+                  </h2>
+                </Reveal>
+
+                <Reveal delay={0.12} y={18} blur={2}>
+                  <a
+                    href="#contact"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-300 hover:border-[#c7ff16] hover:text-[#c7ff16]"
+                  >
+                    All services
+                  </a>
+                </Reveal>
+              </div>
+
+              <div>
                 {services.map((service, index) => (
-                  <Reveal key={service.title} delay={index * 0.07} className="h-full">
-                    <Tilt className="h-full">
-                    <article className="group h-full rounded-card border border-ink/10 bg-white p-7 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:border-ink/25 hover:shadow-lift">
-                      <div className="flex items-start justify-between">
-                        <div className="flex h-12 items-center gap-4">
-                          {service.logos.map((logo) => (
-                            <img
-                              key={logo.name}
-                              src={logo.src}
-                              alt={`${logo.name} logo`}
-                              title={logo.name}
-                              className="h-8 w-8 object-contain grayscale transition-all duration-500 ease-out-expo group-hover:grayscale-0"
-                              loading="lazy"
-                            />
-                          ))}
-                        </div>
-                        <span className="text-xs font-medium tabular-nums text-ink/30">
-                          0{index + 1}
-                        </span>
-                      </div>
-                      <h3 className={`${serifDisplay} mt-8 text-2xl leading-tight tracking-[-0.02em] text-ink`}>
+                  <Reveal key={service.title} delay={index * 0.06} y={18} blur={2}>
+                    <a
+                      href="#contact"
+                      className="group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-300 hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
+                    >
+                      <span className="text-xs font-medium tabular-nums text-white/40 transition-colors duration-300 group-hover:text-black/55 sm:text-sm">
+                        0{index + 1}
+                      </span>
+                      <h3 className="font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-300 group-hover:text-black sm:text-3xl lg:text-4xl">
                         {service.title}
                       </h3>
-                      <p className="mt-3 text-sm leading-7 text-ink/60">{service.description}</p>
-                    </article>
-                    </Tilt>
+                      <p className="col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-300 group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
+                        {service.description}
+                      </p>
+                      <ArrowUpRight className="col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-300 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
+                    </a>
                   </Reveal>
                 ))}
-              </div>
-            </div>
-          </StackedScene>
-
-          <StackedScene
-            layer={5}
-            className="on-dark min-h-[100svh] bg-black px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12"
-          >
-            <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-              <div>
-                <Reveal>
-                  <SectionLabel tone="dark">Why it works</SectionLabel>
-                </Reveal>
-                <h2 className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] sm:text-5xl`}>
-                  <TextReveal
-                    segments={toSegments("Your website should not just sit there. It should sell your business.")}
-                    stagger={0.025}
-                  />
-                </h2>
-                <Reveal delay={0.15}>
-                  <p className="mt-7 max-w-xl text-base leading-8 text-white/60 sm:text-lg">
-                    A beautiful site is only the start. The real value is in clear offers, search-friendly
-                    pages, persuasive copy and traffic channels that bring people who are ready to buy.
-                  </p>
-                </Reveal>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {[
-                  ["More calls", "Make it easy for visitors to contact you from mobile, email or WhatsApp."],
-                  ["More orders", "Create a clear path from menu, product or service page to checkout or inquiry."],
-                  ["More trust", "Show your offer, quality, reviews and process in a polished first impression."],
-                  ["More visibility", "Use SEO keywords and ad-ready landing pages to reach high-intent customers."]
-                ].map(([title, text], index) => (
-                  <Reveal key={title} delay={index * 0.07} className="h-full">
-                    <Tilt className="h-full">
-                      <div className="h-full rounded-card border border-white/10 bg-white/[0.05] p-7 transition-colors duration-500 ease-out-expo hover:bg-white/[0.08]">
-                        <span className="grid h-9 w-9 place-items-center rounded-full bg-white/10">
-                          <Check className="h-4 w-4 text-white" />
-                        </span>
-                        <h3 className={`${serifDisplay} mt-6 text-2xl tracking-[-0.02em]`}>{title}</h3>
-                        <p className="mt-3 text-sm leading-7 text-white/60">{text}</p>
-                      </div>
-                    </Tilt>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </StackedScene>
-
-          <StackedScene
-            id="packages"
-            layer={6}
-            className="min-h-[100svh] scroll-mt-24 bg-transparent px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
-          >
-            <div className="mx-auto max-w-7xl">
-              <div className="max-w-3xl">
-                <Reveal>
-                  <SectionLabel>Packages</SectionLabel>
-                </Reveal>
-                <h2 className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-5xl`}>
-                  <TextReveal
-                    segments={toSegments("No fixed prices. Just the right package for your next stage.")}
-                    stagger={0.03}
-                  />
-                </h2>
-              </div>
-              <div className="mt-10 grid gap-4 sm:mt-14 lg:grid-cols-3">
-                {packages.map((item, index) => {
-                  const featured = index === 1;
-                  return (
-                    <Reveal key={item.title} delay={index * 0.08} className="h-full">
-                      <Tilt className="h-full">
-                      <article
-                        className={`h-full rounded-card border p-8 transition-all duration-500 ease-out-expo hover:-translate-y-1 ${
-                          featured
-                            ? "on-dark border-ink bg-ink text-white shadow-lift"
-                            : "border-ink/10 bg-white hover:border-ink/25 hover:shadow-lift"
-                        }`}
-                      >
-                        <h3 className={`${serifDisplay} text-3xl tracking-[-0.02em]`}>{item.title}</h3>
-                        <p className={`mt-3 text-sm leading-7 ${featured ? "text-white/60" : "text-ink/60"}`}>
-                          {item.bestFor}
-                        </p>
-                        <div
-                          className={`my-7 rounded-xl border px-4 py-3 text-center text-sm font-medium ${
-                            featured
-                              ? "border-white/12 bg-white/[0.06] text-white"
-                              : "border-ink/10 bg-ink/[0.03] text-ink"
-                          }`}
-                        >
-                          Contact for a custom package
-                        </div>
-                        <ul className="space-y-3">
-                          {item.includes.map((feature) => (
-                            <li
-                              key={feature}
-                              className={`flex gap-3 text-sm font-medium ${
-                                featured ? "text-white/85" : "text-ink/75"
-                              }`}
-                            >
-                              <Check
-                                className={`mt-0.5 h-4 w-4 shrink-0 ${
-                                  featured ? "text-white/60" : "text-ink/50"
-                                }`}
-                              />
-                              <span>{feature}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </article>
-                      </Tilt>
-                    </Reveal>
-                  );
-                })}
               </div>
             </div>
           </StackedScene>
 
           <StackedScene
             id="process"
-            layer={7}
-            className="min-h-[100svh] scroll-mt-24 bg-transparent px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+            layer={5}
+            solidEntry
+            className="min-h-[100svh] scroll-mt-24 overflow-hidden rounded-t-[24px] bg-white px-5 py-20 shadow-[0_-22px_60px_rgba(0,0,0,0.18)] sm:px-8 sm:py-28 lg:px-12"
           >
-            <div className="mx-auto grid max-w-7xl gap-10 sm:gap-14 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
               <div>
-                <Reveal>
-                  <SectionLabel>Process</SectionLabel>
+                <Reveal y={24} blur={3}>
+                  <p className="font-jetbrains mb-8 text-[10px] font-medium uppercase tracking-normal text-ink/45 sm:text-xs">
+                    ( The Approach )
+                  </p>
+                  <h2 className="max-w-xl font-sans text-6xl font-semibold leading-[0.86] tracking-normal text-ink sm:text-7xl lg:text-[6.5rem]">
+                    How we
+                    <span className="block">drive</span>
+                    <span className="block">growth</span>
+                  </h2>
                 </Reveal>
-                <h2 className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-5xl`}>
-                  <TextReveal
-                    segments={toSegments("Simple, clear and focused on growth from day one.")}
-                    stagger={0.03}
-                  />
-                </h2>
-                <Reveal delay={0.15}>
-                  <p className="mt-7 max-w-xl text-base leading-8 text-ink/60 sm:text-lg">
-                    I keep the process friendly and practical, so business owners know exactly what is being
-                    built and why it matters.
+                <Reveal delay={0.12} y={18} blur={2}>
+                  <p className="mt-8 max-w-lg text-base leading-8 text-ink/60 sm:text-lg">
+                    A proven process that turns marketing from a cost centre into your most reliable growth
+                    engine.
                   </p>
                 </Reveal>
               </div>
-              <div className="border-y border-ink/10">
-                {process.map((step, index) => (
-                  <Reveal key={step} delay={index * 0.07}>
-                    <div
-                      className={`group flex items-baseline gap-6 py-7 sm:gap-10 ${
-                        index > 0 ? "border-t border-ink/10" : ""
-                      }`}
-                    >
-                      <span className="text-sm font-medium tabular-nums text-ink/30 transition-colors duration-300 group-hover:text-ink sm:text-base">
+
+              <div className="space-y-9 lg:pt-8">
+                {approachSteps.map((step, index) => (
+                  <Reveal key={step.title} delay={index * 0.08} y={22} blur={2}>
+                    <div className="grid grid-cols-[2rem_1fr] gap-4 sm:grid-cols-[2.5rem_1fr] sm:gap-6">
+                      <span className="pt-1 text-sm font-medium tabular-nums text-ink/30 sm:text-base">
                         0{index + 1}
                       </span>
-                      <p className="text-lg leading-8 text-ink/75 transition-all duration-500 ease-out-expo group-hover:translate-x-1.5 group-hover:text-ink sm:text-xl">
-                        {step}
-                      </p>
+                      <div>
+                        <h3 className="font-sans text-2xl font-bold leading-tight tracking-normal text-ink sm:text-3xl">
+                          {step.title}
+                        </h3>
+                        <p className="mt-3 max-w-xl text-sm leading-7 text-ink/60 sm:text-base sm:leading-8">
+                          {step.description}
+                        </p>
+                      </div>
                     </div>
                   </Reveal>
                 ))}
@@ -1432,22 +1563,24 @@ export default function Home() {
           </StackedScene>
 
           <StackedScene
-            layer={8}
-            className="min-h-[100svh] bg-transparent px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+            layer={6}
+            long
+            className="on-dark min-h-[100svh] bg-black px-5 py-20 text-white sm:px-8 sm:py-28 lg:px-12"
           >
-            <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-              <div>
-                <Reveal>
-                  <SectionLabel>FAQ</SectionLabel>
-                </Reveal>
-                <h2 className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-5xl`}>
-                  <TextReveal
-                    segments={toSegments("Questions business owners usually ask before starting.")}
-                    stagger={0.03}
-                  />
-                </h2>
-              </div>
-              <div className="border-t border-ink/10">
+            <div className="mx-auto max-w-4xl">
+              <Reveal y={24} blur={3}>
+                <div className="text-center">
+                  <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45 sm:text-xs">
+                    ( FAQ )
+                  </p>
+                  <h2 className="mt-8 font-sans text-6xl font-extrabold leading-[0.84] tracking-normal text-white sm:text-8xl lg:text-9xl">
+                    <span className="block">Good</span>
+                    <span className="block">questions</span>
+                  </h2>
+                </div>
+              </Reveal>
+
+              <div className="mt-14 border-t border-white/15 sm:mt-20">
                 {faqs.map((faq, index) => (
                   <FaqItem key={faq.question} faq={faq} index={index} />
                 ))}
@@ -1457,111 +1590,121 @@ export default function Home() {
 
           <StackedScene
             id="contact"
-            layer={9}
-            className="min-h-[100svh] scroll-mt-24 bg-transparent px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+            layer={7}
+            long
+            className="on-dark min-h-[100svh] scroll-mt-24 bg-black px-5 py-16 text-white sm:px-8 sm:py-20 lg:px-12"
           >
-            <Reveal className="mx-auto max-w-7xl">
-              <div className="on-dark relative overflow-hidden rounded-panel bg-ink px-7 py-16 text-white sm:px-12 sm:py-20 lg:px-20 lg:py-24">
-                <div
-                  className="pointer-events-none absolute -top-48 left-1/2 h-96 w-[56rem] -translate-x-1/2"
-                  aria-hidden="true"
-                >
-                  <motion.div
-                    className="h-full w-full rounded-full bg-white/[0.05] blur-3xl"
-                    animate={{ x: [-60, 60, -60] }}
-                    transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
-                  />
-                </div>
-                <div className="relative">
-                  <SectionLabel tone="dark">Ready to grow?</SectionLabel>
-                  <h2 className={`${serifDisplay} max-w-4xl text-4xl leading-[0.95] tracking-[-0.03em] sm:text-6xl`}>
-                    <TextReveal
-                      segments={toSegments(
-                        "Tell me what you sell. I will help you turn it into a stronger online business."
-                      )}
-                      stagger={0.025}
-                    />
-                  </h2>
-                  <p className="mt-7 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
-                    Send your business type, current website if you have one and the result you want next:
-                    more calls, more orders, better Google ranking or ecommerce sales.
-                  </p>
-                  <div className="mt-10">
-                    <ContactButtons compact tone="dark" />
-                  </div>
-                </div>
-              </div>
-            </Reveal>
-          </StackedScene>
-
-          <section className="relative z-20 bg-white py-12 sm:py-16">
-            <div className="marquee overflow-hidden py-2">
-              <div className="marquee-track flex w-max items-center gap-4 px-5 hover:[animation-play-state:paused]">
-                {[...tools, ...tools].map((tool, index) => (
-                  <motion.div
-                    key={`${tool.name}-${index}`}
-                    className="group grid h-24 w-28 place-items-center"
-                    title={tool.name}
-                    aria-label={tool.name}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true, amount: 0.6 }}
-                    transition={{ duration: 0.5, ease: EASE, delay: (index % tools.length) * 0.03 }}
-                  >
-                    <img
-                      src={tool.logo}
-                      alt={`${tool.name} logo`}
-                      className="h-12 w-12 object-contain opacity-40 grayscale transition-all duration-500 ease-out-expo group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0"
-                      loading="lazy"
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <footer className="relative z-20 border-t border-ink/10 bg-white px-5 py-12 sm:px-8 lg:px-12">
-            <Reveal>
-            <div className="mx-auto flex max-w-7xl flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className={`${serifAccent} text-lg text-ink`}>Bilal Asif</p>
-                <p className="mt-2 text-sm text-ink/50">
-                  Websites, SEO and ads for business growth.
+            <div className="mx-auto flex min-h-[calc(100svh-8rem)] max-w-7xl flex-col sm:min-h-[calc(100svh-10rem)]">
+              <div className="flex flex-1 flex-col items-center justify-center text-center">
+              <Reveal y={20} blur={2}>
+                <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.34em] text-white/45 sm:text-xs">
+                  Get in touch
                 </p>
+              </Reveal>
+
+              <Reveal delay={0.08} y={28} blur={3}>
+                <h2 className="mt-8 font-sans text-6xl font-extrabold leading-[0.82] tracking-normal text-white sm:text-8xl lg:text-9xl">
+                  <span className="block">Ready to</span>
+                  <span className="block text-white/20">grow your</span>
+                  <span className="block">business?</span>
+                </h2>
+              </Reveal>
+
+              <Reveal delay={0.16} y={22} blur={2}>
+                <p className="mx-auto mt-9 max-w-3xl text-base leading-7 text-white/50 sm:text-lg sm:leading-8">
+                  I work with small businesses across the USA and Europe. Whether you need a new
+                  website, better SEO or profitable ad campaigns, let&apos;s talk.
+                </p>
+              </Reveal>
+
+              <Reveal delay={0.24} y={18} blur={2}>
+                <a
+                  href={`mailto:${contact.email}?subject=Business%20growth%20project%20with%20Bilal`}
+                  className="group mt-10 inline-flex items-center gap-3 font-sans text-2xl font-extrabold tracking-normal text-white transition-colors duration-300 hover:text-white/70 sm:text-4xl"
+                >
+                  {contact.email}
+                  <ArrowUpRight className="h-6 w-6 transition-transform duration-300 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 sm:h-8 sm:w-8" />
+                </a>
+              </Reveal>
+
+              <Reveal delay={0.32} y={18} blur={2}>
+                <Magnetic>
+                  <a
+                    href={contact.whatsapp}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-300 ease-out-expo hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-10"
+                  >
+                    <MessageCircle className="h-5 w-5" />
+                    Message on WhatsApp
+                  </a>
+                </Magnetic>
+              </Reveal>
+
+              <Reveal delay={0.4} y={14} blur={1}>
+                <div className="mt-12 flex items-center justify-center gap-3">
+                  {[
+                    {
+                      label: "WhatsApp",
+                      href: contact.whatsapp,
+                      icon: <MessageCircle className="h-5 w-5" />
+                    },
+                    {
+                      label: "Instagram",
+                      href: contact.instagram,
+                      icon: (
+                        <img
+                          src="https://cdn.simpleicons.org/instagram/FFFFFF"
+                          alt=""
+                          className="h-5 w-5 group-hover:invert"
+                        />
+                      )
+                    },
+                    {
+                      label: "LinkedIn",
+                      href: contact.linkedin,
+                      icon: (
+                        <img
+                          src="https://cdn.simpleicons.org/linkedin/FFFFFF"
+                          alt=""
+                          className="h-5 w-5 group-hover:invert"
+                        />
+                      )
+                    },
+                    {
+                      label: "Email",
+                      href: `mailto:${contact.email}`,
+                      icon: <Mail className="h-5 w-5" />
+                    }
+                  ].map((item) => {
+                    const external = item.href.startsWith("http");
+                    return (
+                      <a
+                        key={item.label}
+                        href={item.href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noreferrer" : undefined}
+                        aria-label={item.label}
+                        title={item.label}
+                        className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-all duration-300 hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
+                      >
+                        {item.icon}
+                      </a>
+                    );
+                  })}
+                </div>
+              </Reveal>
               </div>
-              <div className="flex flex-wrap items-center gap-6 text-sm font-medium text-ink/60">
-                <a
-                  href={contact.linkedin}
-                  className="link-underline transition-colors duration-300 hover:text-ink"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href={contact.instagram}
-                  className="link-underline transition-colors duration-300 hover:text-ink"
-                >
-                  Instagram
-                </a>
-                <a
-                  href={`mailto:${contact.email}`}
-                  className="link-underline transition-colors duration-300 hover:text-ink"
-                >
-                  Email
-                </a>
-                <a
-                  href={contact.whatsapp}
-                  className="link-underline transition-colors duration-300 hover:text-ink"
-                >
-                  WhatsApp
-                </a>
+
+              <div className="mt-16 flex w-full flex-col gap-5 border-t border-white/10 pt-8 text-xs text-white/30 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
+                <p>{new Date().getFullYear()} Bilal Asif. All rights reserved.</p>
+                <div className="flex items-center gap-8">
+                  <span>Privacy</span>
+                  <span>Terms</span>
+                </div>
               </div>
             </div>
-            <div className="mx-auto mt-10 flex max-w-7xl flex-col gap-2 text-xs text-ink/40 sm:flex-row sm:items-center sm:justify-between">
-              <p>© {new Date().getFullYear()} Bilal Asif</p>
-              <p>Built for Vercel, Next.js and fast SEO performance.</p>
-            </div>
-            </Reveal>
-          </footer>
+          </StackedScene>
         </div>
       </main>
     </MotionConfig>
