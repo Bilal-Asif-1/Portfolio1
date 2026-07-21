@@ -446,20 +446,18 @@ function IntroSplash() {
       window.setTimeout(() => setText(phrase), phraseDuration * (index + 1))
     );
 
-    const finalTextTimer = window.setTimeout(() => {
-      setText("HI, This is Bilal Asif");
-    }, phraseDuration * introPhrases.length);
-
-    const exitTimer = window.setTimeout(() => setExiting(true), phraseDuration * introPhrases.length + 1000);
+    const exitTimer = window.setTimeout(
+      () => setExiting(true),
+      phraseDuration * introPhrases.length
+    );
     const hideTimer = window.setTimeout(() => {
       setVisible(false);
       document.body.style.overflow = "";
       getLenis()?.start();
-    }, phraseDuration * introPhrases.length + 1250);
+    }, phraseDuration * introPhrases.length + 250);
 
     return () => {
       phraseTimers.forEach((timer) => window.clearTimeout(timer));
-      window.clearTimeout(finalTextTimer);
       window.clearTimeout(exitTimer);
       window.clearTimeout(hideTimer);
       document.body.style.overflow = "";
