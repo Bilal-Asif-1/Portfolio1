@@ -21,7 +21,6 @@ import {
   ArrowUpRight,
   Check,
   Mail,
-  MessageCircle,
   Plus,
   X
 } from "lucide-react";
@@ -39,11 +38,20 @@ const petrona = Petrona({
   subsets: ["latin"],
   weight: ["100", "300", "400"],
   style: "italic",
+  variable: "--font-petrona",
   display: "swap"
 });
 
 const serifAccent = `${petrona.className} italic font-normal`;
 const serifDisplay = `${petrona.className} italic font-thin`;
+
+function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={`${className} fill-current`}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.693.625.712.226 1.36.194 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.029 6.988 2.895a9.825 9.825 0 0 1 2.895 6.993c-.003 5.45-4.437 9.884-9.887 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.481-8.413Z" />
+    </svg>
+  );
+}
 
 const toSegments = (text: string) => text.split(" ").map((word) => ({ text: word }));
 
@@ -645,7 +653,7 @@ function AnimatedMetricValue({ value, delay = 0 }: { value: string; delay?: numb
   return (
     <dd
       ref={valueRef}
-      className="metric-value order-1 text-4xl font-extrabold leading-none tracking-normal text-black sm:text-5xl lg:text-6xl"
+      className="metric-value order-1 text-[clamp(1.4rem,7vw,2.25rem)] font-extrabold leading-none tracking-normal text-black sm:text-5xl lg:text-6xl"
     >
       {displayValue}
     </dd>
@@ -660,7 +668,7 @@ function StackedScene({
   long = false,
   liftIn = false,
   overlapNext = false,
-  solidEntry = false,
+  linearExitFade = false,
   pinAtEnd = false
 }: {
   children: ReactNode;
@@ -670,7 +678,7 @@ function StackedScene({
   long?: boolean;
   liftIn?: boolean;
   overlapNext?: boolean;
-  solidEntry?: boolean;
+  linearExitFade?: boolean;
   pinAtEnd?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -691,11 +699,16 @@ function StackedScene({
     target: trackRef,
     offset: ["start start", "end end"]
   });
-  const entryOpacity = useTransform(
-    entryProgress,
-    [0, 0.2, 1],
-    reducedMotion || solidEntry ? [1, 1, 1] : [0.08, 0.75, 1]
-  );
+  const pinTravel = Math.max(0, pinContentHeight - pinViewportHeight);
+  const pinHold = pinAtEnd ? pinViewportHeight * 0.12 : 0;
+  const pinExitDrift = pinAtEnd ? pinViewportHeight : 0;
+  const pinScrollRange = pinContentHeight + pinHold;
+  const pinCompletion =
+    pinTravel > 0 && pinScrollRange > 0 ? pinTravel / pinScrollRange : 1;
+  const pinFadeStart =
+    pinScrollRange > 0
+      ? Math.min((pinTravel + pinHold) / pinScrollRange, 0.999)
+      : 0.999;
   const entryY = useTransform(
     entryProgress,
     [0, 0.45, 1],
@@ -703,24 +716,42 @@ function StackedScene({
   );
   const exitOpacity = useTransform(
     exitProgress,
-    [0, 0.15, 0.3, 0.6, 1],
-    reducedMotion || pinAtEnd ? [1, 1, 1, 1, 1] : [1, 0.92, 0.3, 0, 0]
+    linearExitFade ? [0, 1] : [0, 0.15, 0.3, 0.6, 1],
+    reducedMotion || pinAtEnd
+      ? linearExitFade
+        ? [1, 1]
+        : [1, 1, 1, 1, 1]
+      : linearExitFade
+        ? [1, 0]
+        : [1, 0.92, 0.3, 0, 0]
   );
-  const opacity = useTransform(() => Math.min(entryOpacity.get(), exitOpacity.get()));
-  const pinTravel = Math.max(0, pinContentHeight - pinViewportHeight);
-  const pinY = useTransform(pinProgress, [0, 1], [0, -pinTravel]);
+  const pinnedExitOpacity = useTransform(
+    pinProgress,
+    [pinFadeStart, 1],
+    reducedMotion ? [1, 1] : [1, 0]
+  );
+  const pinY = useTransform(
+    pinProgress,
+    pinCompletion < pinFadeStart
+      ? [0, pinCompletion, pinFadeStart, 1]
+      : [0, 1],
+    pinCompletion < pinFadeStart
+      ? [0, -pinTravel, -pinTravel, -pinTravel - pinExitDrift]
+      : [0, -pinTravel]
+  );
 
   useEffect(() => {
     if (!pinAtEnd || !pinContentRef.current) return;
 
     const updateHeight = () => {
       setPinViewportHeight(window.innerHeight);
-      if (pinContentRef.current) setPinContentHeight(pinContentRef.current.offsetHeight);
+      if (sceneRef.current) setPinContentHeight(sceneRef.current.scrollHeight);
     };
 
     updateHeight();
     const observer = new ResizeObserver(updateHeight);
     observer.observe(pinContentRef.current);
+    if (sceneRef.current) observer.observe(sceneRef.current);
     window.addEventListener("resize", updateHeight);
 
     return () => {
@@ -730,7 +761,10 @@ function StackedScene({
   }, [pinAtEnd]);
 
   const pinHeightStyle = pinAtEnd && pinContentHeight
-    ? ({ "--pin-scene-height": `${pinContentHeight}px` } as CSSProperties)
+    ? ({
+        "--pin-scene-height": `${pinContentHeight}px`,
+        "--pin-hold-height": `${pinHold}px`
+      } as CSSProperties)
     : {};
   const trackStyle = {
     "--scene-layer": layer,
@@ -752,7 +786,7 @@ function StackedScene({
         id={id}
         className={`stacked-scene ${pinAtEnd ? "stacked-scene--pin-viewport" : ""} ${className}`}
         style={{
-          opacity,
+          opacity: pinAtEnd && linearExitFade ? pinnedExitOpacity : exitOpacity,
           y: liftIn ? entryY : 0,
           ...pinHeightStyle
         }}
@@ -1086,6 +1120,7 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
   const [packagesOpen, setPackagesOpen] = useState(false);
   const [navOnDark, setNavOnDark] = useState(false);
+  const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
 
   const portraitX = useMotionValueSpring(0);
   const portraitY = useMotionValueSpring(0);
@@ -1134,6 +1169,12 @@ export default function Home() {
           .at(-1);
 
         setNavOnDark(Boolean(activeScene?.classList.contains("on-dark")));
+        const activeId = activeScene?.id;
+        setActiveNavItem(
+          activeId && ["services", "projects", "process", "contact"].includes(activeId)
+            ? activeId
+            : null
+        );
       });
     };
 
@@ -1212,32 +1253,54 @@ export default function Home() {
               aria-label="Main navigation"
             >
               <div className="flex items-center justify-center gap-3 sm:gap-8">
-                {[...navItems, "Contact"].map((item, index) =>
-                  item === "Packages" ? (
+                {[...navItems, "Contact"].map((item, index) => {
+                  const isActive =
+                    item === "Packages" ? packagesOpen : activeNavItem === item.toLowerCase();
+
+                  return item === "Packages" ? (
                     <motion.button
                       key={item}
                       type="button"
+                      aria-pressed={isActive}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
-                      className="link-underline text-[11px] font-semibold transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      className="link-underline relative text-[11px] font-normal transition-opacity duration-300 hover:opacity-55 sm:text-sm"
                       onClick={() => setPackagesOpen(true)}
                     >
                       {item}
+                      {isActive && (
+                        <motion.span
+                          layoutId="active-nav-dot"
+                          className={`absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
+                            navOnDark ? "bg-white" : "bg-black"
+                          }`}
+                        />
+                      )}
                     </motion.button>
                   ) : (
                     <motion.a
                       key={item}
                       href={`#${item.toLowerCase()}`}
+                      aria-current={isActive ? "page" : undefined}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
-                      className="link-underline text-[11px] font-semibold transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      className="link-underline relative text-[11px] font-normal transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      onClick={() => setActiveNavItem(item.toLowerCase())}
                     >
                       {item}
+                      {isActive && (
+                        <motion.span
+                          layoutId="active-nav-dot"
+                          className={`absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
+                            navOnDark ? "bg-white" : "bg-black"
+                          }`}
+                        />
+                      )}
                     </motion.a>
-                  )
-                )}
+                  );
+                })}
               </div>
             </motion.nav>
         </header>
@@ -1262,16 +1325,16 @@ export default function Home() {
               }}
             >
               <h2
-                className={`${serifDisplay} pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[10%] pr-[7%] text-6xl leading-none text-ink sm:top-8 sm:pl-[13%] sm:pr-[9%] sm:text-8xl lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]`}
+                className={`${serifDisplay} intro-hey-light pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[10%] pr-[7%] text-6xl leading-none text-ink sm:top-8 sm:pl-[13%] sm:pr-[9%] sm:text-8xl lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]`}
               >
                 <span className="inline-block">Hey,</span>
                 <span className="inline-block">there</span>
               </h2>
 
-              <div className="absolute bottom-6 left-1/2 z-10 w-[440px] max-w-[100vw] -translate-x-1/2 sm:bottom-4 sm:w-[560px] lg:bottom-2 lg:w-[620px]">
+              <div className="absolute bottom-10 left-1/2 z-10 w-[460px] max-w-[100vw] -translate-x-1/2 sm:bottom-8 sm:w-[590px] lg:bottom-6 lg:w-[650px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <img
-                    src="/bilal-asif-portrait-light.webp"
+                    src="/bilal-asif-portrait-2026-v3.png"
                     alt="Bilal Asif, freelance website designer and digital growth partner"
                     className="w-full object-contain"
                     loading="eager"
@@ -1282,10 +1345,10 @@ export default function Home() {
               <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
 
               <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
-                <p className={`${serifDisplay} whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
+                <p className={`${serifDisplay} ${petrona.variable} intro-heading-thin whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
                   I am
                 </p>
-                <p className={`${serifDisplay} whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
+                <p className={`${serifDisplay} ${petrona.variable} intro-heading-thin whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
                   Bilal Asif
                 </p>
               </div>
@@ -1355,7 +1418,7 @@ export default function Home() {
                       className="group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink/15 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/55 transition-all duration-300 hover:border-ink/40 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                     >
                       <span className="grid h-9 w-9 place-items-center rounded-full border border-ink/25 text-ink transition-colors duration-300 group-hover:bg-ink group-hover:text-white">
-                        <MessageCircle className="h-4 w-4" />
+                        <WhatsAppIcon className="h-4 w-4" />
                       </span>
                       Chat on WhatsApp
                     </a>
@@ -1382,7 +1445,7 @@ export default function Home() {
             layer={3}
             long
             overlapNext
-            className="min-h-[100svh] overflow-x-hidden bg-white px-5 pb-10 pt-20 sm:px-8 sm:pt-24 lg:px-12 lg:pb-[calc(2.5rem+30svh)]"
+            className="min-h-[100svh] overflow-x-clip bg-transparent px-5 pb-0 pt-20 sm:px-8 sm:pt-24 lg:px-12"
           >
             <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
               <Reveal y={24} blur={3}>
@@ -1444,29 +1507,33 @@ export default function Home() {
               </div>
             </motion.div>
 
-            <Reveal y={18} blur={2}>
-              <dl className="-mx-5 grid grid-cols-2 bg-white py-8 sm:-mx-8 sm:py-10 lg:-mx-12 lg:grid-cols-4 lg:py-12">
-                {projectMetrics.map((metric, index) => (
-                  <div
-                    key={metric.label}
-                    className="flex min-h-28 flex-col items-center justify-center px-5 py-5 text-center sm:min-h-32 sm:px-8 lg:min-h-36 lg:px-12"
-                  >
-                    <dt className="order-2 mt-2 text-center text-xs font-semibold uppercase tracking-normal text-black/55 sm:text-sm">
-                      {metric.label}
-                    </dt>
-                    <AnimatedMetricValue value={metric.value} delay={index * 0.1} />
-                  </div>
-                ))}
-              </dl>
-            </Reveal>
+            <div className="-mx-5 bg-white sm:-mx-8 lg:-mx-12 lg:h-[100svh]">
+              <div className="flex min-h-[55svh] items-start bg-white px-5 pt-16 sm:min-h-[65svh] sm:px-8 sm:pt-20 lg:sticky lg:top-0 lg:h-[50svh] lg:min-h-0 lg:items-center lg:px-12 lg:pt-0">
+                <Reveal y={18} blur={2} className="w-full">
+                  <dl className="grid w-full grid-cols-4 py-7 sm:py-10 lg:py-12">
+                    {projectMetrics.map((metric, index) => (
+                      <div
+                        key={metric.label}
+                        className="flex min-w-0 flex-col items-center justify-center px-1 py-4 text-center sm:min-h-32 sm:px-4 sm:py-5 lg:min-h-36 lg:px-12"
+                      >
+                        <dt className="order-2 mt-2 text-center text-[7px] font-semibold uppercase leading-tight tracking-normal text-black/55 sm:text-xs lg:text-sm">
+                          {metric.label}
+                        </dt>
+                        <AnimatedMetricValue value={metric.value} delay={index * 0.1} />
+                      </div>
+                    ))}
+                  </dl>
+                </Reveal>
+              </div>
+            </div>
           </StackedScene>
 
           <StackedScene
             id="services"
             layer={4}
             long
+            linearExitFade
             pinAtEnd
-            solidEntry
             className="on-dark min-h-[100svh] scroll-mt-24 bg-black pb-0 pt-16 text-white sm:pt-20"
           >
             <div className="w-full">
@@ -1483,7 +1550,7 @@ export default function Home() {
                 <Reveal delay={0.12} y={18} blur={2}>
                   <a
                     href="#contact"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-300 hover:border-[#c7ff16] hover:text-[#c7ff16]"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-300 hover:border-white hover:bg-white hover:text-black"
                   >
                     All services
                   </a>
@@ -1495,21 +1562,22 @@ export default function Home() {
                   <Reveal key={service.title} delay={index * 0.06} y={18} blur={2}>
                     <a
                       href="#contact"
-                      className="group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-300 hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
+                      className="service-row group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-150 hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
                     >
-                      <span className="text-xs font-medium tabular-nums text-white/40 transition-colors duration-300 group-hover:text-black/55 sm:text-sm">
+                      <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-150 group-hover:text-black/55 sm:text-sm">
                         0{index + 1}
                       </span>
-                      <h3 className="font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-300 group-hover:text-black sm:text-3xl lg:text-4xl">
+                      <h3 className="service-row-heading font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-150 group-hover:text-black sm:text-3xl lg:text-4xl">
                         {service.title}
                       </h3>
-                      <p className="col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-300 group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
+                      <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-150 group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
                         {service.description}
                       </p>
-                      <ArrowUpRight className="col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-300 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
+                      <ArrowUpRight className="service-row-arrow col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-150 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
                     </a>
                   </Reveal>
                 ))}
+                <div className="h-24 bg-black sm:h-28" aria-hidden="true" />
               </div>
             </div>
           </StackedScene>
@@ -1517,7 +1585,6 @@ export default function Home() {
           <StackedScene
             id="process"
             layer={5}
-            solidEntry
             className="min-h-[100svh] scroll-mt-24 overflow-hidden rounded-t-[24px] bg-white px-5 py-20 shadow-[0_-22px_60px_rgba(0,0,0,0.18)] sm:px-8 sm:py-28 lg:px-12"
           >
             <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
@@ -1580,7 +1647,7 @@ export default function Home() {
                 </div>
               </Reveal>
 
-              <div className="mt-14 border-t border-white/15 sm:mt-20">
+              <div className="mx-auto mt-14 max-w-3xl border-t border-white/15 sm:mt-20">
                 {faqs.map((faq, index) => (
                   <FaqItem key={faq.question} faq={faq} index={index} />
                 ))}
@@ -1635,7 +1702,7 @@ export default function Home() {
                     rel="noreferrer"
                     className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-300 ease-out-expo hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-10"
                   >
-                    <MessageCircle className="h-5 w-5" />
+                    <WhatsAppIcon />
                     Message on WhatsApp
                   </a>
                 </Magnetic>
@@ -1647,7 +1714,7 @@ export default function Home() {
                     {
                       label: "WhatsApp",
                       href: contact.whatsapp,
-                      icon: <MessageCircle className="h-5 w-5" />
+                      icon: <WhatsAppIcon />
                     },
                     {
                       label: "Instagram",
@@ -1664,11 +1731,13 @@ export default function Home() {
                       label: "LinkedIn",
                       href: contact.linkedin,
                       icon: (
-                        <img
-                          src="https://cdn.simpleicons.org/linkedin/FFFFFF"
-                          alt=""
-                          className="h-5 w-5 group-hover:invert"
-                        />
+                        <svg
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                          className="h-5 w-5 fill-current"
+                        >
+                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286ZM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065Zm1.782 13.019H3.555V9h3.564v11.452ZM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003Z" />
+                        </svg>
                       )
                     },
                     {
