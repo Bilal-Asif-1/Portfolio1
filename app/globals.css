@@ -50,6 +50,110 @@ a {
   transition-timing-function: var(--motion-ease);
 }
 
+.smooth-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10000;
+  display: none;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  opacity: 0;
+  mix-blend-mode: difference;
+  will-change: transform, width, height;
+  transition:
+    width 300ms var(--motion-ease),
+    height 300ms var(--motion-ease),
+    border-color 300ms var(--motion-ease),
+    background-color 300ms var(--motion-ease),
+    opacity 180ms ease-out;
+}
+
+.smooth-cursor.is-visible {
+  opacity: 1;
+}
+
+.smooth-cursor.is-hovering {
+  width: 60px;
+  height: 60px;
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.smooth-cursor-dot {
+  position: absolute;
+  left: calc(50% - 2.5px);
+  top: calc(50% - 2.5px);
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffffff;
+  will-change: transform;
+}
+
+.floating-scrollbar {
+  --floating-scroll-height: min(260px, 36svh);
+  --floating-thumb-height: 46px;
+  position: fixed;
+  right: 10px;
+  top: 50%;
+  z-index: 80;
+  display: none;
+  width: 8px;
+  height: var(--floating-scroll-height);
+  pointer-events: none;
+  transform: translateY(-50%);
+  mix-blend-mode: difference;
+}
+
+.floating-scrollbar-rail {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.34);
+  transform: translateX(-50%);
+}
+
+.floating-scrollbar-thumb {
+  position: absolute;
+  left: 2.5px;
+  top: 0;
+  width: 3px;
+  height: var(--floating-thumb-height);
+  border-radius: 999px;
+  background: #ffffff;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 768px) {
+  .smooth-cursor {
+    display: block;
+  }
+
+  body.has-smooth-cursor,
+  body.has-smooth-cursor * {
+    cursor: none !important;
+  }
+
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .floating-scrollbar {
+    display: block;
+  }
+}
+
 h1,
 h2,
 h3 {

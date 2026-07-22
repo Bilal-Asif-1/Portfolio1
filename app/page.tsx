@@ -27,11 +27,13 @@ import {
 } from "lucide-react";
 import {
   EASE,
+  FloatingScrollbar,
   getLenis,
   Magnetic,
   MOTION,
   Reveal,
   ScrollProgress,
+  SmoothCursor,
   SmoothScroll
 } from "@/components/motion";
 
@@ -1296,7 +1298,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
 }
 
 function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) {
-  const [open, setOpen] = useState(index === 0);
+  const [open, setOpen] = useState(false);
 
   return (
     <Reveal delay={index * 0.05}>
@@ -1496,7 +1498,9 @@ export default function Home() {
     <MotionConfig reducedMotion="user">
       <main className="relative min-h-screen bg-white text-ink">
         <SmoothScroll />
+        <SmoothCursor />
         <ScrollProgress />
+        <FloatingScrollbar />
         <IntroSplash />
         <AnimatePresence>
           {selectedProject && (
@@ -1537,7 +1541,7 @@ export default function Home() {
                         ease: EASE,
                         delay: 0.26 + index * 0.045
                       }}
-                      className="link-underline relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
+                      className="relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
                       onClick={() => setPackagesOpen(true)}
                     >
                       {item}
@@ -1562,7 +1566,7 @@ export default function Home() {
                         ease: EASE,
                         delay: 0.26 + index * 0.045
                       }}
-                      className="link-underline relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
+                      className="relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
                       onClick={() => setActiveNavItem(item.toLowerCase())}
                     >
                       {item}
@@ -1811,14 +1815,6 @@ export default function Home() {
                   </h2>
                 </Reveal>
 
-                <Reveal delay={0.12} y={18} blur={2}>
-                  <a
-                    href="#contact"
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-[320ms] hover:border-white hover:bg-white hover:text-black"
-                  >
-                    All services
-                  </a>
-                </Reveal>
               </div>
 
               <div>

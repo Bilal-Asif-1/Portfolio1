@@ -9,7 +9,8 @@ import {
   useMotionValue,
   useReducedMotion,
   useScroll,
-  useSpring
+  useSpring,
+  useTransform
 } from "framer-motion";
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -32,6 +33,111 @@ let lenisInstance: Lenis | null = null;
 
 export function getLenis() {
   return lenisInstance;
+}
+
+const CURSOR_INTERACTIVE_SELECTOR =
+  'a, button, [role="button"], summary, input, textarea, select, .service-row';
+
+export function SmoothCursor() {
+  const cursorRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const cursor = cursorRef.current;
+    const dot = dotRef.current;
+    if (!cursor || !dot) return;
+
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (!finePointer.matches || reducedMotion.matches) return;
+    document.body.classList.add("has-smooth-cursor");
+
+    let frame = 0;
+    let initialized = false;
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+    let dotX = 0;
+    let dotY = 0;
+    let previousFrameTime = performance.now();
+    let hoveringInteractive = false;
+
+    const setInteractiveState = (interactive: boolean) => {
+      if (interactive === hoveringInteractive) return;
+      hoveringInteractive = interactive;
+      cursor.classList.toggle("is-hovering", interactive);
+    };
+
+    const updateInteractiveAtPointer = () => {
+      if (!initialized) return;
+      const target = document.elementFromPoint(mouseX, mouseY);
+      setInteractiveState(Boolean(target?.closest(CURSOR_INTERACTIVE_SELECTOR)));
+    };
+
+    const handlePointerMove = (event: PointerEvent) => {
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+      if (!initialized) {
+        cursorX = mouseX;
+        cursorY = mouseY;
+        initialized = true;
+      }
+      cursor.classList.add("is-visible");
+      setInteractiveState(
+        Boolean((event.target as Element | null)?.closest?.(CURSOR_INTERACTIVE_SELECTOR))
+      );
+    };
+
+    const hideCursor = () => {
+      cursor.classList.remove("is-visible");
+      setInteractiveState(false);
+    };
+
+    const renderCursor = (time: number) => {
+      const frameDelta = Math.min(32, Math.max(1, time - previousFrameTime));
+      previousFrameTime = time;
+      const cursorFollow = 1 - Math.pow(1 - 0.24, frameDelta / 16.667);
+      const dotFollow = 1 - Math.pow(1 - 0.48, frameDelta / 16.667);
+      cursorX += (mouseX - cursorX) * cursorFollow;
+      cursorY += (mouseY - cursorY) * cursorFollow;
+      const dotLimit = hoveringInteractive ? 32 : 18;
+      const dotTargetX = Math.max(
+        -dotLimit,
+        Math.min(dotLimit, (mouseX - cursorX) * 0.65)
+      );
+      const dotTargetY = Math.max(
+        -dotLimit,
+        Math.min(dotLimit, (mouseY - cursorY) * 0.65)
+      );
+      dotX += (dotTargetX - dotX) * dotFollow;
+      dotY += (dotTargetY - dotY) * dotFollow;
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
+      dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
+      frame = window.requestAnimationFrame(renderCursor);
+    };
+
+    document.addEventListener("pointermove", handlePointerMove, { passive: true });
+    document.documentElement.addEventListener("mouseleave", hideCursor);
+    window.addEventListener("blur", hideCursor);
+    window.addEventListener("scroll", updateInteractiveAtPointer, { passive: true });
+    frame = window.requestAnimationFrame(renderCursor);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.documentElement.removeEventListener("mouseleave", hideCursor);
+      window.removeEventListener("blur", hideCursor);
+      window.removeEventListener("scroll", updateInteractiveAtPointer);
+      document.body.classList.remove("has-smooth-cursor");
+    };
+  }, []);
+
+  return (
+    <div ref={cursorRef} className="smooth-cursor" aria-hidden="true">
+      <span ref={dotRef} className="smooth-cursor-dot" />
+    </div>
+  );
 }
 
 export function SmoothScroll() {
@@ -188,6 +294,28 @@ export function ScrollProgress() {
       className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-ink"
       style={{ scaleX }}
     />
+  );
+}
+
+export function FloatingScrollbar() {
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 180,
+    damping: 30,
+    mass: 0.5,
+    restDelta: 0.0005,
+    restSpeed: 0.0005
+  });
+  const thumbY = useTransform(
+    smoothProgress,
+    (value) =>
+      `calc(${value} * (var(--floating-scroll-height) - var(--floating-thumb-height)))`
+  );
+  return (
+    <div className="floating-scrollbar" aria-hidden="true">
+      <div className="floating-scrollbar-rail" />
+      <motion.div className="floating-scrollbar-thumb" style={{ y: thumbY }} />
+    </div>
   );
 }
 
