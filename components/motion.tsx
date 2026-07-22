@@ -101,7 +101,21 @@ export function SmoothScroll() {
       const target = document.querySelector(hash);
       if (!target) return;
       event.preventDefault();
-      lenis.scrollTo(target as HTMLElement, { offset: -104, duration: 1.3 });
+      const isServicesTarget = hash === "#services";
+      const scrollTarget = isServicesTarget
+        ? target.closest<HTMLElement>(".stacked-scene-track") ?? target
+        : target;
+      if (isServicesTarget) {
+        const trackTop =
+          scrollTarget.getBoundingClientRect().top + window.scrollY;
+        lenis.scrollTo(trackTop, {
+          offset: 0,
+          duration: 1.3,
+          force: true
+        });
+        return;
+      }
+      lenis.scrollTo(scrollTarget as HTMLElement, { offset: -104, duration: 1.3 });
     };
     document.addEventListener("click", onClick);
 

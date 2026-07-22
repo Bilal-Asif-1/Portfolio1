@@ -317,15 +317,10 @@ body.scroll-input-active #services .service-row-arrow {
   will-change: transform;
 }
 
-.circular-carousel {
+.stacked-carousel {
+  --stacked-carousel-step: 132px;
   touch-action: pan-y;
   overscroll-behavior: contain;
-}
-
-.circular-carousel-depth {
-  perspective: 1200px;
-  perspective-origin: 50% 42%;
-  transform-style: preserve-3d;
 }
 
 @media (min-width: 768px) {
@@ -342,11 +337,10 @@ body.scroll-input-active #services .service-row-arrow {
   }
 }
 
-.circular-project-card {
+.stacked-project-card {
   contain: layout paint;
   margin-left: -88px;
-  transform-origin: center center;
-  transform-style: preserve-3d;
+  transform-origin: center bottom;
   backface-visibility: hidden;
   will-change: transform, opacity;
   box-shadow:
@@ -355,13 +349,21 @@ body.scroll-input-active #services .service-row-arrow {
 }
 
 @media (min-width: 640px) {
-  .circular-project-card {
+  .stacked-carousel {
+    --stacked-carousel-step: 162px;
+  }
+
+  .stacked-project-card {
     margin-left: -109px;
   }
 }
 
 @media (min-width: 1024px) {
-  .circular-project-card {
+  .stacked-carousel {
+    --stacked-carousel-step: 194px;
+  }
+
+  .stacked-project-card {
     margin-left: -129px;
   }
 }
@@ -409,15 +411,14 @@ body.scroll-input-active #services .service-row-arrow {
 
 .business-online-pulse {
   color: rgba(17, 17, 17, 0.42);
-  animation: business-online-breathe 3.2s var(--motion-ease) infinite;
+  animation: business-online-breathe 3.6s ease-in-out infinite alternate;
 }
 
 @keyframes business-online-breathe {
-  0%,
-  100% {
+  from {
     color: rgba(17, 17, 17, 0.38);
   }
-  50% {
+  to {
     color: rgba(17, 17, 17, 0.7);
   }
 }

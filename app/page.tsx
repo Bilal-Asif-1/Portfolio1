@@ -7,7 +7,6 @@ import {
   animate,
   motion,
   MotionConfig,
-  useAnimationFrame,
   useInView,
   type MotionValue,
   useMotionValue,
@@ -68,42 +67,82 @@ const services = [
   {
     title: "Website Development",
     description:
-      "Fast, responsive, SEO-friendly websites engineered to turn visitors into customers."
+      "Fast, responsive, SEO-friendly websites engineered to turn visitors into customers.",
+    details: [
+      "A focused website gives your business a credible home, explains the offer clearly and guides visitors toward calling, booking or buying.",
+      "Responsive layouts, strong performance and a clean SEO foundation make it easier to reach and convert customers across every device.",
+      "It delivers the best long-term value when content, security and key pages are kept current after launch."
+    ]
   },
   {
     title: "Mobile App Development",
     description:
-      "FlutterFlow-powered Android and iOS applications designed to scale with your business."
+      "FlutterFlow-powered Android and iOS applications designed to scale with your business.",
+    details: [
+      "An app keeps your service close to customers through faster repeat actions, personalized experiences and useful notifications.",
+      "One thoughtfully planned product can serve both Android and iOS while remaining easier to improve as the business grows.",
+      "For simple information or occasional visits, a responsive website can be more efficient than asking customers to install an app."
+    ]
   },
   {
     title: "SEO Services",
     description:
-      "Improve search rankings, increase visibility and generate qualified leads."
+      "Improve search rankings, increase visibility and generate qualified leads.",
+    details: [
+      "SEO connects your pages with the searches potential customers already make, bringing in traffic with stronger intent.",
+      "Technical improvements, useful content and local optimization can compound into a dependable source of leads over time.",
+      "Results are rarely instant and sustainable growth needs consistent work rather than shortcuts that risk future rankings."
+    ]
   },
   {
     title: "Digital Marketing",
     description:
-      "Data-driven campaigns across Google, Facebook, Instagram, LinkedIn and YouTube."
+      "Data-driven campaigns across Google, Facebook, Instagram, LinkedIn and YouTube.",
+    details: [
+      "A coordinated strategy keeps your message consistent while reaching customers across the channels they actually use.",
+      "Content, audience data and campaign insights work together to improve awareness, enquiries and repeat business.",
+      "Spreading effort across too many platforms can dilute results, so the strongest channels should be prioritized first."
+    ]
   },
   {
     title: "Paid Advertising",
     description:
-      "Google Ads and Meta Ads management focused relentlessly on return on investment."
+      "Google Ads and Meta Ads management focused relentlessly on return on investment.",
+    details: [
+      "Paid campaigns can place a relevant offer in front of high-intent customers quickly and generate measurable feedback from day one.",
+      "Clear targeting, persuasive creative and conversion tracking help direct budget toward the audiences and messages that perform.",
+      "Traffic slows when spending stops, so ads work best alongside a strong website, organic visibility and careful budget control."
+    ]
   },
   {
     title: "Email Marketing & Automation",
     description:
-      "Email automation, customer journeys, lead nurturing and CRM integration."
+      "Email automation, customer journeys, lead nurturing and CRM integration.",
+    details: [
+      "Automated email journeys follow up with leads, welcome customers and encourage repeat purchases without adding repetitive manual work.",
+      "Because the audience is owned by your business, communication is less dependent on changing social algorithms.",
+      "Good results still depend on permission, clean customer data and messages useful enough to avoid fatigue or unsubscribes."
+    ]
   },
   {
     title: "Branding & Strategy",
     description:
-      "Brand identity, positioning, digital strategy and practical growth planning."
+      "Brand identity, positioning, digital strategy and practical growth planning.",
+    details: [
+      "Clear positioning helps customers understand who you serve, what makes the business different and why they should trust it.",
+      "A consistent visual and verbal system makes websites, campaigns and sales material feel connected and more memorable.",
+      "The strategy creates value only when the whole business applies it consistently instead of treating branding as a one-time logo exercise."
+    ]
   },
   {
     title: "UI/UX Design",
     description:
-      "Clear, intuitive interfaces that make websites and digital products easier to use and convert."
+      "Clear, intuitive interfaces that make websites and digital products easier to use and convert.",
+    details: [
+      "Thoughtful interface design reduces confusion and helps people complete important actions with fewer steps and less effort.",
+      "Clear hierarchy, accessible interactions and responsive behavior improve trust, usability and conversion across devices.",
+      "Visual polish alone is not enough; the strongest experience comes from understanding real users and validating important decisions."
+    ]
   }
 ];
 
@@ -342,12 +381,12 @@ const approachSteps = [
   {
     title: "Strategy first",
     description:
-      "We start with your business goals, not a template. Every decision traces back to a number that matters."
+      "I start with your business goals, not a template. Every decision traces back to a number that matters."
   },
   {
     title: "Designed to convert",
     description:
-      "Beautiful is table stakes. We engineer experiences that turn attention into action and visitors into customers."
+      "Beautiful is table stakes. I engineer experiences that turn attention into action and visitors into customers."
   },
   {
     title: "Built to last",
@@ -357,7 +396,7 @@ const approachSteps = [
   {
     title: "Optimised forever",
     description:
-      "Launch is the starting line. We test, measure and refine so your results compound month over month."
+      "Launch is the starting line. I test, measure and refine so your results compound month over month."
   }
 ];
 
@@ -375,7 +414,7 @@ const faqs = [
   {
     question: "Can I mix services across plans?",
     answer:
-      "Yes. Packages are flexible, so we can combine the website, SEO, advertising, ecommerce or automation work that best matches your goals and current stage."
+      "Yes. Packages are flexible, so I can combine the website, SEO, advertising, ecommerce or automation work that best matches your goals and current stage."
   },
   {
     question: "Who owns the work you produce?",
@@ -495,7 +534,7 @@ function wrapCarouselDistance(value: number, total: number) {
   return ((value + total / 2) % total + total) % total - total / 2;
 }
 
-function CircularProjectCard({
+function StackedProjectCard({
   cardIndex,
   index,
   total,
@@ -512,29 +551,29 @@ function CircularProjectCard({
   onCenter: (index: number) => void;
   onOpen: (card: (typeof showcaseCards)[number]) => void;
 }) {
-  const phase = useTransform(rotation, (value) =>
+  const position = useTransform(rotation, (value) =>
     wrapCarouselDistance(index - value, total)
   );
-  const angle = useTransform(phase, (value) => (value / total) * Math.PI * 2);
-  const depth = useTransform(angle, (value) => Math.cos(value));
-  const x = useTransform(angle, (value) => `${Math.sin(value) * 44}vw`);
-  const y = useTransform(depth, (value) => (1 - value) * 38 - 18);
-  const z = useTransform(depth, (value) => (value - 1) * 180);
-  const scale = useTransform(depth, [-0.3, 0, 1], [0.68, 0.8, 1.08]);
-  const opacity = useTransform(depth, [-0.55, -0.22, 0.35, 1], [0, 0.36, 0.72, 1]);
-  const rotate = useTransform(angle, (value) => Math.sin(value) * -5);
-  const zIndex = useTransform(depth, (value) => Math.round((value + 1) * 100));
-  const visibility = useTransform(depth, (value) =>
-    value > -0.55 ? "visible" : "hidden"
+  const distance = useTransform(position, (value) => Math.abs(value));
+  const x = useTransform(
+    position,
+    (value) => `calc(${value} * var(--stacked-carousel-step))`
   );
-  const pointerEvents = useTransform(depth, (value) =>
-    value > -0.45 ? "auto" : "none"
+  const y = useTransform(distance, [0, 1, 2, 3, 5], [0, 18, 32, 58, 74]);
+  const scale = useTransform(distance, [0, 1, 2, 3, 5], [1.08, 1, 0.97, 0.94, 0.92]);
+  const opacity = useTransform(distance, [0, 3.5, 5, 6], [1, 1, 0.7, 0]);
+  const zIndex = useTransform(distance, (value) => Math.round(1000 - value * 100));
+  const visibility = useTransform(distance, (value) =>
+    value < 6 ? "visible" : "hidden"
+  );
+  const pointerEvents = useTransform(distance, (value) =>
+    value < 4.5 ? "auto" : "none"
   );
 
   return (
     <motion.div
-      className="circular-project-card absolute left-1/2 top-8 h-[255px] w-[176px] overflow-hidden rounded-card sm:top-10 sm:h-[325px] sm:w-[218px] lg:top-12 lg:h-[380px] lg:w-[258px]"
-      style={{ x, y, z, scale, rotate, opacity, zIndex, visibility, pointerEvents }}
+      className="stacked-project-card absolute left-1/2 top-8 h-[255px] w-[176px] overflow-hidden rounded-card sm:top-10 sm:h-[325px] sm:w-[218px] lg:top-12 lg:h-[380px] lg:w-[258px]"
+      style={{ x, y, scale, opacity, zIndex, visibility, pointerEvents }}
       onClick={() => {
         if (!didDrag.current) onCenter(index);
       }}
@@ -544,16 +583,20 @@ function CircularProjectCard({
   );
 }
 
-function InfiniteCircularCarousel({
+function InfiniteStackedCarousel({
   onOpen,
   reducedMotion
 }: {
   onOpen: (card: (typeof showcaseCards)[number]) => void;
   reducedMotion: boolean;
 }) {
-  const rotation = useMotionValue(3);
+  // Two sequences leave a full invisible card-width buffer at the wrap point,
+  // so the loop stays seamless without rendering a third off-screen set.
+  const carouselCards = [...heroCards, ...heroCards];
+  const rotation = useMotionValue(heroCards.length + 3);
   const stageRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(stageRef, { margin: "200px 0px" });
+  const isInView = useInView(stageRef, { amount: 0.3 });
+  const wasOutsideViewport = useRef(true);
   const dragStartX = useRef(0);
   const dragStartRotation = useRef(0);
   const lastPointerX = useRef(0);
@@ -561,8 +604,6 @@ function InfiniteCircularCarousel({
   const releaseVelocity = useRef(0);
   const dragging = useRef(false);
   const didDrag = useRef(false);
-  const autoPaused = useRef(false);
-  const resumeTimer = useRef<number | null>(null);
   const rotationAnimation = useRef<ReturnType<typeof animate> | null>(null);
   const wheelTarget = useRef(rotation.get());
   const lastWheelTime = useRef(0);
@@ -572,22 +613,10 @@ function InfiniteCircularCarousel({
     rotationAnimation.current = null;
   };
 
-  const pauseAuto = (resumeAfter?: number) => {
-    autoPaused.current = true;
-    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
-    resumeTimer.current = null;
-    if (resumeAfter) {
-      resumeTimer.current = window.setTimeout(() => {
-        autoPaused.current = false;
-      }, resumeAfter);
-    }
-  };
-
   const centerCard = (index: number) => {
-    pauseAuto(1800);
     stopRotationAnimation();
     const current = rotation.get();
-    const delta = wrapCarouselDistance(index - current, heroCards.length);
+    const delta = wrapCarouselDistance(index - current, carouselCards.length);
     if (reducedMotion) {
       rotation.set(current + delta);
       return;
@@ -629,28 +658,77 @@ function InfiniteCircularCarousel({
         }
       );
     }
-    pauseAuto(1600);
   };
-
-  useAnimationFrame((_time, delta) => {
-    if (
-      reducedMotion ||
-      !isInView ||
-      autoPaused.current ||
-      dragging.current ||
-      rotationAnimation.current
-    ) {
-      return;
-    }
-    rotation.set(rotation.get() + Math.min(delta, 32) * 0.00004);
-  });
 
   useEffect(() => {
     return () => {
       stopRotationAnimation();
-      if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isInView) {
+      wasOutsideViewport.current = true;
+      return;
+    }
+    if (!wasOutsideViewport.current || reducedMotion || dragging.current) return;
+
+    wasOutsideViewport.current = false;
+    stopRotationAnimation();
+    const current = rotation.get();
+    rotationAnimation.current = animate(rotation, current + 0.18, {
+      duration: 0.86,
+      ease: EASE,
+      onComplete: () => {
+        rotationAnimation.current = null;
+      }
+    });
+  }, [isInView, reducedMotion, rotation]);
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+
+    const handleWheel = (event: WheelEvent) => {
+      const isHorizontalGesture =
+        event.shiftKey ||
+        (Math.abs(event.deltaX) > 4 &&
+          Math.abs(event.deltaX) > Math.abs(event.deltaY) * 1.25);
+      if (!isHorizontalGesture) return;
+
+      const delta = event.shiftKey ? event.deltaY : event.deltaX;
+      if (Math.abs(delta) < 0.1) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const now = performance.now();
+      if (now - lastWheelTime.current > 160) wheelTarget.current = rotation.get();
+      lastWheelTime.current = now;
+      wheelTarget.current += Math.max(-180, Math.min(180, delta)) / 340;
+      stopRotationAnimation();
+
+      if (reducedMotion) {
+        rotation.set(wheelTarget.current);
+        return;
+      }
+
+      rotationAnimation.current = animate(rotation, wheelTarget.current, {
+        type: "spring",
+        stiffness: 190,
+        damping: 28,
+        mass: 0.62,
+        restDelta: 0.0005,
+        restSpeed: 0.0005,
+        onComplete: () => {
+          rotationAnimation.current = null;
+        }
+      });
+    };
+
+    stage.addEventListener("wheel", handleWheel, { passive: false });
+    return () => stage.removeEventListener("wheel", handleWheel);
+  }, [reducedMotion]);
 
   return (
     <motion.div
@@ -659,47 +737,12 @@ function InfiniteCircularCarousel({
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: MOTION.duration.reveal, ease: EASE }}
-      className="circular-carousel project-deck-sticky scroll-reveal-filter relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-hidden active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] lg:-mx-12 lg:h-[530px]"
+      className="stacked-carousel project-deck-sticky scroll-reveal-filter relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-hidden active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] lg:-mx-12 lg:h-[530px]"
       role="region"
-      aria-label="Featured projects circular carousel. Drag or scroll to rotate."
-      onPointerEnter={() => pauseAuto()}
-      onPointerLeave={() => {
-        if (!dragging.current) pauseAuto(500);
-      }}
-      onFocus={() => pauseAuto()}
-      onBlur={() => pauseAuto(900)}
-      onWheel={(event) => {
-        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
-          ? event.deltaX
-          : event.deltaY;
-        if (Math.abs(delta) < 0.1) return;
-
-        const now = performance.now();
-        if (now - lastWheelTime.current > 160) wheelTarget.current = rotation.get();
-        lastWheelTime.current = now;
-        wheelTarget.current += Math.max(-180, Math.min(180, delta)) / 340;
-        pauseAuto(1400);
-        stopRotationAnimation();
-        if (reducedMotion) {
-          rotation.set(wheelTarget.current);
-          return;
-        }
-        rotationAnimation.current = animate(rotation, wheelTarget.current, {
-          type: "spring",
-          stiffness: 190,
-          damping: 28,
-          mass: 0.62,
-          restDelta: 0.0005,
-          restSpeed: 0.0005,
-          onComplete: () => {
-            rotationAnimation.current = null;
-          }
-        });
-      }}
+      aria-label="Featured projects carousel. Drag or scroll horizontally to browse."
       onPointerDown={(event) => {
         if ((event.target as HTMLElement).closest("[data-project-trigger]")) return;
         stopRotationAnimation();
-        pauseAuto();
         dragging.current = true;
         didDrag.current = false;
         dragStartX.current = event.clientX;
@@ -728,13 +771,13 @@ function InfiniteCircularCarousel({
       onPointerUp={finishDrag}
       onPointerCancel={finishDrag}
     >
-      <div className="circular-carousel-depth absolute inset-0">
-        {heroCards.map((cardIndex, index) => (
-          <CircularProjectCard
-            key={cardIndex}
+      <div className="absolute inset-0">
+        {carouselCards.map((cardIndex, index) => (
+          <StackedProjectCard
+            key={`${cardIndex}-${index}`}
             cardIndex={cardIndex}
             index={index}
-            total={heroCards.length}
+            total={carouselCards.length}
             rotation={rotation}
             didDrag={didDrag}
             onCenter={centerCard}
@@ -743,7 +786,7 @@ function InfiniteCircularCarousel({
         ))}
       </div>
       <p className="pointer-events-none absolute bottom-2 left-1/2 z-[220] -translate-x-1/2 whitespace-nowrap font-jetbrains text-[9px] uppercase tracking-[0.2em] text-ink/35 sm:bottom-4 sm:text-[10px]">
-        Drag or scroll to rotate
+        Drag or scroll sideways
       </p>
     </motion.div>
   );
@@ -880,7 +923,7 @@ function StackedScene({
   const pullDistance = pinViewportWidth >= 768 ? pinViewportHeight * 0.66 : 0;
   const bottomPullY = useTransform(
     entryProgress,
-    [0, 0.66, 1],
+    [0, 0.25, 1],
     reducedMotion ? [0, 0, 0] : [pullDistance, pullDistance, 0]
   );
   const exitOpacity = useTransform(
@@ -1006,14 +1049,14 @@ function FastHeroMockup({
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
           <h3
-            className={`${serifDisplay} project-card-heading max-w-[85%] text-xl leading-none tracking-[-0.02em] text-white sm:text-2xl`}
+            className="project-card-heading max-w-[85%] font-sans text-[1.15rem] font-medium not-italic leading-none tracking-[-0.01em] text-white sm:text-[1.35rem]"
           >
             {card.title}
           </h3>
           <button
             type="button"
             data-project-trigger="true"
-            className="group/btn pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full bg-white/80 py-1.5 pl-3.5 pr-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-ink backdrop-blur-sm transition-colors duration-[320ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="group/btn pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full border border-white/85 bg-transparent py-1.5 pl-3.5 pr-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition-colors duration-[320ms] hover:bg-white hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={`Open ${card.title} project details`}
             onPointerDown={(event) => event.stopPropagation()}
             onPointerUp={(event) => event.stopPropagation()}
@@ -1023,7 +1066,7 @@ function FastHeroMockup({
             }}
           >
             <span>Details</span>
-            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-white">
+            <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/85 bg-transparent text-white transition-colors duration-[320ms] group-hover/btn:border-ink group-hover/btn:bg-ink group-hover/btn:text-white">
               <ArrowRight
                 className="h-3.5 w-3.5 transition-transform duration-[320ms] ease-out-expo group-hover/btn:translate-x-0.5"
                 aria-hidden="true"
@@ -1296,6 +1339,72 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
   );
 }
 
+function ServiceItem({
+  service,
+  index
+}: {
+  service: (typeof services)[number];
+  index: number;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Reveal delay={index * 0.04} y={18} blur={0}>
+      <div className="border-b border-white/15">
+        <button
+          type="button"
+          className="service-row group grid h-[196px] w-full grid-cols-[2rem_1fr_auto] items-center gap-3 px-5 py-5 text-left transition-colors duration-[180ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 sm:h-auto sm:gap-4 sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
+          aria-expanded={open}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm">
+            0{index + 1}
+          </span>
+          <h3 className="service-row-heading font-sans text-xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-[180ms] group-hover:text-black sm:text-3xl lg:text-4xl">
+            {service.title}
+          </h3>
+          <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-[13px] leading-5 text-white/50 transition-colors duration-[180ms] group-hover:text-black/65 sm:text-sm sm:leading-6 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
+            {service.description}
+          </p>
+          <motion.span
+            animate={{ rotate: open ? 45 : 0 }}
+            transition={{ duration: MOTION.duration.fast, ease: EASE }}
+            className="service-row-arrow col-start-3 row-start-1 grid h-8 w-8 place-items-center rounded-full border border-white/25 text-white transition-colors duration-[180ms] group-hover:border-black/25 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-9 lg:w-9"
+            aria-hidden="true"
+          >
+            <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
+          </motion.span>
+        </button>
+
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: MOTION.duration.base, ease: EASE }}
+              className="overflow-hidden"
+            >
+              <div className="pb-8 pl-[3.25rem] pr-5 sm:pb-10 sm:pl-[5.5rem] sm:pr-8 lg:pl-[6.5rem] lg:pr-12">
+                <div className="grid max-w-5xl gap-4 border-t border-white/10 pt-6 sm:grid-cols-3 sm:gap-6">
+                  {service.details.map((detail) => (
+                    <p
+                      key={detail}
+                      className="relative pl-4 text-sm leading-6 text-white/60 before:absolute before:left-0 before:top-[0.65rem] before:h-1 before:w-1 before:rounded-full before:bg-white/45 sm:leading-7"
+                    >
+                      {detail}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </Reveal>
+  );
+}
+
 export default function Home() {
   const reducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
@@ -1498,7 +1607,7 @@ export default function Home() {
                 <span className="inline-block">there</span>
               </h2>
 
-              <div className="absolute bottom-7 left-1/2 z-10 w-[min(150vw,620px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[650px]">
+              <div className="absolute bottom-7 left-1/2 z-10 w-[min(150vw,620px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <img
                     src="/bilal-asif-portrait-2026-v4.webp"
@@ -1518,6 +1627,24 @@ export default function Home() {
                   Bilal Asif
                 </p>
               </div>
+
+              <motion.div
+                className="pointer-events-none absolute bottom-5 right-0 z-30 flex items-center gap-2 text-ink/45 sm:bottom-7 lg:bottom-9"
+                animate={{ opacity: [0.42, 0.78, 0.42] }}
+                transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
+                aria-hidden="true"
+              >
+                <span className="hidden font-jetbrains text-[9px] font-medium uppercase tracking-[0.2em] sm:inline">
+                  Scroll down to explore
+                </span>
+                <motion.span
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                  className="grid h-8 w-8 place-items-center rounded-full border border-ink/20"
+                >
+                  <ArrowDown className="h-3.5 w-3.5" />
+                </motion.span>
+              </motion.div>
             </motion.div>
           </StackedScene>
 
@@ -1618,7 +1745,7 @@ export default function Home() {
           >
             <div className="mx-auto grid max-w-7xl gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
               <Reveal y={24} blur={3}>
-                <p className="font-jetbrains mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-black/55 sm:text-xs">
+                <p className="font-jetbrains mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-black sm:text-xs">
                   ( Selected Work )
                 </p>
                 <h2 className="scroll-mt-28 font-sans text-5xl font-extrabold leading-[0.86] tracking-normal text-black sm:text-7xl lg:text-8xl">
@@ -1638,13 +1765,13 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <InfiniteCircularCarousel
+            <InfiniteStackedCarousel
               onOpen={setSelectedProject}
               reducedMotion={Boolean(reducedMotion)}
             />
 
-            <div className="relative z-[2] -mx-5 h-[190px] bg-white sm:-mx-8 sm:h-[210px] md:h-[68svh] md:bg-transparent lg:-mx-12">
-              <div className="flex h-full min-h-0 items-center bg-white px-5 sm:px-8 md:sticky md:top-0 md:h-[34svh] md:translate-y-[34svh] lg:px-12">
+            <div className="relative z-[2] -mx-5 h-[190px] bg-white sm:-mx-8 sm:h-[210px] md:h-[48svh] md:bg-transparent lg:-mx-12">
+              <div className="flex h-full min-h-0 items-center bg-transparent px-5 sm:px-8 md:sticky md:top-0 md:h-[24svh] md:translate-y-[12svh] lg:px-12">
                 <Reveal y={18} blur={2} className="w-full">
                   <dl className="grid w-full grid-cols-4 py-5 sm:py-7 lg:py-6">
                     {projectMetrics.map((metric, index) => (
@@ -1671,7 +1798,7 @@ export default function Home() {
             linearExitFade
             pinAtEnd
             pullFromBottom
-            className="on-dark min-h-[100svh] scroll-mt-24 bg-black pb-0 pt-16 text-white sm:pt-20"
+            className="on-dark min-h-[100svh] scroll-mt-0 bg-black pb-0 pt-16 text-white sm:pt-20"
           >
             <div className="w-full">
               <div className="grid gap-8 border-b border-white/15 px-5 pb-10 sm:grid-cols-[1fr_auto] sm:items-end sm:px-8 lg:px-12 lg:pb-12">
@@ -1696,23 +1823,7 @@ export default function Home() {
 
               <div>
                 {services.map((service, index) => (
-                  <Reveal key={service.title} delay={index * 0.04} y={18} blur={0}>
-                    <a
-                      href="#contact"
-                      className="service-row group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-[180ms] hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
-                    >
-                      <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm">
-                        0{index + 1}
-                      </span>
-                      <h3 className="service-row-heading font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-[180ms] group-hover:text-black sm:text-3xl lg:text-4xl">
-                        {service.title}
-                      </h3>
-                      <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-[180ms] group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
-                        {service.description}
-                      </p>
-                      <ArrowUpRight className="service-row-arrow col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-[180ms] ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
-                    </a>
-                  </Reveal>
+                  <ServiceItem key={service.title} service={service} index={index} />
                 ))}
                 <div className="h-24 bg-black sm:h-28" aria-hidden="true" />
               </div>
@@ -1732,7 +1843,7 @@ export default function Home() {
                     ( The Approach )
                   </p>
                   <h2 className="max-w-xl font-sans text-6xl font-semibold leading-[0.86] tracking-normal text-ink sm:text-7xl lg:text-[6.5rem]">
-                    How we
+                    How I
                     <span className="block">drive</span>
                     <span className="block">growth</span>
                   </h2>
