@@ -667,7 +667,8 @@ function StackedScene({
   liftIn = false,
   overlapNext = false,
   linearExitFade = false,
-  pinAtEnd = false
+  pinAtEnd = false,
+  pullFromBottom = false
 }: {
   children: ReactNode;
   className: string;
@@ -678,12 +679,14 @@ function StackedScene({
   overlapNext?: boolean;
   linearExitFade?: boolean;
   pinAtEnd?: boolean;
+  pullFromBottom?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLElement>(null);
   const pinContentRef = useRef<HTMLDivElement>(null);
   const [pinContentHeight, setPinContentHeight] = useState(0);
   const [pinViewportHeight, setPinViewportHeight] = useState(0);
+  const [pinViewportWidth, setPinViewportWidth] = useState(0);
   const reducedMotion = useReducedMotion();
   const { scrollYProgress: entryProgress } = useScroll({
     target: trackRef,
@@ -711,6 +714,12 @@ function StackedScene({
     entryProgress,
     [0, 0.45, 1],
     reducedMotion ? [0, 0, 0] : [88, 24, 0]
+  );
+  const pullDistance = pinViewportWidth >= 768 ? pinViewportHeight * 0.66 : 0;
+  const bottomPullY = useTransform(
+    entryProgress,
+    [0, 0.66, 1],
+    reducedMotion ? [0, 0, 0] : [pullDistance, pullDistance, 0]
   );
   const exitOpacity = useTransform(
     exitProgress,
@@ -743,6 +752,7 @@ function StackedScene({
 
     const updateHeight = () => {
       setPinViewportHeight(window.innerHeight);
+      setPinViewportWidth(window.innerWidth);
       if (sceneRef.current) setPinContentHeight(sceneRef.current.scrollHeight);
     };
 
@@ -785,7 +795,7 @@ function StackedScene({
         className={`stacked-scene ${pinAtEnd ? "stacked-scene--pin-viewport" : ""} ${className}`}
         style={{
           opacity: pinAtEnd && linearExitFade ? pinnedExitOpacity : exitOpacity,
-          y: liftIn ? entryY : 0,
+          y: pullFromBottom ? bottomPullY : liftIn ? entryY : 0,
           ...pinHeightStyle
         }}
       >
@@ -1307,10 +1317,10 @@ export default function Home() {
           <StackedScene
             id="about"
             layer={1}
-            className="relative isolate min-h-[100svh] overflow-hidden bg-white px-5 pt-[136px] sm:px-8 sm:pt-[152px] lg:px-12"
+            className="relative isolate min-h-[100svh] overflow-hidden bg-white px-5 pt-[112px] sm:px-8 sm:pt-[132px] lg:px-12 lg:pt-[152px]"
           >
             <motion.div
-              className="relative mx-auto min-h-[580px] max-w-7xl sm:min-h-[600px] lg:min-h-[630px]"
+              className="relative mx-auto min-h-[calc(100svh-112px)] max-w-7xl sm:min-h-[calc(100svh-132px)] lg:min-h-[calc(100svh-152px)]"
               onMouseMove={(event) => {
                 if (reducedMotion) return;
                 const bounds = event.currentTarget.getBoundingClientRect();
@@ -1323,30 +1333,28 @@ export default function Home() {
               }}
             >
               <h2
-                className={`${serifDisplay} intro-hey-light pointer-events-none absolute inset-x-0 top-10 z-20 flex items-center justify-between pl-[10%] pr-[7%] text-6xl leading-none text-ink sm:top-8 sm:pl-[13%] sm:pr-[9%] sm:text-8xl lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]`}
+                className="intro-hey-light pointer-events-none absolute inset-x-0 top-8 z-20 flex items-center justify-between pl-[5%] pr-[3%] text-[clamp(3.9rem,18vw,6rem)] leading-none text-ink sm:top-8 sm:pl-[10%] sm:pr-[7%] sm:text-[clamp(6rem,13vw,8.5rem)] lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]"
               >
                 <span className="inline-block">Hey,</span>
                 <span className="inline-block">there</span>
               </h2>
 
-              <div className="absolute bottom-10 left-1/2 z-10 w-[460px] max-w-[100vw] -translate-x-1/2 sm:bottom-8 sm:w-[590px] lg:bottom-6 lg:w-[650px]">
+              <div className="absolute bottom-7 left-1/2 z-10 w-[min(150vw,620px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[650px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <img
-                    src="/bilal-asif-portrait-2026-v3.png"
+                    src="/bilal-asif-portrait-2026-v4.png"
                     alt="Bilal Asif, freelance website designer and digital growth partner"
-                    className="w-full object-contain"
+                    className="portrait-image w-full object-contain"
                     loading="eager"
                   />
                 </motion.div>
               </div>
 
-              <div className="absolute inset-x-0 bottom-0 z-20 h-52 bg-gradient-to-b from-transparent via-white/80 to-white" />
-
               <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
-                <p className={`${serifDisplay} ${petrona.variable} intro-heading-thin whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
+                <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
                   I am
                 </p>
-                <p className={`${serifDisplay} ${petrona.variable} intro-heading-thin whitespace-nowrap text-4xl leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl`}>
+                <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
                   Bilal Asif
                 </p>
               </div>
@@ -1426,7 +1434,8 @@ export default function Home() {
             </div>
 
             <motion.div
-              className="absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-ink/40 sm:flex"
+              className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/40 sm:flex"
+              style={{ x: "-50%" }}
               animate={{ y: [0, 7, 0], opacity: [0.42, 0.8, 0.42] }}
               transition={{ duration: 2.1, repeat: Infinity, ease: "easeInOut" }}
               aria-hidden="true"
@@ -1445,7 +1454,7 @@ export default function Home() {
             overlapNext
             className="min-h-[100svh] overflow-x-clip bg-transparent px-5 pb-0 pt-20 sm:px-8 sm:pt-24 lg:px-12"
           >
-            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div className="mx-auto grid max-w-7xl gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
               <Reveal y={24} blur={3}>
                 <p className="font-jetbrains mb-7 text-[10px] font-semibold uppercase tracking-[0.28em] text-black/55 sm:text-xs">
                   ( Selected Work )
@@ -1473,7 +1482,7 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.9, ease: EASE }}
-              className="manual-hero-scroll relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
+              className="manual-hero-scroll project-deck-sticky relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
               onScroll={(event) => handleHeroScroll(event.currentTarget)}
               onPointerDown={startDragScroll}
               onPointerMove={dragScroll}
@@ -1505,14 +1514,14 @@ export default function Home() {
               </div>
             </motion.div>
 
-            <div className="-mx-5 bg-white sm:-mx-8 lg:-mx-12 lg:h-[100svh]">
-              <div className="flex min-h-[55svh] items-start bg-white px-5 pt-16 sm:min-h-[65svh] sm:px-8 sm:pt-20 lg:sticky lg:top-0 lg:h-[50svh] lg:min-h-0 lg:items-center lg:px-12 lg:pt-0">
+            <div className="relative z-[2] -mx-5 h-[190px] bg-white sm:-mx-8 sm:h-[210px] md:h-[68svh] md:bg-transparent lg:-mx-12">
+              <div className="flex h-full min-h-0 items-center bg-white px-5 sm:px-8 md:sticky md:top-0 md:h-[34svh] md:translate-y-[34svh] lg:px-12">
                 <Reveal y={18} blur={2} className="w-full">
-                  <dl className="grid w-full grid-cols-4 py-7 sm:py-10 lg:py-12">
+                  <dl className="grid w-full grid-cols-4 py-5 sm:py-7 lg:py-6">
                     {projectMetrics.map((metric, index) => (
                       <div
                         key={metric.label}
-                        className="flex min-w-0 flex-col items-center justify-center px-1 py-4 text-center sm:min-h-32 sm:px-4 sm:py-5 lg:min-h-36 lg:px-12"
+                        className="flex min-w-0 flex-col items-center justify-center px-1 py-3 text-center sm:min-h-28 sm:px-4 sm:py-4 lg:min-h-36 lg:px-12"
                       >
                         <dt className="order-2 mt-2 text-center text-[7px] font-semibold uppercase leading-tight tracking-normal text-black/55 sm:text-xs lg:text-sm">
                           {metric.label}
@@ -1532,10 +1541,11 @@ export default function Home() {
             long
             linearExitFade
             pinAtEnd
+            pullFromBottom
             className="on-dark min-h-[100svh] scroll-mt-24 bg-black pb-0 pt-16 text-white sm:pt-20"
           >
             <div className="w-full">
-              <div className="grid gap-8 border-b border-white/15 px-5 pb-10 sm:px-8 lg:grid-cols-[1fr_auto] lg:items-end lg:px-12 lg:pb-12">
+              <div className="grid gap-8 border-b border-white/15 px-5 pb-10 sm:grid-cols-[1fr_auto] sm:items-end sm:px-8 lg:px-12 lg:pb-12">
                 <Reveal y={24} blur={3}>
                   <p className="font-jetbrains mb-6 text-[10px] font-medium uppercase tracking-normal text-white sm:text-xs">
                     What I Do
@@ -1557,7 +1567,7 @@ export default function Home() {
 
               <div>
                 {services.map((service, index) => (
-                  <Reveal key={service.title} delay={index * 0.06} y={18} blur={2}>
+                  <Reveal key={service.title} delay={index * 0.04} y={18} blur={0}>
                     <a
                       href="#contact"
                       className="service-row group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-150 hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
@@ -1668,7 +1678,7 @@ export default function Home() {
               </Reveal>
 
               <Reveal delay={0.08} y={28} blur={3}>
-                <h2 className="mt-8 font-sans text-6xl font-extrabold leading-[0.82] tracking-normal text-white sm:text-8xl lg:text-9xl">
+                <h2 className="mt-8 font-sans text-[clamp(3rem,12vw,5rem)] font-extrabold leading-[0.96] tracking-normal text-white md:text-8xl md:leading-[0.9] lg:text-9xl lg:leading-[0.84]">
                   <span className="block">Ready to</span>
                   <span className="block text-white/20">grow your</span>
                   <span className="block">business?</span>

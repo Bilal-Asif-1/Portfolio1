@@ -33,81 +33,51 @@ export function SmoothScroll() {
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // Native scrolling is more stable on touch screens (especially iOS/iPadOS)
+    // and avoids running a second momentum system over the browser's own one.
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+
     const lenis = new Lenis({
-      duration: 1.1,
+      duration: 0.85,
+      overscroll: false,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
     });
     lenisInstance = lenis;
 
     let frame = 0;
-    let wasScrolling = false;
-    let userScrollGesture = false;
-    let settlingSection = false;
+    let inputIdleTimer = 0;
+    let inputActive = false;
+    let hasPointerPosition = false;
+    let activeServiceRow: HTMLElement | null = null;
     let pointerX = window.innerWidth / 2;
     let pointerY = window.innerHeight / 2;
 
     const clearForcedServiceHover = () => {
-      document
-        .querySelector(".service-row--cursor-active")
-        ?.classList.remove("service-row--cursor-active");
+      activeServiceRow?.classList.remove("service-row--cursor-active");
+      activeServiceRow = null;
     };
 
-    const finishServiceScroll = () => {
-      document.body.classList.remove("suppress-service-hover");
-      clearForcedServiceHover();
-      document
+    const updateHoverAtPointer = () => {
+      if (inputActive || !hasPointerPosition) return;
+
+      const nextServiceRow = document
         .elementFromPoint(pointerX, pointerY)
-        ?.closest(".service-row")
-        ?.classList.add("service-row--cursor-active");
+        ?.closest<HTMLElement>(".service-row") ?? null;
+
+      if (nextServiceRow === activeServiceRow) return;
+      clearForcedServiceHover();
+      activeServiceRow = nextServiceRow;
+      activeServiceRow?.classList.add("service-row--cursor-active");
     };
 
-    const settleVisibleSection = () => {
-      if (settlingSection || window.innerWidth < 1024) return false;
-
-      const viewportHeight = window.innerHeight;
-      const enteringSection = Array.from(
-        document.querySelectorAll<HTMLElement>(".stacked-scene")
-      )
-        .map((section) => ({ section, bounds: section.getBoundingClientRect() }))
-        .filter(({ section, bounds }) => {
-          const opacity = Number.parseFloat(window.getComputedStyle(section).opacity);
-          return bounds.top > 2 && bounds.top < viewportHeight - 2 && opacity > 0.05;
-        })
-        .sort((first, second) => first.bounds.top - second.bounds.top)[0];
-
-      if (!enteringSection) return false;
-
-      const enteredRatio = (viewportHeight - enteringSection.bounds.top) / viewportHeight;
-      const restingTop =
-        enteringSection.section.id === "services" ? viewportHeight * 0.5 : viewportHeight;
-      const targetScroll =
-        enteredRatio >= 0.6
-          ? window.scrollY + enteringSection.bounds.top
-          : window.scrollY + enteringSection.bounds.top - restingTop;
-
-      if (Math.abs(targetScroll - window.scrollY) < 4) return false;
-
-      settlingSection = true;
-      lenis.scrollTo(targetScroll, {
-        duration: 0.55,
-        easing: (t) => 1 - Math.pow(1 - t, 4),
-        onComplete: () => {
-          settlingSection = false;
-          finishServiceScroll();
-        }
-      });
-      return true;
+    const releaseInputHoverGate = () => {
+      inputActive = false;
+      document.body.classList.remove("scroll-input-active");
+      updateHoverAtPointer();
     };
 
     const raf = (time: number) => {
       lenis.raf(time);
-      const isScrolling = Boolean(lenis.isScrolling);
-      if (wasScrolling && !isScrolling) {
-        const shouldSettle = userScrollGesture;
-        userScrollGesture = false;
-        if (!shouldSettle || !settleVisibleSection()) finishServiceScroll();
-      }
-      wasScrolling = isScrolling;
       frame = requestAnimationFrame(raf);
     };
     frame = requestAnimationFrame(raf);
@@ -126,35 +96,41 @@ export function SmoothScroll() {
     };
     document.addEventListener("click", onClick);
 
-    const suppressServiceHover = (event: WheelEvent | TouchEvent) => {
+    const onVirtualScroll = ({ event }: { event: WheelEvent | TouchEvent }) => {
       if ("clientX" in event) {
         pointerX = event.clientX;
         pointerY = event.clientY;
+        hasPointerPosition = true;
       }
+
+      inputActive = true;
       clearForcedServiceHover();
-      userScrollGesture = true;
-      settlingSection = false;
-      wasScrolling = true;
-      document.body.classList.add("suppress-service-hover");
+      document.body.classList.add("scroll-input-active");
+      window.clearTimeout(inputIdleTimer);
+      inputIdleTimer = window.setTimeout(releaseInputHoverGate, 48);
     };
+
+    const onLenisScroll = () => updateHoverAtPointer();
+
     const trackPointer = (event: MouseEvent) => {
       pointerX = event.clientX;
       pointerY = event.clientY;
-      clearForcedServiceHover();
-      if (!lenis.isScrolling) document.body.classList.remove("suppress-service-hover");
+      hasPointerPosition = true;
+      updateHoverAtPointer();
     };
 
-    window.addEventListener("wheel", suppressServiceHover, { passive: true });
-    window.addEventListener("touchmove", suppressServiceHover, { passive: true });
+    const removeVirtualScrollListener = lenis.on("virtual-scroll", onVirtualScroll);
+    const removeScrollListener = lenis.on("scroll", onLenisScroll);
     window.addEventListener("mousemove", trackPointer);
 
     return () => {
       cancelAnimationFrame(frame);
+      window.clearTimeout(inputIdleTimer);
       document.removeEventListener("click", onClick);
-      window.removeEventListener("wheel", suppressServiceHover);
-      window.removeEventListener("touchmove", suppressServiceHover);
+      removeVirtualScrollListener();
+      removeScrollListener();
       window.removeEventListener("mousemove", trackPointer);
-      document.body.classList.remove("suppress-service-hover");
+      document.body.classList.remove("scroll-input-active");
       clearForcedServiceHover();
       lenis.destroy();
       lenisInstance = null;
