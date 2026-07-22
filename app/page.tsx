@@ -7,7 +7,9 @@ import {
   animate,
   motion,
   MotionConfig,
+  useAnimationFrame,
   useInView,
+  type MotionValue,
   useMotionValue,
   useReducedMotion,
   useScroll,
@@ -28,10 +30,10 @@ import {
   EASE,
   getLenis,
   Magnetic,
+  MOTION,
   Reveal,
   ScrollProgress,
-  SmoothScroll,
-  TextReveal
+  SmoothScroll
 } from "@/components/motion";
 
 const petrona = Petrona({
@@ -42,7 +44,6 @@ const petrona = Petrona({
   display: "swap"
 });
 
-const serifAccent = `${petrona.className} italic font-normal`;
 const serifDisplay = `${petrona.className} italic font-thin`;
 
 function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) {
@@ -53,8 +54,6 @@ function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) {
   );
 }
 
-const toSegments = (text: string) => text.split(" ").map((word) => ({ text: word }));
-
 const contact = {
   email: "bilalasif1024@gmail.com",
   whatsapp: "https://wa.me/92307998854?text=Hi%20Bilal%2C%20I%20want%20to%20grow%20my%20business%20online.",
@@ -62,7 +61,8 @@ const contact = {
   linkedin: "https://www.linkedin.com/in/bilal-asif/"
 };
 
-const navItems = ["Services", "Projects", "Packages", "Process"];
+// Match the navigation order to the actual vertical order of page sections.
+const navItems = ["Packages", "Projects", "Services", "Process"];
 
 const services = [
   {
@@ -237,15 +237,7 @@ const showcaseCards = [
   }
 ];
 
-const heroCards = [
-  { cardIndex: 3, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden lg:block" },
-  { cardIndex: 8, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden md:block" },
-  { cardIndex: 0, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "" },
-  { cardIndex: 1, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "" },
-  { cardIndex: 2, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "" },
-  { cardIndex: 4, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden md:block" },
-  { cardIndex: 7, rotate: 0, top: 74, scale: 0.92, z: 2, hide: "hidden lg:block" }
-];
+const heroCards = [3, 8, 0, 1, 2, 4, 7] as const;
 
 const projectDetails: Record<
   string,
@@ -394,7 +386,7 @@ const faqs = [
 
 function useMotionValueSpring(initial: number) {
   const value = useMotionValue(initial);
-  const spring = useSpring(value, { stiffness: 60, damping: 18, mass: 0.6 });
+  const spring = useSpring(value, MOTION.spring.subtle);
   return {
     set: (next: number) => value.set(next),
     spring
@@ -472,7 +464,7 @@ function IntroSplash() {
       className="fixed inset-0 z-[100] grid place-items-center bg-white px-6 text-center text-ink"
       initial={{ opacity: 1 }}
       animate={{ opacity: exiting ? 0 : 1 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
+      transition={{ duration: MOTION.duration.fast, ease: EASE }}
     >
       <div
         className={
@@ -485,7 +477,7 @@ function IntroSplash() {
           key={text}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.16, ease: "easeOut" }}
+          transition={{ duration: MOTION.duration.instant, ease: EASE }}
           className={
             text.startsWith("HI,")
               ? "inline-block min-w-[12ch] leading-none"
@@ -499,98 +491,262 @@ function IntroSplash() {
   );
 }
 
-function startDragScroll(event: PointerEvent<HTMLDivElement>) {
-  const slider = event.currentTarget;
-  const target = event.target as HTMLElement;
-  if (target.closest("[data-project-trigger]")) {
-    slider.dataset.dragging = "false";
-    slider.dataset.didDrag = "false";
-    return;
-  }
-
-  slider.dataset.dragging = "true";
-  slider.dataset.didDrag = "false";
-  slider.dataset.startX = String(event.clientX);
-  slider.dataset.scrollLeft = String(slider.scrollLeft);
-  slider.setPointerCapture(event.pointerId);
+function wrapCarouselDistance(value: number, total: number) {
+  return ((value + total / 2) % total + total) % total - total / 2;
 }
 
-function dragScroll(event: PointerEvent<HTMLDivElement>) {
-  const slider = event.currentTarget;
-  if (slider.dataset.dragging !== "true") return;
-
-  event.preventDefault();
-  const startX = Number(slider.dataset.startX ?? 0);
-  const scrollLeft = Number(slider.dataset.scrollLeft ?? 0);
-  const dragDistance = event.clientX - startX;
-  if (Math.abs(dragDistance) > 6) {
-    slider.dataset.didDrag = "true";
-  }
-  slider.scrollLeft = scrollLeft - dragDistance;
-}
-
-function stopDragScroll(event: PointerEvent<HTMLDivElement>) {
-  const slider = event.currentTarget;
-  slider.dataset.dragging = "false";
-  if (slider.hasPointerCapture(event.pointerId)) {
-    slider.releasePointerCapture(event.pointerId);
-  }
-}
-
-function keepInfiniteHeroScroll(slider: HTMLDivElement) {
-  const segmentWidth = slider.scrollWidth / 3;
-  if (!segmentWidth) return;
-
-  if (slider.scrollLeft < segmentWidth * 0.35) {
-    slider.scrollLeft += segmentWidth;
-  }
-
-  if (slider.scrollLeft > segmentWidth * 1.65) {
-    slider.scrollLeft -= segmentWidth;
-  }
-}
-
-function updateActiveHeroCard(slider: HTMLDivElement) {
-  const cards = Array.from(slider.querySelectorAll<HTMLElement>(".hero-card")).filter(
-    (card) => card.offsetWidth > 0
+function CircularProjectCard({
+  cardIndex,
+  index,
+  total,
+  rotation,
+  didDrag,
+  onCenter,
+  onOpen
+}: {
+  cardIndex: number;
+  index: number;
+  total: number;
+  rotation: MotionValue<number>;
+  didDrag: { current: boolean };
+  onCenter: (index: number) => void;
+  onOpen: (card: (typeof showcaseCards)[number]) => void;
+}) {
+  const phase = useTransform(rotation, (value) =>
+    wrapCarouselDistance(index - value, total)
   );
-  const viewportCenter = slider.scrollLeft + slider.clientWidth / 2;
-  let activeCard: HTMLElement | undefined;
-  let activeIndex = -1;
-  let smallestDistance = Number.POSITIVE_INFINITY;
+  const angle = useTransform(phase, (value) => (value / total) * Math.PI * 2);
+  const depth = useTransform(angle, (value) => Math.cos(value));
+  const x = useTransform(angle, (value) => `${Math.sin(value) * 44}vw`);
+  const y = useTransform(depth, (value) => (1 - value) * 38 - 18);
+  const z = useTransform(depth, (value) => (value - 1) * 180);
+  const scale = useTransform(depth, [-0.3, 0, 1], [0.68, 0.8, 1.08]);
+  const opacity = useTransform(depth, [-0.55, -0.22, 0.35, 1], [0, 0.36, 0.72, 1]);
+  const rotate = useTransform(angle, (value) => Math.sin(value) * -5);
+  const zIndex = useTransform(depth, (value) => Math.round((value + 1) * 100));
+  const visibility = useTransform(depth, (value) =>
+    value > -0.55 ? "visible" : "hidden"
+  );
+  const pointerEvents = useTransform(depth, (value) =>
+    value > -0.45 ? "auto" : "none"
+  );
 
-  cards.forEach((card, index) => {
-    const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-    const distance = Math.abs(cardCenter - viewportCenter);
-
-    if (distance < smallestDistance) {
-      smallestDistance = distance;
-      activeCard = card;
-      activeIndex = index;
-    }
-  });
-
-  if (!activeCard) return;
-  if (activeCard.dataset.heroCardId === slider.dataset.activeHeroCard) return;
-  slider.dataset.activeHeroCard = activeCard.dataset.heroCardId ?? "";
-
-  cards.forEach((card, index) => {
-    card.classList.toggle("is-center-card", card === activeCard);
-    card.classList.toggle("is-neighbor-card", index === activeIndex - 1 || index === activeIndex + 1);
-    card.classList.toggle("is-outer-neighbor-card", index === activeIndex - 2 || index === activeIndex + 2);
-    card.classList.toggle("is-far-neighbor-card", index === activeIndex - 3 || index === activeIndex + 3);
-  });
+  return (
+    <motion.div
+      className="circular-project-card absolute left-1/2 top-8 h-[255px] w-[176px] overflow-hidden rounded-card sm:top-10 sm:h-[325px] sm:w-[218px] lg:top-12 lg:h-[380px] lg:w-[258px]"
+      style={{ x, y, z, scale, rotate, opacity, zIndex, visibility, pointerEvents }}
+      onClick={() => {
+        if (!didDrag.current) onCenter(index);
+      }}
+    >
+      <FastHeroMockup card={showcaseCards[cardIndex]} onOpen={onOpen} />
+    </motion.div>
+  );
 }
 
-function handleHeroScroll(slider: HTMLDivElement) {
-  keepInfiniteHeroScroll(slider);
-  if (slider.dataset.heroFrame === "true") return;
+function InfiniteCircularCarousel({
+  onOpen,
+  reducedMotion
+}: {
+  onOpen: (card: (typeof showcaseCards)[number]) => void;
+  reducedMotion: boolean;
+}) {
+  const rotation = useMotionValue(3);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(stageRef, { margin: "200px 0px" });
+  const dragStartX = useRef(0);
+  const dragStartRotation = useRef(0);
+  const lastPointerX = useRef(0);
+  const lastPointerTime = useRef(0);
+  const releaseVelocity = useRef(0);
+  const dragging = useRef(false);
+  const didDrag = useRef(false);
+  const autoPaused = useRef(false);
+  const resumeTimer = useRef<number | null>(null);
+  const rotationAnimation = useRef<ReturnType<typeof animate> | null>(null);
+  const wheelTarget = useRef(rotation.get());
+  const lastWheelTime = useRef(0);
 
-  slider.dataset.heroFrame = "true";
-  window.requestAnimationFrame(() => {
-    updateActiveHeroCard(slider);
-    delete slider.dataset.heroFrame;
+  const stopRotationAnimation = () => {
+    rotationAnimation.current?.stop();
+    rotationAnimation.current = null;
+  };
+
+  const pauseAuto = (resumeAfter?: number) => {
+    autoPaused.current = true;
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = null;
+    if (resumeAfter) {
+      resumeTimer.current = window.setTimeout(() => {
+        autoPaused.current = false;
+      }, resumeAfter);
+    }
+  };
+
+  const centerCard = (index: number) => {
+    pauseAuto(1800);
+    stopRotationAnimation();
+    const current = rotation.get();
+    const delta = wrapCarouselDistance(index - current, heroCards.length);
+    if (reducedMotion) {
+      rotation.set(current + delta);
+      return;
+    }
+    rotationAnimation.current = animate(rotation, current + delta, {
+      type: "spring",
+      ...MOTION.spring.subtle,
+      restDelta: 0.0005,
+      restSpeed: 0.0005,
+      onComplete: () => {
+        rotationAnimation.current = null;
+      }
+    });
+  };
+
+  const finishDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (!dragging.current) return;
+    dragging.current = false;
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    if (didDrag.current && !reducedMotion) {
+      const velocity = releaseVelocity.current;
+      rotationAnimation.current = animate(
+        rotation,
+        rotation.get() + velocity * 0.18,
+        {
+          type: "spring",
+          velocity,
+          stiffness: 105,
+          damping: 19,
+          mass: 0.78,
+          restDelta: 0.0005,
+          restSpeed: 0.0005,
+          onComplete: () => {
+            rotationAnimation.current = null;
+          }
+        }
+      );
+    }
+    pauseAuto(1600);
+  };
+
+  useAnimationFrame((_time, delta) => {
+    if (
+      reducedMotion ||
+      !isInView ||
+      autoPaused.current ||
+      dragging.current ||
+      rotationAnimation.current
+    ) {
+      return;
+    }
+    rotation.set(rotation.get() + Math.min(delta, 32) * 0.00004);
   });
+
+  useEffect(() => {
+    return () => {
+      stopRotationAnimation();
+      if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    };
+  }, []);
+
+  return (
+    <motion.div
+      ref={stageRef}
+      initial={{ opacity: 0, y: 24, filter: "blur(2px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: MOTION.duration.reveal, ease: EASE }}
+      className="circular-carousel project-deck-sticky scroll-reveal-filter relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-hidden active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] lg:-mx-12 lg:h-[530px]"
+      role="region"
+      aria-label="Featured projects circular carousel. Drag or scroll to rotate."
+      onPointerEnter={() => pauseAuto()}
+      onPointerLeave={() => {
+        if (!dragging.current) pauseAuto(500);
+      }}
+      onFocus={() => pauseAuto()}
+      onBlur={() => pauseAuto(900)}
+      onWheel={(event) => {
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+          ? event.deltaX
+          : event.deltaY;
+        if (Math.abs(delta) < 0.1) return;
+
+        const now = performance.now();
+        if (now - lastWheelTime.current > 160) wheelTarget.current = rotation.get();
+        lastWheelTime.current = now;
+        wheelTarget.current += Math.max(-180, Math.min(180, delta)) / 340;
+        pauseAuto(1400);
+        stopRotationAnimation();
+        if (reducedMotion) {
+          rotation.set(wheelTarget.current);
+          return;
+        }
+        rotationAnimation.current = animate(rotation, wheelTarget.current, {
+          type: "spring",
+          stiffness: 190,
+          damping: 28,
+          mass: 0.62,
+          restDelta: 0.0005,
+          restSpeed: 0.0005,
+          onComplete: () => {
+            rotationAnimation.current = null;
+          }
+        });
+      }}
+      onPointerDown={(event) => {
+        if ((event.target as HTMLElement).closest("[data-project-trigger]")) return;
+        stopRotationAnimation();
+        pauseAuto();
+        dragging.current = true;
+        didDrag.current = false;
+        dragStartX.current = event.clientX;
+        dragStartRotation.current = rotation.get();
+        lastPointerX.current = event.clientX;
+        lastPointerTime.current = performance.now();
+        releaseVelocity.current = 0;
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={(event) => {
+        if (!dragging.current) return;
+        const distance = event.clientX - dragStartX.current;
+        if (Math.abs(distance) > 5) didDrag.current = true;
+        if (didDrag.current) event.preventDefault();
+
+        const cardTravel = Math.max(210, Math.min(window.innerWidth * 0.24, 390));
+        rotation.set(dragStartRotation.current - distance / cardTravel);
+
+        const now = performance.now();
+        const elapsed = Math.max(8, now - lastPointerTime.current);
+        releaseVelocity.current =
+          (-(event.clientX - lastPointerX.current) / cardTravel / elapsed) * 1000;
+        lastPointerX.current = event.clientX;
+        lastPointerTime.current = now;
+      }}
+      onPointerUp={finishDrag}
+      onPointerCancel={finishDrag}
+    >
+      <div className="circular-carousel-depth absolute inset-0">
+        {heroCards.map((cardIndex, index) => (
+          <CircularProjectCard
+            key={cardIndex}
+            cardIndex={cardIndex}
+            index={index}
+            total={heroCards.length}
+            rotation={rotation}
+            didDrag={didDrag}
+            onCenter={centerCard}
+            onOpen={onOpen}
+          />
+        ))}
+      </div>
+      <p className="pointer-events-none absolute bottom-2 left-1/2 z-[220] -translate-x-1/2 whitespace-nowrap font-jetbrains text-[9px] uppercase tracking-[0.2em] text-ink/35 sm:bottom-4 sm:text-[10px]">
+        Drag or scroll to rotate
+      </p>
+    </motion.div>
+  );
 }
 
 function SectionLabel({
@@ -668,7 +824,8 @@ function StackedScene({
   overlapNext = false,
   linearExitFade = false,
   pinAtEnd = false,
-  pullFromBottom = false
+  pullFromBottom = false,
+  deferExitOnMobile = false
 }: {
   children: ReactNode;
   className: string;
@@ -680,6 +837,7 @@ function StackedScene({
   linearExitFade?: boolean;
   pinAtEnd?: boolean;
   pullFromBottom?: boolean;
+  deferExitOnMobile?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLElement>(null);
@@ -687,6 +845,7 @@ function StackedScene({
   const [pinContentHeight, setPinContentHeight] = useState(0);
   const [pinViewportHeight, setPinViewportHeight] = useState(0);
   const [pinViewportWidth, setPinViewportWidth] = useState(0);
+  const [mobileExitAtContentEnd, setMobileExitAtContentEnd] = useState(false);
   const reducedMotion = useReducedMotion();
   const { scrollYProgress: entryProgress } = useScroll({
     target: trackRef,
@@ -694,7 +853,10 @@ function StackedScene({
   });
   const { scrollYProgress: exitProgress } = useScroll({
     target: trackRef,
-    offset: long ? ["end end", "end start"] : ["start start", "center start"]
+    offset:
+      long || mobileExitAtContentEnd
+        ? ["end end", "end start"]
+        : ["start start", "center start"]
   });
   const { scrollYProgress: pinProgress } = useScroll({
     target: trackRef,
@@ -746,6 +908,17 @@ function StackedScene({
       ? [0, -pinTravel, -pinTravel, -pinTravel - pinExitDrift]
       : [0, -pinTravel]
   );
+
+  useEffect(() => {
+    if (!deferExitOnMobile) return;
+
+    const mobileQuery = window.matchMedia("(max-width: 767px)");
+    const updateExitTiming = () => setMobileExitAtContentEnd(mobileQuery.matches);
+    updateExitTiming();
+    mobileQuery.addEventListener("change", updateExitTiming);
+
+    return () => mobileQuery.removeEventListener("change", updateExitTiming);
+  }, [deferExitOnMobile]);
 
   useEffect(() => {
     if (!pinAtEnd || !pinContentRef.current) return;
@@ -826,8 +999,9 @@ function FastHeroMockup({
         <img
           src={card.image}
           alt={`${card.title} ${card.eyebrow} poster visual`}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-[1.04]"
-          loading="eager"
+          className="h-full w-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
@@ -839,7 +1013,7 @@ function FastHeroMockup({
           <button
             type="button"
             data-project-trigger="true"
-            className="group/btn pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full bg-white/80 py-1.5 pl-3.5 pr-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-ink backdrop-blur-sm transition-colors duration-300 hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="group/btn pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full bg-white/80 py-1.5 pl-3.5 pr-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-ink backdrop-blur-sm transition-colors duration-[320ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
             aria-label={`Open ${card.title} project details`}
             onPointerDown={(event) => event.stopPropagation()}
             onPointerUp={(event) => event.stopPropagation()}
@@ -851,7 +1025,7 @@ function FastHeroMockup({
             <span>Details</span>
             <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-ink text-white">
               <ArrowRight
-                className="h-3.5 w-3.5 transition-transform duration-300 ease-out-expo group-hover/btn:translate-x-0.5"
+                className="h-3.5 w-3.5 transition-transform duration-[320ms] ease-out-expo group-hover/btn:translate-x-0.5"
                 aria-hidden="true"
               />
             </span>
@@ -918,7 +1092,7 @@ function ProjectDetailModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.18, ease: "easeOut" }}
+      transition={{ duration: MOTION.duration.fast, ease: EASE }}
       onClick={onClose}
     >
       <motion.article
@@ -929,12 +1103,12 @@ function ProjectDetailModal({
         initial={{ opacity: 0, scale: 0.96, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.97, y: 18 }}
-        transition={{ duration: 0.3, ease: EASE }}
+        transition={{ duration: MOTION.duration.base, ease: EASE }}
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-300 hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
+          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
           aria-label="Close project details"
           onClick={onClose}
         >
@@ -991,7 +1165,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: MOTION.duration.fast, ease: EASE }}
       onClick={onClose}
     >
       <motion.section
@@ -1002,12 +1176,12 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
         initial={{ opacity: 0, y: 54, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 38, scale: 0.99 }}
-        transition={{ duration: 0.35, ease: EASE }}
+        transition={{ duration: MOTION.duration.base, ease: EASE }}
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type="button"
-          className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-300 hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 sm:right-6 sm:top-6"
+          className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 sm:right-6 sm:top-6"
           aria-label="Close packages"
           onClick={onClose}
         >
@@ -1044,7 +1218,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
                   href={contact.whatsapp}
                   target="_blank"
                   rel="noreferrer"
-                  className={`my-7 block rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors duration-300 ${
+                  className={`my-7 block rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors duration-[320ms] ${
                     featured
                       ? "border-white/15 bg-white/[0.06] text-white hover:bg-white hover:text-ink"
                       : "border-ink/10 bg-ink/[0.03] text-ink hover:bg-ink hover:text-white"
@@ -1095,7 +1269,7 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
           </span>
           <motion.span
             animate={{ rotate: open ? 45 : 0 }}
-            transition={{ duration: 0.3, ease: EASE }}
+            transition={{ duration: MOTION.duration.fast, ease: EASE }}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/15 text-white/60"
             aria-hidden="true"
           >
@@ -1108,7 +1282,7 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
+              transition={{ duration: MOTION.duration.base, ease: EASE }}
               className="overflow-hidden"
             >
               <p className="max-w-3xl pb-7 text-sm leading-7 text-white/50 sm:text-base sm:leading-8">
@@ -1123,7 +1297,6 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
 }
 
 export default function Home() {
-  const heroScrollerRef = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
   const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
   const [packagesOpen, setPackagesOpen] = useState(false);
@@ -1156,24 +1329,20 @@ export default function Home() {
 
   useEffect(() => {
     let frame = 0;
+    const scenes = Array.from(document.querySelectorAll<HTMLElement>(".stacked-scene"));
 
     const updateNavTone = () => {
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => {
         const navLine = 36;
-        const activeScene = Array.from(
-          document.querySelectorAll<HTMLElement>(".stacked-scene")
-        )
+        const activeScene = scenes
           .filter((scene) => {
             const bounds = scene.getBoundingClientRect();
-            const opacity = Number.parseFloat(window.getComputedStyle(scene).opacity);
-            return bounds.top <= navLine && bounds.bottom > navLine && opacity > 0.12;
+            return bounds.top <= navLine && bounds.bottom > navLine;
           })
-          .sort((first, second) => {
-            const firstLayer = Number.parseInt(window.getComputedStyle(first).zIndex || "0", 10);
-            const secondLayer = Number.parseInt(window.getComputedStyle(second).zIndex || "0", 10);
-            return firstLayer - secondLayer;
-          })
+          .filter(
+            (scene) => Number.parseFloat(window.getComputedStyle(scene).opacity) > 0.12
+          )
           .at(-1);
 
         setNavOnDark(Boolean(activeScene?.classList.contains("on-dark")));
@@ -1214,24 +1383,6 @@ export default function Home() {
     ]
   };
 
-  useEffect(() => {
-    const slider = heroScrollerRef.current;
-    if (!slider) return;
-
-    const setMiddleSegment = () => {
-      slider.scrollLeft = slider.scrollWidth / 3;
-      updateActiveHeroCard(slider);
-    };
-
-    const frame = window.requestAnimationFrame(setMiddleSegment);
-    window.addEventListener("resize", setMiddleSegment);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("resize", setMiddleSegment);
-    };
-  }, []);
-
   return (
     <MotionConfig reducedMotion="user">
       <main className="relative min-h-screen bg-white text-ink">
@@ -1254,8 +1405,8 @@ export default function Home() {
             <motion.nav
               initial={{ y: -16, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.7, ease: EASE, delay: 0.15 }}
-              className={`pointer-events-auto mx-auto flex h-12 items-center justify-center gap-3 font-sans transition-colors duration-300 sm:gap-8 ${
+              transition={{ duration: MOTION.duration.reveal, ease: EASE, delay: 0.12 }}
+              className={`pointer-events-auto mx-auto flex h-12 items-center justify-center gap-3 font-sans transition-colors duration-[320ms] sm:gap-8 ${
                 navOnDark ? "text-white" : "text-black"
               }`}
               aria-label="Main navigation"
@@ -1272,8 +1423,12 @@ export default function Home() {
                       aria-pressed={isActive}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
-                      className="link-underline relative text-[11px] font-normal transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      transition={{
+                        duration: MOTION.duration.base,
+                        ease: EASE,
+                        delay: 0.26 + index * 0.045
+                      }}
+                      className="link-underline relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
                       onClick={() => setPackagesOpen(true)}
                     >
                       {item}
@@ -1293,8 +1448,12 @@ export default function Home() {
                       aria-current={isActive ? "page" : undefined}
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, ease: EASE, delay: 0.4 + index * 0.07 }}
-                      className="link-underline relative text-[11px] font-normal transition-opacity duration-300 hover:opacity-55 sm:text-sm"
+                      transition={{
+                        duration: MOTION.duration.base,
+                        ease: EASE,
+                        delay: 0.26 + index * 0.045
+                      }}
+                      className="link-underline relative text-[11px] font-normal transition-opacity duration-[320ms] hover:opacity-55 sm:text-sm"
                       onClick={() => setActiveNavItem(item.toLowerCase())}
                     >
                       {item}
@@ -1342,10 +1501,11 @@ export default function Home() {
               <div className="absolute bottom-7 left-1/2 z-10 w-[min(150vw,620px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[650px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <img
-                    src="/bilal-asif-portrait-2026-v4.png"
+                    src="/bilal-asif-portrait-2026-v4.webp"
                     alt="Bilal Asif, freelance website designer and digital growth partner"
                     className="portrait-image w-full object-contain"
                     loading="eager"
+                    decoding="async"
                   />
                 </motion.div>
               </div>
@@ -1370,7 +1530,7 @@ export default function Home() {
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.7 }}
-                transition={{ duration: 0.7, ease: EASE }}
+                transition={{ duration: MOTION.duration.reveal, ease: EASE }}
                 className="font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
               >
                 Freelance Digital Growth Partner
@@ -1382,19 +1542,19 @@ export default function Home() {
                     className="block text-black"
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
-                    transition={{ duration: 1, ease: EASE, delay: 0.08 }}
+                    transition={{ duration: MOTION.duration.slow, ease: EASE, delay: 0.06 }}
                   >
                     Grow Your
                   </motion.span>
                 </span>
                 <span className="block overflow-hidden pb-3">
                   <motion.span
-                    className="block text-ink/40"
+                    className="block"
                     initial={{ y: "110%" }}
                     animate={{ y: 0 }}
-                    transition={{ duration: 1, ease: EASE, delay: 0.18 }}
+                    transition={{ duration: MOTION.duration.slow, ease: EASE, delay: 0.14 }}
                   >
-                    Business Online
+                    <span className="business-online-pulse">Business Online</span>
                   </motion.span>
                 </span>
               </h1>
@@ -1411,8 +1571,9 @@ export default function Home() {
                   <Magnetic>
                     <a
                       href="#projects"
-                      className="inline-flex min-h-14 items-center justify-center border border-ink/25 px-8 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition-colors duration-300 hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                      className="crystal-border inline-flex min-h-14 items-center justify-center border border-ink px-8 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                     >
+                      <span aria-hidden="true" className="crystal-border-orbit" />
                       View My Work
                     </a>
                   </Magnetic>
@@ -1421,9 +1582,10 @@ export default function Home() {
                       href={contact.whatsapp}
                       target="_blank"
                       rel="noreferrer"
-                      className="group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink/15 px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/55 transition-all duration-300 hover:border-ink/40 hover:text-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                      className="crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-all duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                     >
-                      <span className="grid h-9 w-9 place-items-center rounded-full border border-ink/25 text-ink transition-colors duration-300 group-hover:bg-ink group-hover:text-white">
+                      <span aria-hidden="true" className="crystal-border-orbit" />
+                      <span className="grid h-9 w-9 place-items-center rounded-full border border-ink text-ink transition-colors duration-[320ms] group-hover:border-white group-hover:text-white">
                         <WhatsAppIcon className="h-4 w-4" />
                       </span>
                       Chat on WhatsApp
@@ -1436,8 +1598,8 @@ export default function Home() {
             <motion.div
               className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/40 sm:flex"
               style={{ x: "-50%" }}
-              animate={{ y: [0, 7, 0], opacity: [0.42, 0.8, 0.42] }}
-              transition={{ duration: 2.1, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ y: [0, 4, 0], opacity: [0.42, 0.72, 0.42] }}
+              transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
               aria-hidden="true"
             >
               <span className="text-[9px] font-medium uppercase tracking-[0.28em]">
@@ -1468,51 +1630,18 @@ export default function Home() {
               <Reveal delay={0.15} y={18} blur={2}>
                 <a
                   href="#contact"
-                  className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-normal text-ink/55 transition-colors duration-300 hover:text-ink sm:text-sm"
+                  className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase tracking-normal text-ink/55 transition-colors duration-[320ms] hover:text-ink sm:text-sm"
                 >
                   Start Your Project
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-out-expo group-hover:translate-x-1.5" />
+                  <ArrowRight className="h-4 w-4 transition-transform duration-[320ms] ease-out-expo group-hover:translate-x-1" />
                 </a>
               </Reveal>
             </div>
 
-            <motion.div
-              ref={heroScrollerRef}
-              initial={{ opacity: 0, y: 32, filter: "blur(6px)" }}
-              whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.9, ease: EASE }}
-              className="manual-hero-scroll project-deck-sticky relative -mx-5 mt-6 h-[370px] cursor-grab select-none overflow-x-auto overflow-y-visible py-8 active:cursor-grabbing sm:-mx-8 sm:mt-8 sm:h-[455px] sm:py-10 lg:-mx-12 lg:h-[530px] lg:py-12"
-              onScroll={(event) => handleHeroScroll(event.currentTarget)}
-              onPointerDown={startDragScroll}
-              onPointerMove={dragScroll}
-              onPointerUp={stopDragScroll}
-              onPointerCancel={stopDragScroll}
-              onPointerLeave={stopDragScroll}
-            >
-              <div className="flex w-max items-start -space-x-11 px-[12vw] sm:-space-x-14 sm:px-[10vw] lg:-space-x-16 lg:px-[8vw]">
-                {[...heroCards, ...heroCards, ...heroCards].map((item, index) => {
-                  return (
-                    <div
-                      key={`${item.cardIndex}-${index}`}
-                      data-hero-card-id={`${item.cardIndex}-${index}`}
-                      className={`hero-card relative h-[255px] w-[176px] shrink-0 overflow-hidden rounded-card sm:h-[325px] sm:w-[218px] lg:h-[380px] lg:w-[258px] ${item.hide}`}
-                      style={{
-                        "--card-y": `${item.top}px`,
-                        "--card-rotate": `${item.rotate}deg`,
-                        "--card-scale": item.scale,
-                        "--card-z": item.z
-                      } as CSSProperties}
-                    >
-                      <FastHeroMockup
-                        card={showcaseCards[item.cardIndex]}
-                        onOpen={setSelectedProject}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </motion.div>
+            <InfiniteCircularCarousel
+              onOpen={setSelectedProject}
+              reducedMotion={Boolean(reducedMotion)}
+            />
 
             <div className="relative z-[2] -mx-5 h-[190px] bg-white sm:-mx-8 sm:h-[210px] md:h-[68svh] md:bg-transparent lg:-mx-12">
               <div className="flex h-full min-h-0 items-center bg-white px-5 sm:px-8 md:sticky md:top-0 md:h-[34svh] md:translate-y-[34svh] lg:px-12">
@@ -1558,7 +1687,7 @@ export default function Home() {
                 <Reveal delay={0.12} y={18} blur={2}>
                   <a
                     href="#contact"
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-300 hover:border-white hover:bg-white hover:text-black"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/15 px-7 text-sm font-medium text-white/75 transition-colors duration-[320ms] hover:border-white hover:bg-white hover:text-black"
                   >
                     All services
                   </a>
@@ -1570,18 +1699,18 @@ export default function Home() {
                   <Reveal key={service.title} delay={index * 0.04} y={18} blur={0}>
                     <a
                       href="#contact"
-                      className="service-row group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-150 hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
+                      className="service-row group grid grid-cols-[2rem_1fr_auto] items-center gap-4 border-b border-white/15 px-5 py-6 transition-colors duration-[180ms] hover:bg-white sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
                     >
-                      <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-150 group-hover:text-black/55 sm:text-sm">
+                      <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm">
                         0{index + 1}
                       </span>
-                      <h3 className="service-row-heading font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-150 group-hover:text-black sm:text-3xl lg:text-4xl">
+                      <h3 className="service-row-heading font-sans text-2xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-[180ms] group-hover:text-black sm:text-3xl lg:text-4xl">
                         {service.title}
                       </h3>
-                      <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-150 group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
+                      <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-sm leading-6 text-white/50 transition-colors duration-[180ms] group-hover:text-black/65 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
                         {service.description}
                       </p>
-                      <ArrowUpRight className="service-row-arrow col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-150 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
+                      <ArrowUpRight className="service-row-arrow col-start-3 row-start-1 h-5 w-5 text-white transition-all duration-[180ms] ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-6 lg:w-6" />
                     </a>
                   </Reveal>
                 ))}
@@ -1593,6 +1722,7 @@ export default function Home() {
           <StackedScene
             id="process"
             layer={5}
+            deferExitOnMobile
             className="min-h-[100svh] scroll-mt-24 overflow-hidden rounded-t-[24px] bg-white px-5 py-20 shadow-[0_-22px_60px_rgba(0,0,0,0.18)] sm:px-8 sm:py-28 lg:px-12"
           >
             <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
@@ -1695,10 +1825,10 @@ export default function Home() {
               <Reveal delay={0.24} y={18} blur={2}>
                 <a
                   href={`mailto:${contact.email}?subject=Business%20growth%20project%20with%20Bilal`}
-                  className="group mt-10 inline-flex items-center gap-3 font-sans text-2xl font-extrabold tracking-normal text-white transition-colors duration-300 hover:text-white/70 sm:text-4xl"
+                  className="group mt-10 inline-flex items-center gap-3 font-sans text-2xl font-extrabold tracking-normal text-white transition-colors duration-[320ms] hover:text-white/70 sm:text-4xl"
                 >
                   {contact.email}
-                  <ArrowUpRight className="h-6 w-6 transition-transform duration-300 ease-out-expo group-hover:-translate-y-1 group-hover:translate-x-1 sm:h-8 sm:w-8" />
+                  <ArrowUpRight className="h-6 w-6 transition-transform duration-[320ms] ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-8 sm:w-8" />
                 </a>
               </Reveal>
 
@@ -1708,7 +1838,7 @@ export default function Home() {
                     href={contact.whatsapp}
                     target="_blank"
                     rel="noreferrer"
-                    className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-300 ease-out-expo hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-10"
+                    className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-[320ms] ease-out-expo hover:scale-[1.015] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-10"
                   >
                     <WhatsAppIcon />
                     Message on WhatsApp
@@ -1763,7 +1893,7 @@ export default function Home() {
                         rel={external ? "noreferrer" : undefined}
                         aria-label={item.label}
                         title={item.label}
-                        className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-all duration-300 hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
+                        className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-all duration-[320ms] hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
                       >
                         {item.icon}
                       </a>

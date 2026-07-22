@@ -33,7 +33,7 @@ const config: Config = {
         ]
       },
       transitionTimingFunction: {
-        "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)"
+        "out-expo": "cubic-bezier(0.22, 1, 0.36, 1)"
       }
     }
   },

@@ -12,7 +12,21 @@ import {
   useSpring
 } from "framer-motion";
 
-export const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
+export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+export const MOTION = {
+  duration: {
+    instant: 0.16,
+    fast: 0.24,
+    base: 0.42,
+    reveal: 0.68,
+    slow: 0.9
+  },
+  spring: {
+    interactive: { stiffness: 320, damping: 28, mass: 0.55 },
+    subtle: { stiffness: 220, damping: 26, mass: 0.65 }
+  }
+} as const;
 
 let lenisInstance: Lenis | null = null;
 
@@ -40,15 +54,16 @@ export function SmoothScroll() {
     const lenis = new Lenis({
       duration: 0.85,
       overscroll: false,
+      autoRaf: true,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
     });
     lenisInstance = lenis;
 
-    let frame = 0;
     let inputIdleTimer = 0;
     let inputActive = false;
     let hasPointerPosition = false;
     let activeServiceRow: HTMLElement | null = null;
+    let servicesInViewport = false;
     let pointerX = window.innerWidth / 2;
     let pointerY = window.innerHeight / 2;
 
@@ -75,12 +90,6 @@ export function SmoothScroll() {
       document.body.classList.remove("scroll-input-active");
       updateHoverAtPointer();
     };
-
-    const raf = (time: number) => {
-      lenis.raf(time);
-      frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
 
     const onClick = (event: MouseEvent) => {
       const anchor = (event.target as HTMLElement | null)?.closest?.(
@@ -110,7 +119,9 @@ export function SmoothScroll() {
       inputIdleTimer = window.setTimeout(releaseInputHoverGate, 48);
     };
 
-    const onLenisScroll = () => updateHoverAtPointer();
+    const onLenisScroll = () => {
+      if (servicesInViewport || activeServiceRow) updateHoverAtPointer();
+    };
 
     const trackPointer = (event: MouseEvent) => {
       pointerX = event.clientX;
@@ -121,14 +132,23 @@ export function SmoothScroll() {
 
     const removeVirtualScrollListener = lenis.on("virtual-scroll", onVirtualScroll);
     const removeScrollListener = lenis.on("scroll", onLenisScroll);
+    const servicesSection = document.getElementById("services");
+    const servicesObserver = new IntersectionObserver(
+      ([entry]) => {
+        servicesInViewport = Boolean(entry?.isIntersecting);
+        if (!servicesInViewport) clearForcedServiceHover();
+      },
+      { rootMargin: "20% 0px" }
+    );
+    if (servicesSection) servicesObserver.observe(servicesSection);
     window.addEventListener("mousemove", trackPointer);
 
     return () => {
-      cancelAnimationFrame(frame);
       window.clearTimeout(inputIdleTimer);
       document.removeEventListener("click", onClick);
       removeVirtualScrollListener();
       removeScrollListener();
+      servicesObserver.disconnect();
       window.removeEventListener("mousemove", trackPointer);
       document.body.classList.remove("scroll-input-active");
       clearForcedServiceHover();
@@ -143,9 +163,9 @@ export function SmoothScroll() {
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
-    stiffness: 180,
-    damping: 32,
-    restDelta: 0.001
+    ...MOTION.spring.subtle,
+    restDelta: 0.001,
+    restSpeed: 0.001
   });
 
   return (
@@ -161,8 +181,8 @@ export function Reveal({
   children,
   className,
   delay = 0,
-  y = 40,
-  blur = 6,
+  y = 24,
+  blur = 2,
   once = true
 }: {
   children: ReactNode;
@@ -175,11 +195,11 @@ export function Reveal({
 }) {
   return (
     <motion.div
-      className={className}
+      className={clsx("scroll-reveal-filter", className)}
       initial={{ opacity: 0, y, filter: `blur(${blur}px)` }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once, margin: "-80px" }}
-      transition={{ duration: 0.9, ease: EASE, delay }}
+      viewport={{ once, margin: "-12% 0px -8%" }}
+      transition={{ duration: MOTION.duration.reveal, ease: EASE, delay }}
     >
       {children}
     </motion.div>
@@ -224,15 +244,15 @@ export function TextReveal({
 
   return (
     <motion.span
-      className={clsx("block", className)}
-      initial={{ opacity: 0, y: 24, filter: "blur(4px)" }}
+      className={clsx("scroll-reveal-filter block", className)}
+      initial={{ opacity: 0, y: 18, filter: "blur(2px)" }}
       {...(immediate
         ? { animate: { opacity: 1, y: 0, filter: "blur(0px)" } }
         : {
             whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
             viewport: { once, margin: "-12%" }
           })}
-      transition={{ duration: 0.8, ease: EASE, delay }}
+      transition={{ duration: MOTION.duration.reveal, ease: EASE, delay }}
     >
       {segments.map((segment, index) => (
         <Fragment key={index}>
@@ -247,7 +267,7 @@ export function TextReveal({
 export function Tilt({
   children,
   className,
-  max = 7
+  max = 4
 }: {
   children: ReactNode;
   className?: string;
@@ -256,8 +276,8 @@ export function Tilt({
   const ref = useRef<HTMLDivElement>(null);
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
-  const springX = useSpring(rotateX, { stiffness: 220, damping: 20, mass: 0.5 });
-  const springY = useSpring(rotateY, { stiffness: 220, damping: 20, mass: 0.5 });
+  const springX = useSpring(rotateX, MOTION.spring.subtle);
+  const springY = useSpring(rotateY, MOTION.spring.subtle);
   const reduced = useReducedMotion();
 
   if (reduced) {
@@ -292,7 +312,7 @@ export function Tilt({
 export function Magnetic({
   children,
   className,
-  strength = 0.22
+  strength = 0.14
 }: {
   children: ReactNode;
   className?: string;
@@ -301,8 +321,8 @@ export function Magnetic({
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 260, damping: 18, mass: 0.4 });
-  const springY = useSpring(y, { stiffness: 260, damping: 18, mass: 0.4 });
+  const springX = useSpring(x, MOTION.spring.interactive);
+  const springY = useSpring(y, MOTION.spring.interactive);
   const reduced = useReducedMotion();
 
   if (reduced) {
