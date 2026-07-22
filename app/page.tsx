@@ -6,7 +6,7 @@ import type {
   PointerEvent,
   ReactNode
 } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   animate,
@@ -1214,7 +1214,7 @@ function ProjectDetailModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-detail-title"
-        className="relative grid max-h-full w-full max-w-6xl overflow-y-auto rounded-panel bg-white shadow-lift lg:grid-cols-[0.88fr_1.12fr]"
+        className="relative max-h-full w-full max-w-6xl overflow-hidden rounded-panel bg-white shadow-lift"
         initial={{ opacity: 0, scale: 0.96, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.97, y: 18 }}
@@ -1230,42 +1230,44 @@ function ProjectDetailModal({
           <X className="h-5 w-5" />
         </button>
 
-        <div className="relative min-h-[280px] overflow-hidden bg-paper sm:min-h-[380px] lg:min-h-[680px]">
-          <img
-            src={card.image}
-            alt={`${card.title} project visual`}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-          <p className="absolute bottom-6 left-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-white drop-shadow-md">
-            {card.eyebrow}
-          </p>
-        </div>
+        <div className="grid max-h-[calc(100svh-1.5rem)] overflow-y-auto overscroll-contain sm:max-h-[calc(100svh-3rem)] lg:max-h-[calc(100svh-5rem)] lg:grid-cols-[0.88fr_1.12fr]">
+          <div className="relative min-h-[280px] overflow-hidden bg-paper sm:min-h-[380px] lg:min-h-[680px]">
+            <img
+              src={card.image}
+              alt={`${card.title} project visual`}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
+            <p className="absolute bottom-6 left-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-white drop-shadow-md">
+              {card.eyebrow}
+            </p>
+          </div>
 
-        <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink/45">
-            Project case study
-          </p>
-          <h2
-            id="project-detail-title"
-            className={`${serifDisplay} mt-3 text-5xl leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl`}
-          >
-            {card.title}
-          </h2>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-ink/60">{card.description}</p>
+          <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink/45">
+              Project case study
+            </p>
+            <h2
+              id="project-detail-title"
+              className={`${serifDisplay} mt-3 text-5xl leading-[0.9] tracking-[-0.04em] text-ink sm:text-6xl`}
+            >
+              {card.title}
+            </h2>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-ink/60">{card.description}</p>
 
-          <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-            {[
-              ["Problem statement", details.problem],
-              ["User requirements", details.requirements],
-              ["Solution", details.solution],
-              ["Results", details.result]
-            ].map(([title, copy]) => (
-              <section key={title} className="border-t border-ink/10 pt-4">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">{title}</h3>
-                <p className="mt-3 text-sm leading-6 text-ink/60">{copy}</p>
-              </section>
-            ))}
+            <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
+              {[
+                ["Problem statement", details.problem],
+                ["User requirements", details.requirements],
+                ["Solution", details.solution],
+                ["Results", details.result]
+              ].map(([title, copy]) => (
+                <section key={title} className="border-t border-ink/10 pt-4">
+                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-ink/60">{copy}</p>
+                </section>
+              ))}
+            </div>
           </div>
         </div>
       </motion.article>
@@ -1483,9 +1485,42 @@ export default function Home() {
   const [packagesOpen, setPackagesOpen] = useState(false);
   const [navOnDark, setNavOnDark] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
+  const projectHistoryEntry = useRef(false);
 
   const portraitX = useMotionValueSpring(0);
   const portraitY = useMotionValueSpring(0);
+
+  const openProject = useCallback((card: (typeof showcaseCards)[number]) => {
+    if (!projectHistoryEntry.current) {
+      window.history.pushState(
+        { ...(window.history.state ?? {}), portfolioProjectDetail: true },
+        ""
+      );
+      projectHistoryEntry.current = true;
+    }
+    setSelectedProject(card);
+  }, []);
+
+  const closeProject = useCallback(() => {
+    const ownsHistoryEntry =
+      projectHistoryEntry.current && window.history.state?.portfolioProjectDetail === true;
+
+    projectHistoryEntry.current = false;
+    setSelectedProject(null);
+
+    if (ownsHistoryEntry) window.history.back();
+  }, []);
+
+  useEffect(() => {
+    const closeProjectOnBack = () => {
+      if (!projectHistoryEntry.current) return;
+      projectHistoryEntry.current = false;
+      setSelectedProject(null);
+    };
+
+    window.addEventListener("popstate", closeProjectOnBack);
+    return () => window.removeEventListener("popstate", closeProjectOnBack);
+  }, []);
 
   useEffect(() => {
     if (!selectedProject && !packagesOpen) return;
@@ -1495,7 +1530,7 @@ export default function Home() {
     getLenis()?.stop();
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedProject(null);
+        if (selectedProject) closeProject();
         setPackagesOpen(false);
       }
     };
@@ -1506,7 +1541,7 @@ export default function Home() {
       getLenis()?.start();
       window.removeEventListener("keydown", closeOnEscape);
     };
-  }, [selectedProject, packagesOpen]);
+  }, [closeProject, selectedProject, packagesOpen]);
 
   useEffect(() => {
     let frame = 0;
@@ -1574,7 +1609,7 @@ export default function Home() {
         <IntroSplash />
         <AnimatePresence>
           {selectedProject && (
-            <ProjectDetailModal card={selectedProject} onClose={() => setSelectedProject(null)} />
+            <ProjectDetailModal card={selectedProject} onClose={closeProject} />
           )}
           {packagesOpen && <PackagesModal onClose={() => setPackagesOpen(false)} />}
         </AnimatePresence>
@@ -1681,7 +1716,7 @@ export default function Home() {
                 <span className="inline-block">there</span>
               </h2>
 
-              <div className="absolute bottom-7 left-1/2 z-10 w-[min(150vw,620px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
+              <div className="absolute bottom-7 left-1/2 z-10 w-[min(140vw,580px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <img
                     src="/bilal-asif-portrait-2026-v4.webp"
@@ -1840,7 +1875,7 @@ export default function Home() {
             </div>
 
             <InfiniteStackedCarousel
-              onOpen={setSelectedProject}
+              onOpen={openProject}
               reducedMotion={Boolean(reducedMotion)}
             />
 
