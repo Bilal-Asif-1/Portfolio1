@@ -439,7 +439,6 @@ function useMotionValueSpring(initial: number) {
   };
 }
 
-const introCooldownMs = 20 * 60 * 1000;
 const introPhrases = [
   "比拉勒·阿西夫",
   "बिलाल आसिफ़",
@@ -457,17 +456,6 @@ function IntroSplash() {
   useEffect(() => {
     if (reducedMotion) return;
 
-    try {
-      const lastShownAt = Number(window.localStorage.getItem("introLastShownAt") ?? 0);
-      const shouldShow = !lastShownAt || Date.now() - lastShownAt > introCooldownMs;
-
-      if (!shouldShow) return;
-
-      window.localStorage.setItem("introLastShownAt", String(Date.now()));
-    } catch {
-      // If storage is blocked, still show the intro on a fresh page load.
-    }
-
     setText(introPhrases[0]);
     setExiting(false);
     setVisible(true);
@@ -478,7 +466,7 @@ function IntroSplash() {
 
     document.body.style.overflow = "hidden";
     getLenis()?.stop();
-    const phraseDuration = 500;
+    const phraseDuration = 190;
 
     const phraseTimers = introPhrases.slice(1).map((phrase, index) =>
       window.setTimeout(() => setText(phrase), phraseDuration * (index + 1))
@@ -492,7 +480,7 @@ function IntroSplash() {
       setVisible(false);
       document.body.style.overflow = "";
       getLenis()?.start();
-    }, phraseDuration * introPhrases.length + 250);
+    }, phraseDuration * introPhrases.length + 160);
 
     return () => {
       phraseTimers.forEach((timer) => window.clearTimeout(timer));
@@ -515,8 +503,8 @@ function IntroSplash() {
       <div
         className={
           text.startsWith("HI,")
-            ? `${serifDisplay} text-3xl tracking-[-0.02em] sm:text-5xl lg:text-6xl`
-            : "text-xl font-medium tracking-[-0.01em] sm:text-3xl lg:text-4xl"
+            ? `${serifDisplay} text-2xl tracking-[-0.02em] sm:text-4xl lg:text-5xl`
+            : "text-lg font-medium tracking-[-0.01em] sm:text-2xl lg:text-3xl"
         }
       >
         <motion.span
