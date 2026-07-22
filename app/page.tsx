@@ -1,6 +1,11 @@
 "use client";
 
-import type { CSSProperties, PointerEvent, ReactNode } from "react";
+import type {
+  CSSProperties,
+  MouseEvent as ReactMouseEvent,
+  PointerEvent,
+  ReactNode
+} from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
@@ -600,12 +605,14 @@ function InfiniteStackedCarousel({
   const isInView = useInView(stageRef, { amount: 0.3 });
   const wasOutsideViewport = useRef(true);
   const dragStartX = useRef(0);
+  const dragStartY = useRef(0);
   const dragStartRotation = useRef(0);
   const lastPointerX = useRef(0);
   const lastPointerTime = useRef(0);
   const releaseVelocity = useRef(0);
   const dragging = useRef(false);
   const didDrag = useRef(false);
+  const gestureAxis = useRef<"pending" | "horizontal" | "vertical">("pending");
   const rotationAnimation = useRef<ReturnType<typeof animate> | null>(null);
   const wheelTarget = useRef(rotation.get());
   const lastWheelTime = useRef(0);
@@ -747,21 +754,46 @@ function InfiniteStackedCarousel({
         stopRotationAnimation();
         dragging.current = true;
         didDrag.current = false;
+        gestureAxis.current = "pending";
         dragStartX.current = event.clientX;
+        dragStartY.current = event.clientY;
         dragStartRotation.current = rotation.get();
         lastPointerX.current = event.clientX;
         lastPointerTime.current = performance.now();
         releaseVelocity.current = 0;
-        event.currentTarget.setPointerCapture(event.pointerId);
       }}
       onPointerMove={(event) => {
         if (!dragging.current) return;
-        const distance = event.clientX - dragStartX.current;
-        if (Math.abs(distance) > 5) didDrag.current = true;
-        if (didDrag.current) event.preventDefault();
+        const distanceX = event.clientX - dragStartX.current;
+        const distanceY = event.clientY - dragStartY.current;
+
+        if (gestureAxis.current === "pending") {
+          if (
+            Math.abs(distanceY) > 6 &&
+            Math.abs(distanceY) > Math.abs(distanceX) * 1.15
+          ) {
+            gestureAxis.current = "vertical";
+            dragging.current = false;
+            return;
+          }
+
+          if (
+            Math.abs(distanceX) > 6 &&
+            Math.abs(distanceX) > Math.abs(distanceY) * 1.15
+          ) {
+            gestureAxis.current = "horizontal";
+            didDrag.current = true;
+            event.currentTarget.setPointerCapture(event.pointerId);
+          } else {
+            return;
+          }
+        }
+
+        if (gestureAxis.current !== "horizontal") return;
+        event.preventDefault();
 
         const cardTravel = Math.max(210, Math.min(window.innerWidth * 0.24, 390));
-        rotation.set(dragStartRotation.current - distance / cardTravel);
+        rotation.set(dragStartRotation.current - distanceX / cardTravel);
 
         const now = performance.now();
         const elapsed = Math.max(8, now - lastPointerTime.current);
@@ -997,6 +1029,43 @@ function StackedScene({
     ...pinHeightStyle
   } as CSSProperties;
 
+  const settleFadedScene = (event: ReactMouseEvent<HTMLElement>) => {
+    const activeOpacity = pinAtEnd ? pinnedExitOpacity.get() : exitOpacity.get();
+    if (activeOpacity >= 0.96 || activeOpacity <= 0.02 || !trackRef.current) return;
+
+    const trackBounds = trackRef.current.getBoundingClientRect();
+    const trackTop = trackBounds.top + window.scrollY;
+    const trackHeight = trackBounds.height;
+    let settlePosition: number;
+
+    if (pinAtEnd) {
+      const scrollableRange = Math.max(0, trackHeight - window.innerHeight);
+      settlePosition = trackTop + pinFadeStart * scrollableRange - 2;
+    } else if (long || mobileExitAtContentEnd) {
+      settlePosition = trackTop + trackHeight - window.innerHeight;
+    } else {
+      settlePosition = trackTop;
+    }
+
+    settlePosition = Math.max(0, settlePosition);
+    if (settlePosition >= window.scrollY - 2) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    const lenis = getLenis();
+    if (lenis) {
+      lenis.scrollTo(settlePosition, {
+        duration: 0.82,
+        force: true
+      });
+    } else {
+      window.scrollTo({
+        top: settlePosition,
+        behavior: reducedMotion ? "auto" : "smooth"
+      });
+    }
+  };
+
   return (
     <div
       ref={trackRef}
@@ -1010,6 +1079,7 @@ function StackedScene({
       <motion.section
         ref={sceneRef}
         id={id}
+        onClickCapture={settleFadedScene}
         className={`stacked-scene ${pinAtEnd ? "stacked-scene--pin-viewport" : ""} ${className}`}
         style={{
           opacity: pinAtEnd && linearExitFade ? pinnedExitOpacity : exitOpacity,
@@ -1605,7 +1675,7 @@ export default function Home() {
               }}
             >
               <h2
-                className="intro-hey-light pointer-events-none absolute inset-x-0 top-8 z-20 flex items-center justify-between pl-[5%] pr-[3%] text-[clamp(3.9rem,18vw,6rem)] leading-none text-ink sm:top-8 sm:pl-[10%] sm:pr-[7%] sm:text-[clamp(6rem,13vw,8.5rem)] lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]"
+                className="intro-hey-light pointer-events-none absolute inset-x-[-0.75rem] -top-1 z-20 flex items-center justify-between text-[clamp(3.9rem,18vw,6rem)] leading-none text-ink sm:inset-x-0 sm:top-8 sm:pl-[10%] sm:pr-[7%] sm:text-[clamp(6rem,13vw,8.5rem)] lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]"
               >
                 <span className="inline-block">Hey,</span>
                 <span className="inline-block">there</span>

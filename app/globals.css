@@ -424,7 +424,8 @@ body.scroll-input-active #services .service-row-arrow {
 .stacked-carousel {
   --stacked-carousel-step: 132px;
   touch-action: pan-y;
-  overscroll-behavior: contain;
+  overscroll-behavior-x: contain;
+  overscroll-behavior-y: auto;
 }
 
 @media (min-width: 768px) {
