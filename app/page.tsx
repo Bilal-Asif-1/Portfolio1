@@ -1266,7 +1266,7 @@ function ProjectDetailModal({
 function PackagesModal({ onClose }: { onClose: () => void }) {
   return (
     <motion.div
-      className="fixed inset-0 z-[160] overflow-y-auto bg-ink/45 p-2 backdrop-blur-sm sm:p-4"
+      className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden bg-ink/45 backdrop-blur-sm sm:p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -1277,7 +1277,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="packages-dialog-title"
-        className="relative mx-auto min-h-full w-full max-w-7xl overflow-hidden rounded-panel bg-white px-5 py-16 shadow-lift sm:px-8 sm:py-20 lg:px-12"
+        className="relative h-full min-w-0 w-full max-w-7xl overflow-hidden bg-white shadow-lift sm:h-auto sm:max-h-[calc(100svh-2rem)] sm:rounded-panel"
         initial={{ opacity: 0, y: 54, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 38, scale: 0.99 }}
@@ -1293,64 +1293,68 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
           <X className="h-5 w-5" />
         </button>
 
-        <div className="max-w-3xl pr-14">
-          <SectionLabel>Packages</SectionLabel>
-          <h2
-            id="packages-dialog-title"
-            className={`${serifDisplay} text-4xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-6xl`}
-          >
-            No fixed prices. Just the right package for your next stage.
-          </h2>
-        </div>
+        <div className="h-full min-w-0 overflow-y-auto overscroll-contain px-4 pb-8 pt-16 sm:max-h-[calc(100svh-2rem)] sm:px-8 sm:pb-10 sm:pt-20 lg:px-12">
+          <div className="max-w-3xl pr-12 sm:pr-14">
+            <SectionLabel>Packages</SectionLabel>
+            <h2
+              id="packages-dialog-title"
+              className={`${serifDisplay} text-3xl leading-[0.95] tracking-[-0.04em] text-ink sm:text-6xl`}
+            >
+              No fixed prices. Just the right package for your next stage.
+            </h2>
+          </div>
 
-        <div className="mt-10 grid gap-4 sm:mt-14 lg:grid-cols-3">
-          {packages.map((item, index) => {
-            const featured = index === 1;
-            return (
-              <article
-                key={item.title}
-                className={`flex h-full flex-col rounded-card border p-7 sm:p-8 ${
-                  featured
-                    ? "on-dark border-ink bg-ink text-white shadow-lift"
-                    : "border-ink/10 bg-white text-ink"
-                }`}
-              >
-                <h3 className={`${serifDisplay} text-3xl tracking-[-0.02em]`}>{item.title}</h3>
-                <p className={`mt-3 text-sm leading-7 ${featured ? "text-white/60" : "text-ink/60"}`}>
-                  {item.bestFor}
-                </p>
-                <a
-                  href={contact.whatsapp}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={`my-7 block rounded-xl border px-4 py-3 text-center text-sm font-semibold transition-colors duration-[320ms] ${
+          <div className="mt-8 grid min-w-0 gap-4 sm:mt-14 lg:grid-cols-3">
+            {packages.map((item, index) => {
+              const featured = index === 1;
+              return (
+                <article
+                  key={item.title}
+                  className={`flex min-w-0 h-full flex-col rounded-card border p-5 sm:p-8 ${
                     featured
-                      ? "border-white/15 bg-white/[0.06] text-white hover:bg-white hover:text-ink"
-                      : "border-ink/10 bg-ink/[0.03] text-ink hover:bg-ink hover:text-white"
+                      ? "on-dark border-ink bg-ink text-white shadow-lift"
+                      : "border-ink/10 bg-white text-ink"
                   }`}
                 >
-                  Contact for a custom package
-                </a>
-                <ul className="mt-auto space-y-3">
-                  {item.includes.map((feature) => (
-                    <li
-                      key={feature}
-                      className={`flex gap-3 text-sm font-medium ${
-                        featured ? "text-white/85" : "text-ink/75"
-                      }`}
-                    >
-                      <Check
-                        className={`mt-0.5 h-4 w-4 shrink-0 ${
-                          featured ? "text-white/60" : "text-ink/50"
+                  <h3 className={`${serifDisplay} break-words text-3xl tracking-[-0.02em]`}>
+                    {item.title}
+                  </h3>
+                  <p className={`mt-3 text-sm leading-7 ${featured ? "text-white/60" : "text-ink/60"}`}>
+                    {item.bestFor}
+                  </p>
+                  <a
+                    href={contact.whatsapp}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`my-7 block rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-colors duration-[320ms] sm:px-4 ${
+                      featured
+                        ? "border-white/15 bg-white/[0.06] text-white hover:bg-white hover:text-ink"
+                        : "border-ink/10 bg-ink/[0.03] text-ink hover:bg-ink hover:text-white"
+                    }`}
+                  >
+                    Contact for a custom package
+                  </a>
+                  <ul className="mt-auto space-y-3">
+                    {item.includes.map((feature) => (
+                      <li
+                        key={feature}
+                        className={`flex gap-3 text-sm font-medium ${
+                          featured ? "text-white/85" : "text-ink/75"
                         }`}
-                      />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            );
-          })}
+                      >
+                        <Check
+                          className={`mt-0.5 h-4 w-4 shrink-0 ${
+                            featured ? "text-white/60" : "text-ink/50"
+                          }`}
+                        />
+                        <span className="min-w-0">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </motion.section>
     </motion.div>
@@ -1403,35 +1407,60 @@ function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) 
 
 function ServiceItem({
   service,
-  index
+  index,
+  open,
+  onToggle,
+  onHover
 }: {
   service: (typeof services)[number];
   index: number;
+  open: boolean;
+  onToggle: () => void;
+  onHover: () => void;
 }) {
-  const [open, setOpen] = useState(false);
-
   return (
     <Reveal delay={index * 0.04} y={18} blur={0}>
-      <div className="border-b border-white/15">
+      <div
+        className={`overflow-hidden border-b transition-colors duration-[320ms] ${
+          open ? "border-black/10 bg-white" : "border-white/15"
+        }`}
+      >
         <button
           type="button"
-          className="service-row group grid h-[196px] w-full grid-cols-[2rem_1fr_auto] items-center gap-3 px-5 py-5 text-left transition-colors duration-[180ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 sm:h-auto sm:gap-4 sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12"
+          className={`service-row group grid h-[196px] w-full grid-cols-[2rem_1fr_auto] items-center gap-3 px-5 py-5 text-left transition-colors duration-[180ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 sm:h-auto sm:gap-4 sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12 ${
+            open ? "bg-white" : ""
+          }`}
           aria-expanded={open}
-          onClick={() => setOpen((value) => !value)}
+          onMouseEnter={onHover}
+          onClick={onToggle}
         >
-          <span className="service-row-number text-xs font-medium tabular-nums text-white/40 transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm">
+          <span
+            className={`service-row-number text-xs font-medium tabular-nums transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm ${
+              open ? "text-black/55" : "text-white/40"
+            }`}
+          >
             0{index + 1}
           </span>
-          <h3 className="service-row-heading font-sans text-xl font-extrabold leading-tight tracking-normal text-white transition-colors duration-[180ms] group-hover:text-black sm:text-3xl lg:text-4xl">
+          <h3
+            className={`service-row-heading font-sans text-xl font-extrabold leading-tight tracking-normal transition-colors duration-[180ms] group-hover:text-black sm:text-3xl lg:text-4xl ${
+              open ? "text-black" : "text-white"
+            }`}
+          >
             {service.title}
           </h3>
-          <p className="service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-[13px] leading-5 text-white/50 transition-colors duration-[180ms] group-hover:text-black/65 sm:text-sm sm:leading-6 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7">
+          <p
+            className={`service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-[13px] leading-5 transition-colors duration-[180ms] group-hover:text-black/65 sm:text-sm sm:leading-6 lg:col-span-1 lg:col-start-auto lg:row-start-auto lg:text-base lg:leading-7 ${
+              open ? "text-black/65" : "text-white/50"
+            }`}
+          >
             {service.description}
           </p>
           <motion.span
             animate={{ rotate: open ? 45 : 0 }}
             transition={{ duration: MOTION.duration.fast, ease: EASE }}
-            className="service-row-arrow col-start-3 row-start-1 grid h-8 w-8 place-items-center rounded-full border border-white/25 text-white transition-colors duration-[180ms] group-hover:border-black/25 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-9 lg:w-9"
+            className={`service-row-arrow col-start-3 row-start-1 grid h-8 w-8 place-items-center rounded-full border transition-colors duration-[180ms] group-hover:border-black/25 group-hover:text-black lg:col-start-auto lg:row-start-auto lg:h-9 lg:w-9 ${
+              open ? "border-black/25 text-black" : "border-white/25 text-white"
+            }`}
             aria-hidden="true"
           >
             <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
@@ -1445,14 +1474,14 @@ function ServiceItem({
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: MOTION.duration.base, ease: EASE }}
-              className="overflow-hidden"
+              className="overflow-hidden bg-white"
             >
               <div className="pb-8 pl-[3.25rem] pr-5 sm:pb-10 sm:pl-[5.5rem] sm:pr-8 lg:pl-[6.5rem] lg:pr-12">
-                <div className="grid max-w-5xl gap-4 border-t border-white/10 pt-6 sm:grid-cols-3 sm:gap-6">
+                <div className="grid max-w-5xl gap-4 border-t border-black/10 pt-6 sm:grid-cols-3 sm:gap-6">
                   {service.details.map((detail) => (
                     <p
                       key={detail}
-                      className="relative pl-4 text-sm leading-6 text-white/60 before:absolute before:left-0 before:top-[0.65rem] before:h-1 before:w-1 before:rounded-full before:bg-white/45 sm:leading-7"
+                      className="relative pl-4 text-sm leading-6 text-black/60 before:absolute before:left-0 before:top-[0.65rem] before:h-1 before:w-1 before:rounded-full before:bg-black/45 sm:leading-7"
                     >
                       {detail}
                     </p>
@@ -1473,6 +1502,7 @@ export default function Home() {
   const [packagesOpen, setPackagesOpen] = useState(false);
   const [navOnDark, setNavOnDark] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
+  const [openServiceIndex, setOpenServiceIndex] = useState<number | null>(null);
   const projectHistoryEntry = useRef(false);
 
   const portraitX = useMotionValueSpring(0);
@@ -1912,7 +1942,20 @@ export default function Home() {
 
               <div>
                 {services.map((service, index) => (
-                  <ServiceItem key={service.title} service={service} index={index} />
+                  <ServiceItem
+                    key={service.title}
+                    service={service}
+                    index={index}
+                    open={openServiceIndex === index}
+                    onToggle={() =>
+                      setOpenServiceIndex((current) => (current === index ? null : index))
+                    }
+                    onHover={() =>
+                      setOpenServiceIndex((current) =>
+                        current !== null && current !== index ? null : current
+                      )
+                    }
+                  />
                 ))}
                 <div className="h-24 bg-black sm:h-28" aria-hidden="true" />
               </div>
