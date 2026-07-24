@@ -17,9 +17,7 @@ const config: Config = {
         panel: "1.75rem"
       },
       boxShadow: {
-        card: "0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 24px rgba(17, 17, 17, 0.05)",
-        lift: "0 2px 4px rgba(17, 17, 17, 0.04), 0 20px 48px rgba(17, 17, 17, 0.10)",
-        deck: "0 10px 24px rgba(17, 17, 17, 0.12), 0 2px 6px rgba(17, 17, 17, 0.07)"
+        lift: "0 2px 4px rgba(17, 17, 17, 0.04), 0 20px 48px rgba(17, 17, 17, 0.10)"
       },
       fontFamily: {
         sans: [

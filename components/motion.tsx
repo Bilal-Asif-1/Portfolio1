@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import Lenis from "lenis";
 import clsx from "clsx";
@@ -62,6 +62,7 @@ export function SmoothCursor() {
     let dotY = 0;
     let previousFrameTime = performance.now();
     let hoveringInteractive = false;
+    let visible = false;
 
     const setInteractiveState = (interactive: boolean) => {
       if (interactive === hoveringInteractive) return;
@@ -75,6 +76,12 @@ export function SmoothCursor() {
       setInteractiveState(Boolean(target?.closest(CURSOR_INTERACTIVE_SELECTOR)));
     };
 
+    const startRendering = () => {
+      if (frame || !visible) return;
+      previousFrameTime = performance.now();
+      frame = window.requestAnimationFrame(renderCursor);
+    };
+
     const handlePointerMove = (event: PointerEvent) => {
       mouseX = event.clientX;
       mouseY = event.clientY;
@@ -83,15 +90,20 @@ export function SmoothCursor() {
         cursorY = mouseY;
         initialized = true;
       }
+      visible = true;
       cursor.classList.add("is-visible");
       setInteractiveState(
         Boolean((event.target as Element | null)?.closest?.(CURSOR_INTERACTIVE_SELECTOR))
       );
+      startRendering();
     };
 
     const hideCursor = () => {
+      visible = false;
       cursor.classList.remove("is-visible");
       setInteractiveState(false);
+      window.cancelAnimationFrame(frame);
+      frame = 0;
     };
 
     const renderCursor = (time: number) => {
@@ -114,15 +126,18 @@ export function SmoothCursor() {
       dotY += (dotTargetY - dotY) * dotFollow;
       cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) translate(-50%, -50%)`;
       dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0)`;
-      frame = window.requestAnimationFrame(renderCursor);
+      const stillMoving =
+        Math.abs(mouseX - cursorX) > 0.05 ||
+        Math.abs(mouseY - cursorY) > 0.05 ||
+        Math.abs(dotTargetX - dotX) > 0.05 ||
+        Math.abs(dotTargetY - dotY) > 0.05;
+      frame = stillMoving && visible ? window.requestAnimationFrame(renderCursor) : 0;
     };
 
     document.addEventListener("pointermove", handlePointerMove, { passive: true });
     document.documentElement.addEventListener("mouseleave", hideCursor);
     window.addEventListener("blur", hideCursor);
     window.addEventListener("scroll", updateInteractiveAtPointer, { passive: true });
-    frame = window.requestAnimationFrame(renderCursor);
-
     return () => {
       window.cancelAnimationFrame(frame);
       document.removeEventListener("pointermove", handlePointerMove);
@@ -342,109 +357,6 @@ export function Reveal({
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once, margin: "-12% 0px -8%" }}
       transition={{ duration: MOTION.duration.reveal, ease: EASE, delay }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-export type TextSegment = { text: string; className?: string };
-
-export function TextReveal({
-  segments,
-  className,
-  delay = 0,
-  stagger = 0.055,
-  once = true,
-  immediate = false
-}: {
-  segments: TextSegment[];
-  className?: string;
-  delay?: number;
-  stagger?: number;
-  once?: boolean;
-  /**
-   * Play on mount instead of on scroll into view. Use for content near the
-   * viewport edge on load (e.g. hero text), where whileInView may never fire.
-   */
-  immediate?: boolean;
-}) {
-  const reduced = useReducedMotion();
-
-  if (reduced) {
-    return (
-      <span className={className}>
-        {segments.map((segment, index) => (
-          <Fragment key={index}>
-            {index > 0 && " "}
-            <span className={segment.className}>{segment.text}</span>
-          </Fragment>
-        ))}
-      </span>
-    );
-  }
-
-  return (
-    <motion.span
-      className={clsx("scroll-reveal-filter block", className)}
-      initial={{ opacity: 0, y: 18, filter: "blur(2px)" }}
-      {...(immediate
-        ? { animate: { opacity: 1, y: 0, filter: "blur(0px)" } }
-        : {
-            whileInView: { opacity: 1, y: 0, filter: "blur(0px)" },
-            viewport: { once, margin: "-12%" }
-          })}
-      transition={{ duration: MOTION.duration.reveal, ease: EASE, delay }}
-    >
-      {segments.map((segment, index) => (
-        <Fragment key={index}>
-          {index > 0 && " "}
-          <span className={segment.className}>{segment.text}</span>
-        </Fragment>
-      ))}
-    </motion.span>
-  );
-}
-
-export function Tilt({
-  children,
-  className,
-  max = 4
-}: {
-  children: ReactNode;
-  className?: string;
-  max?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const springX = useSpring(rotateX, MOTION.spring.subtle);
-  const springY = useSpring(rotateY, MOTION.spring.subtle);
-  const reduced = useReducedMotion();
-
-  if (reduced) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      ref={ref}
-      className={className}
-      style={{ rotateX: springX, rotateY: springY, transformPerspective: 900 }}
-      onPointerMove={(event) => {
-        if (event.pointerType !== "mouse") return;
-        const el = ref.current;
-        if (!el) return;
-        const rect = el.getBoundingClientRect();
-        const px = (event.clientX - rect.left) / rect.width - 0.5;
-        const py = (event.clientY - rect.top) / rect.height - 0.5;
-        rotateY.set(px * 2 * max);
-        rotateX.set(-py * 2 * max);
-      }}
-      onPointerLeave={() => {
-        rotateX.set(0);
-        rotateY.set(0);
-      }}
     >
       {children}
     </motion.div>

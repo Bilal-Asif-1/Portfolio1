@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Bricolage_Grotesque, Hanken_Grotesk, JetBrains_Mono } from "next/font/google";
+import {
+  Bricolage_Grotesque,
+  Hanken_Grotesk,
+  JetBrains_Mono,
+  Petrona
+} from "next/font/google";
 import "./globals.css";
 
 const hankenGrotesk = Hanken_Grotesk({
@@ -21,6 +26,14 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
   variable: "--font-jetbrains-mono",
   weight: "variable"
+});
+
+const petrona = Petrona({
+  subsets: ["latin"],
+  weight: ["100", "300", "400"],
+  style: "italic",
+  variable: "--font-petrona",
+  display: "swap"
 });
 
 const siteUrl = "https://bilalasif.com";
@@ -94,7 +107,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable}`}
+      className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable} ${petrona.variable}`}
     >
       <body className="bg-white font-sans text-ink antialiased">{children}</body>
     </html>

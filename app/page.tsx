@@ -20,7 +20,7 @@ import {
   useSpring,
   useTransform
 } from "framer-motion";
-import { Petrona } from "next/font/google";
+import Image from "next/image";
 import {
   ArrowDown,
   ArrowRight,
@@ -41,394 +41,24 @@ import {
   SmoothCursor,
   SmoothScroll
 } from "@/components/motion";
+import { InstagramIcon, LinkedInIcon, WhatsAppIcon } from "@/components/icons";
+import {
+  APPROACH_STEPS,
+  CONTACT,
+  FAQS,
+  FEATURED_PROJECTS,
+  NAV_ITEMS,
+  PACKAGES,
+  PROFESSIONAL_SERVICE_SCHEMA,
+  PROJECT_DETAILS,
+  PROJECT_METRICS,
+  SERVICES
+} from "@/features/portfolio/data";
+import type { Project, Service } from "@/features/portfolio/types";
+import { IntroSplash } from "@/features/intro/intro-splash";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
 
-const petrona = Petrona({
-  subsets: ["latin"],
-  weight: ["100", "300", "400"],
-  style: "italic",
-  variable: "--font-petrona",
-  display: "swap"
-});
-
-const serifDisplay = `${petrona.className} italic font-thin`;
-
-function WhatsAppIcon({ className = "h-5 w-5" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className={`${className} fill-current`}>
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479s1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.693.625.712.226 1.36.194 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.981.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.029 6.988 2.895a9.825 9.825 0 0 1 2.895 6.993c-.003 5.45-4.437 9.884-9.887 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.304-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.481-8.413Z" />
-    </svg>
-  );
-}
-
-const contact = {
-  email: "bilalasif1024@gmail.com",
-  whatsapp: "https://wa.me/92307998854?text=Hi%20Bilal%2C%20I%20want%20to%20grow%20my%20business%20online.",
-  instagram: "https://www.instagram.com/bilal.asif__/",
-  linkedin: "https://www.linkedin.com/in/bilal-asif/"
-};
-
-// Match the navigation order to the actual vertical order of page sections.
-const navItems = ["Packages", "Projects", "Services", "Process"];
-
-const services = [
-  {
-    title: "Website Development",
-    description:
-      "Fast, responsive, SEO-friendly websites engineered to turn visitors into customers.",
-    details: [
-      "A focused website gives your business a credible home, explains the offer clearly and guides visitors toward calling, booking or buying.",
-      "Responsive layouts, strong performance and a clean SEO foundation make it easier to reach and convert customers across every device.",
-      "It delivers the best long-term value when content, security and key pages are kept current after launch."
-    ]
-  },
-  {
-    title: "Mobile App Development",
-    description:
-      "FlutterFlow-powered Android and iOS applications designed to scale with your business.",
-    details: [
-      "An app keeps your service close to customers through faster repeat actions, personalized experiences and useful notifications.",
-      "One thoughtfully planned product can serve both Android and iOS while remaining easier to improve as the business grows.",
-      "For simple information or occasional visits, a responsive website can be more efficient than asking customers to install an app."
-    ]
-  },
-  {
-    title: "SEO Services",
-    description:
-      "Improve search rankings, increase visibility and generate qualified leads.",
-    details: [
-      "SEO connects your pages with the searches potential customers already make, bringing in traffic with stronger intent.",
-      "Technical improvements, useful content and local optimization can compound into a dependable source of leads over time.",
-      "Results are rarely instant and sustainable growth needs consistent work rather than shortcuts that risk future rankings."
-    ]
-  },
-  {
-    title: "Digital Marketing",
-    description:
-      "Data-driven campaigns across Google, Facebook, Instagram, LinkedIn and YouTube.",
-    details: [
-      "A coordinated strategy keeps your message consistent while reaching customers across the channels they actually use.",
-      "Content, audience data and campaign insights work together to improve awareness, enquiries and repeat business.",
-      "Spreading effort across too many platforms can dilute results, so the strongest channels should be prioritized first."
-    ]
-  },
-  {
-    title: "Paid Advertising",
-    description:
-      "Google Ads and Meta Ads management focused relentlessly on return on investment.",
-    details: [
-      "Paid campaigns can place a relevant offer in front of high-intent customers quickly and generate measurable feedback from day one.",
-      "Clear targeting, persuasive creative and conversion tracking help direct budget toward the audiences and messages that perform.",
-      "Traffic slows when spending stops, so ads work best alongside a strong website, organic visibility and careful budget control."
-    ]
-  },
-  {
-    title: "Email Marketing & Automation",
-    description:
-      "Email automation, customer journeys, lead nurturing and CRM integration.",
-    details: [
-      "Automated email journeys follow up with leads, welcome customers and encourage repeat purchases without adding repetitive manual work.",
-      "Because the audience is owned by your business, communication is less dependent on changing social algorithms.",
-      "Good results still depend on permission, clean customer data and messages useful enough to avoid fatigue or unsubscribes."
-    ]
-  },
-  {
-    title: "Branding & Strategy",
-    description:
-      "Brand identity, positioning, digital strategy and practical growth planning.",
-    details: [
-      "Clear positioning helps customers understand who you serve, what makes the business different and why they should trust it.",
-      "A consistent visual and verbal system makes websites, campaigns and sales material feel connected and more memorable.",
-      "The strategy creates value only when the whole business applies it consistently instead of treating branding as a one-time logo exercise."
-    ]
-  },
-  {
-    title: "UI/UX Design",
-    description:
-      "Clear, intuitive interfaces that make websites and digital products easier to use and convert.",
-    details: [
-      "Thoughtful interface design reduces confusion and helps people complete important actions with fewer steps and less effort.",
-      "Clear hierarchy, accessible interactions and responsive behavior improve trust, usability and conversion across devices.",
-      "Visual polish alone is not enough; the strongest experience comes from understanding real users and validating important decisions."
-    ]
-  }
-];
-
-const projectMetrics = [
-  { value: "10+", label: "Projects delivered" },
-  { value: "95+", label: "Avg. Lighthouse score" },
-  { value: "4.9/5", label: "Client satisfaction" },
-  { value: "3yrs", label: "Digital growth experience" }
-];
-
-const showcaseCards = [
-  {
-    title: "Cocoa Crafted",
-    eyebrow: "Chocolate Website",
-    metric: "Online sweets",
-    description: "A warm ecommerce experience crafted to turn chocolate lovers into loyal customers.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #2a1712 0%, #6f3b25 48%, #f3c37a 100%)",
-    accent: "#f3c37a",
-    image: "/portfolio-cards/light/cocoa-crafted-mixed.jpg"
-  },
-  {
-    title: "Aqua Gallery",
-    eyebrow: "Aquarium Website",
-    metric: "Visitor journeys",
-    description: "A bright aquarium experience designed around discovery, calm and effortless visits.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #ffffff 0%, #dff8f6 55%, #8ad9c0 100%)",
-    accent: "#4eb9b2",
-    image: "/portfolio-cards/light/aqua-gallery-v2.jpg"
-  },
-  {
-    title: "Spice Table",
-    eyebrow: "Restaurant Site",
-    metric: "Table orders",
-    description: "A vibrant restaurant website built to make every dish irresistible and easy to order.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #b63225 0%, #ef624f 50%, #ffd86b 100%)",
-    accent: "#ffd86b",
-    image: "/portfolio-cards/light/spice-table-mixed.jpg"
-  },
-  {
-    title: "Pulse Fit",
-    eyebrow: "Fitness Landing",
-    metric: "New members",
-    description: "A focused fitness landing page that turns motivation into memberships and enquiries.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #101537 0%, #3024f5 55%, #8ad9c0 100%)",
-    accent: "#8ad9c0",
-    image: "/portfolio-cards/light/pulse-fit-mixed.jpg"
-  },
-  {
-    title: "Nest Realty",
-    eyebrow: "Real Estate Leads",
-    metric: "Buyer leads",
-    description: "A polished property experience that helps serious buyers find their perfect home.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #f7fbf8 0%, #8ad9c0 45%, #173f35 100%)",
-    accent: "#173f35",
-    image: "/portfolio-cards/light/nest-realty-mixed.jpg"
-  },
-  {
-    title: "Mode Market",
-    eyebrow: "Fashion Ecommerce",
-    metric: "Store sales",
-    description: "A clean fashion storefront made for smooth browsing, stronger trust and more sales.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #f8f8f8 0%, #f4d84e 48%, #111111 100%)",
-    accent: "#111111",
-    image: "/portfolio-cards/light/mode-market-mixed.jpg"
-  },
-  {
-    title: "Glow Dental",
-    eyebrow: "Clinic Website",
-    metric: "Patient leads",
-    description: "A calm clinic website that builds patient confidence before their first appointment.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #f8ffff 0%, #8ad9c0 48%, #3024f5 100%)",
-    accent: "#3024f5",
-    image: "/portfolio-cards/light/glow-dental-mixed.jpg"
-  },
-  {
-    title: "Azure Coast",
-    eyebrow: "Ocean Retreat",
-    metric: "Luxury stays",
-    description: "An airy coastal experience created to turn peaceful escapes into premium bookings.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #ffffff 0%, #eaf7ff 55%, #9fdcf2 100%)",
-    accent: "#74c4df",
-    image: "/portfolio-cards/light/azure-coast-v2.jpg"
-  },
-  {
-    title: "Paw Palace",
-    eyebrow: "Pet Care Booking",
-    metric: "New clients",
-    description: "A friendly pet care experience that makes trusted grooming simple to discover and book.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #fff8e1 0%, #f4d84e 44%, #8ad9c0 100%)",
-    accent: "#8ad9c0",
-    image: "/portfolio-cards/light/paw-palace-mixed.jpg"
-  },
-  {
-    title: "Cafe Noir",
-    eyebrow: "Coffee Shop Site",
-    metric: "Daily orders",
-    description: "An inviting cafe website that brings the atmosphere online and encourages daily orders.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #1a100d 0%, #5b3426 52%, #f4d84e 100%)",
-    accent: "#f4d84e",
-    image: "/portfolio-cards/light/cafe-noir-mixed.jpg"
-  },
-  {
-    title: "EduPro",
-    eyebrow: "Course Landing",
-    metric: "Enrollments",
-    description: "A clear course platform that helps learners understand the value and enroll faster.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #eff2ff 0%, #3024f5 48%, #111111 100%)",
-    accent: "#111111",
-    image: "/portfolio-cards/light/edupro-mixed.jpg"
-  },
-  {
-    title: "FreshFold",
-    eyebrow: "Laundry Service",
-    metric: "Pickup leads",
-    description: "A fresh local service website designed for quick pickup requests and repeat customers.",
-    textTone: "dark",
-    background: "linear-gradient(135deg, #ffffff 0%, #8ad9c0 50%, #173f35 100%)",
-    accent: "#173f35",
-    image: "/portfolio-cards/light/freshfold-mixed.jpg"
-  }
-];
-
-const heroCards = [3, 8, 0, 1, 2, 4, 7] as const;
-
-const projectDetails: Record<
-  string,
-  {
-    problem: string;
-    requirements: string;
-    solution: string;
-    result: string;
-  }
-> = {
-  "Cocoa Crafted": {
-    problem:
-      "The chocolate brand needed to feel premium online while making gifting and product discovery simple.",
-    requirements:
-      "A mobile-first store, clear gift categories, delivery information and product pages that build trust.",
-    solution:
-      "An editorial ecommerce experience with collection-led navigation, product storytelling and strong purchase calls to action.",
-    result:
-      "A clearer path from discovery to checkout, stronger premium positioning and better repeat-order potential."
-  },
-  "Aqua Gallery": {
-    problem:
-      "Visitors needed an easier way to discover exhibits, plan a visit and understand the aquarium experience.",
-    requirements:
-      "Simple visit planning, exhibit highlights, ticket calls to action and a calm visual experience across devices.",
-    solution:
-      "A bright content system that prioritizes key attractions, visit information and conversion-focused ticket journeys.",
-    result:
-      "Faster access to essential information, stronger visitor confidence and a smoother route to ticket booking."
-  },
-  "Spice Table": {
-    problem:
-      "The restaurant needed its food quality and atmosphere to translate online without slowing down ordering.",
-    requirements:
-      "A visual menu, location details, mobile ordering, reservations and search-friendly restaurant pages.",
-    solution:
-      "A vibrant restaurant experience with dish-led storytelling and direct paths to orders and table bookings.",
-    result:
-      "More appetizing product discovery, fewer steps to order and stronger local search visibility."
-  },
-  "Pulse Fit": {
-    problem:
-      "Potential members were interested but lacked a clear reason and simple next step to join the fitness program.",
-    requirements:
-      "Clear membership value, class information, trainer trust signals and an easy mobile enquiry flow.",
-    solution:
-      "A focused landing experience that connects fitness goals with programs, proof and high-intent membership calls to action.",
-    result:
-      "A more persuasive membership journey with clearer choices and stronger enquiry potential."
-  },
-  "Nest Realty": {
-    problem:
-      "Property buyers needed a polished way to explore listings and contact the right agent without friction.",
-    requirements:
-      "Searchable properties, clear location context, agent credibility and fast lead capture on mobile.",
-    solution:
-      "A clean property experience with focused listing content, lifestyle imagery and strategically placed enquiry actions.",
-    result:
-      "Higher-quality buyer journeys, stronger agent trust and easier conversion from browsing to enquiry."
-  },
-  "Azure Coast": {
-    problem:
-      "The retreat needed to communicate its premium atmosphere while making availability and booking feel effortless.",
-    requirements:
-      "Immersive accommodation pages, amenities, location context, availability prompts and mobile-first booking.",
-    solution:
-      "An airy hospitality experience combining editorial imagery with concise information and clear booking pathways.",
-    result:
-      "Stronger luxury positioning, better-informed guests and a shorter path from inspiration to reservation."
-  },
-  "Paw Palace": {
-    problem:
-      "Pet owners needed reassurance, transparent service choices and a convenient way to request grooming appointments.",
-    requirements:
-      "Service details, trust signals, pet-friendly branding, location information and quick appointment requests.",
-    solution:
-      "A warm booking experience that presents services clearly and keeps the appointment action visible throughout.",
-    result:
-      "Greater customer confidence, easier service selection and more direct booking opportunities."
-  }
-};
-
-const packages = [
-  {
-    title: "Starter Website",
-    bestFor: "For a new business that needs to look professional online.",
-    includes: ["Responsive website", "Contact buttons", "Basic on-page SEO", "Vercel deploy support"]
-  },
-  {
-    title: "Business Growth",
-    bestFor: "For local businesses that want more calls, bookings and leads.",
-    includes: ["Website or landing page", "Keyword research", "Local SEO structure", "Google and Meta ad plan"]
-  },
-  {
-    title: "Ecommerce Launch",
-    bestFor: "For shops, food brands and product businesses ready to sell online.",
-    includes: ["Storefront design", "Product page copy", "Conversion sections", "SEO-ready collections"]
-  }
-];
-
-const approachSteps = [
-  {
-    title: "Strategy first",
-    description:
-      "I start with your business goals, not a template. Every decision traces back to a number that matters."
-  },
-  {
-    title: "Designed to convert",
-    description:
-      "Beautiful is table stakes. I engineer experiences that turn attention into action and visitors into customers."
-  },
-  {
-    title: "Built to last",
-    description:
-      "Fast, accessible, maintainable code on modern frameworks, so your investment keeps performing for years."
-  },
-  {
-    title: "Optimised forever",
-    description:
-      "Launch is the starting line. I test, measure and refine so your results compound month over month."
-  }
-];
-
-const faqs = [
-  {
-    question: "How long does a typical project take?",
-    answer:
-      "Most business websites take around 2–6 weeks, while ecommerce stores and larger digital products may take longer. You will receive a clear timeline once the scope, content and required features are confirmed."
-  },
-  {
-    question: "Can you help my business rank on Google?",
-    answer:
-      "I can build the SEO foundation with keyword research, page structure, headings, metadata, local content and technical improvements that make your site easier for Google and customers to understand."
-  },
-  {
-    question: "Can I mix services across plans?",
-    answer:
-      "Yes. Packages are flexible, so I can combine the website, SEO, advertising, ecommerce or automation work that best matches your goals and current stage."
-  },
-  {
-    question: "Who owns the work you produce?",
-    answer:
-      "You own the approved final website, design assets and project files after the agreed payment is complete. Third-party tools, fonts and licensed assets remain subject to their own terms."
-  }
-];
+const serifDisplay = "font-petrona italic font-thin";
 
 function useMotionValueSpring(initial: number) {
   const value = useMotionValue(initial);
@@ -437,92 +67,6 @@ function useMotionValueSpring(initial: number) {
     set: (next: number) => value.set(next),
     spring
   };
-}
-
-const introPhrases = [
-  "比拉勒·阿西夫",
-  "बिलाल आसिफ़",
-  "ビラル・アシフ",
-  "Билал Асиф",
-  "بلال آصف"
-];
-
-function IntroSplash() {
-  const [visible, setVisible] = useState(false);
-  const [exiting, setExiting] = useState(false);
-  const [text, setText] = useState(introPhrases[0]);
-  const reducedMotion = useReducedMotion();
-
-  useEffect(() => {
-    if (reducedMotion) return;
-
-    setText(introPhrases[0]);
-    setExiting(false);
-    setVisible(true);
-  }, [reducedMotion]);
-
-  useEffect(() => {
-    if (!visible) return;
-
-    document.body.style.overflow = "hidden";
-    getLenis()?.stop();
-    const phraseDuration = 190;
-
-    const phraseTimers = introPhrases.slice(1).map((phrase, index) =>
-      window.setTimeout(() => setText(phrase), phraseDuration * (index + 1))
-    );
-
-    const exitTimer = window.setTimeout(
-      () => setExiting(true),
-      phraseDuration * introPhrases.length
-    );
-    const hideTimer = window.setTimeout(() => {
-      setVisible(false);
-      document.body.style.overflow = "";
-      getLenis()?.start();
-    }, phraseDuration * introPhrases.length + 160);
-
-    return () => {
-      phraseTimers.forEach((timer) => window.clearTimeout(timer));
-      window.clearTimeout(exitTimer);
-      window.clearTimeout(hideTimer);
-      document.body.style.overflow = "";
-      getLenis()?.start();
-    };
-  }, [visible]);
-
-  if (!visible) return null;
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[100] grid place-items-center bg-white px-6 text-center text-ink"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: exiting ? 0 : 1 }}
-      transition={{ duration: MOTION.duration.fast, ease: EASE }}
-    >
-      <div
-        className={
-          text.startsWith("HI,")
-            ? `${serifDisplay} text-2xl tracking-[-0.02em] sm:text-4xl lg:text-5xl`
-            : "text-lg font-medium tracking-[-0.01em] sm:text-2xl lg:text-3xl"
-        }
-      >
-        <motion.span
-          key={text}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: MOTION.duration.instant, ease: EASE }}
-          className={
-            text.startsWith("HI,")
-              ? "inline-block min-w-[12ch] leading-none"
-              : "inline-block min-w-[8ch] leading-tight"
-          }
-        >
-          {text}
-        </motion.span>
-      </div>
-    </motion.div>
-  );
 }
 
 function wrapCarouselDistance(value: number, total: number) {
@@ -544,7 +88,7 @@ function StackedProjectCard({
   rotation: MotionValue<number>;
   didDrag: { current: boolean };
   onCenter: (index: number) => void;
-  onOpen: (card: (typeof showcaseCards)[number]) => void;
+  onOpen: (card: Project) => void;
 }) {
   const position = useTransform(rotation, (value) =>
     wrapCarouselDistance(index - value, total)
@@ -573,7 +117,7 @@ function StackedProjectCard({
         if (!didDrag.current) onCenter(index);
       }}
     >
-      <FastHeroMockup card={showcaseCards[cardIndex]} onOpen={onOpen} />
+      <FastHeroMockup card={FEATURED_PROJECTS[cardIndex]} onOpen={onOpen} />
     </motion.div>
   );
 }
@@ -582,13 +126,13 @@ function InfiniteStackedCarousel({
   onOpen,
   reducedMotion
 }: {
-  onOpen: (card: (typeof showcaseCards)[number]) => void;
+  onOpen: (card: Project) => void;
   reducedMotion: boolean;
 }) {
   // Two sequences leave a full invisible card-width buffer at the wrap point,
   // so the loop stays seamless without rendering a third off-screen set.
-  const carouselCards = [...heroCards, ...heroCards];
-  const rotation = useMotionValue(heroCards.length + 3);
+  const carouselCards = [...FEATURED_PROJECTS, ...FEATURED_PROJECTS];
+  const rotation = useMotionValue(FEATURED_PROJECTS.length + 3);
   const stageRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(stageRef, { amount: 0.3 });
   const wasOutsideViewport = useRef(true);
@@ -725,7 +269,7 @@ function InfiniteStackedCarousel({
 
     stage.addEventListener("wheel", handleWheel, { passive: false });
     return () => stage.removeEventListener("wheel", handleWheel);
-  }, [reducedMotion]);
+  }, [reducedMotion, rotation]);
 
   return (
     <motion.div
@@ -794,10 +338,10 @@ function InfiniteStackedCarousel({
       onPointerCancel={finishDrag}
     >
       <div className="absolute inset-0">
-        {carouselCards.map((cardIndex, index) => (
+        {carouselCards.map((card, index) => (
           <StackedProjectCard
-            key={`${cardIndex}-${index}`}
-            cardIndex={cardIndex}
+            key={`${card.title}-${index}`}
+            cardIndex={index % FEATURED_PROJECTS.length}
             index={index}
             total={carouselCards.length}
             rotation={rotation}
@@ -837,18 +381,18 @@ function AnimatedMetricValue({ value, delay = 0 }: { value: string; delay?: numb
   const valueRef = useRef<HTMLElement>(null);
   const inView = useInView(valueRef, { once: true, amount: 0.6 });
   const reducedMotion = useReducedMotion();
-  const [displayValue, setDisplayValue] = useState("0");
 
   useEffect(() => {
-    if (!inView) return;
+    const element = valueRef.current;
+    if (!inView || !element) return;
     if (reducedMotion) {
-      setDisplayValue(value);
+      element.textContent = value;
       return;
     }
 
     const numberMatch = value.match(/\d+(?:\.\d+)?/);
     if (!numberMatch) {
-      setDisplayValue(value);
+      element.textContent = value;
       return;
     }
 
@@ -862,7 +406,7 @@ function AnimatedMetricValue({ value, delay = 0 }: { value: string; delay?: numb
       ease: EASE,
       onUpdate: (latest) => {
         const formatted = hasDecimal ? latest.toFixed(1) : Math.round(latest).toString();
-        setDisplayValue(`${prefix}${formatted}${suffix}`);
+        element.textContent = `${prefix}${formatted}${suffix}`;
       }
     });
 
@@ -874,7 +418,7 @@ function AnimatedMetricValue({ value, delay = 0 }: { value: string; delay?: numb
       ref={valueRef}
       className="metric-value order-1 text-[clamp(1.4rem,7vw,2.25rem)] font-extrabold leading-none tracking-normal text-black sm:text-5xl lg:text-6xl"
     >
-      {displayValue}
+      0
     </dd>
   );
 }
@@ -1091,20 +635,17 @@ function FastHeroMockup({
   card,
   onOpen
 }: {
-  card: (typeof showcaseCards)[number];
-  onOpen: (card: (typeof showcaseCards)[number]) => void;
+  card: Project;
+  onOpen: (card: Project) => void;
 }) {
-  if ("image" in card && card.image) {
-    const useDarkText = card.textTone === "dark";
-
-    return (
-      <div className={`group relative h-full w-full overflow-hidden ${useDarkText ? "bg-white text-ink" : "bg-ink text-white"}`}>
-        <img
+  return (
+      <div className="group relative h-full w-full overflow-hidden bg-white text-ink">
+        <Image
           src={card.image}
           alt={`${card.title} ${card.eyebrow} poster visual`}
-          className="h-full w-full object-cover"
-          loading="lazy"
-          decoding="async"
+          fill
+          sizes="(min-width: 1024px) 258px, (min-width: 640px) 218px, 176px"
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
@@ -1135,40 +676,6 @@ function FastHeroMockup({
           </button>
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div className="relative h-full w-full overflow-hidden" style={{ background: card.background }}>
-      <div className="relative flex h-full flex-col justify-between p-4 text-white sm:p-5">
-        <div>
-          <div className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/80" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/45" />
-          </div>
-          <p className="mt-7 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/70">
-            {card.eyebrow}
-          </p>
-          <h3 className="mt-2 max-w-[12rem] text-2xl font-semibold leading-none tracking-[-0.03em] sm:text-3xl">
-            {card.title}
-          </h3>
-        </div>
-
-        <div className="space-y-4">
-          <div className="h-3 w-24 rounded-full" style={{ backgroundColor: card.accent }} />
-          <div className="grid grid-cols-3 gap-2">
-            {[0, 1, 2].map((item) => (
-              <div
-                key={item}
-                className="aspect-square rounded-xl bg-white/18"
-                style={item === 1 ? { backgroundColor: card.accent } : undefined}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -1176,10 +683,11 @@ function ProjectDetailModal({
   card,
   onClose
 }: {
-  card: (typeof showcaseCards)[number];
+  card: Project;
   onClose: () => void;
 }) {
-  const details = projectDetails[card.title] ?? {
+  const dialogRef = useDialogFocus<HTMLElement>();
+  const details = PROJECT_DETAILS[card.title] ?? {
     problem: `The business needed a clearer digital experience that could communicate its value and convert attention into ${card.metric.toLowerCase()}.`,
     requirements:
       "A fast mobile experience, clear information architecture, strong trust signals and an obvious next action.",
@@ -1199,6 +707,8 @@ function ProjectDetailModal({
       onClick={onClose}
     >
       <motion.article
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="project-detail-title"
@@ -1210,6 +720,7 @@ function ProjectDetailModal({
         onClick={(event) => event.stopPropagation()}
       >
         <button
+          data-dialog-close
           type="button"
           className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/40"
           aria-label="Close project details"
@@ -1220,10 +731,12 @@ function ProjectDetailModal({
 
         <div className="grid max-h-[calc(100svh-1.5rem)] overflow-y-auto overscroll-contain sm:max-h-[calc(100svh-3rem)] lg:max-h-[calc(100svh-5rem)] lg:grid-cols-[0.88fr_1.12fr]">
           <div className="relative min-h-[280px] overflow-hidden bg-paper sm:min-h-[380px] lg:min-h-[680px]">
-            <img
+            <Image
               src={card.image}
               alt={`${card.title} project visual`}
-              className="absolute inset-0 h-full w-full object-cover"
+              fill
+              sizes="(min-width: 1024px) 44vw, 100vw"
+              className="object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
             <p className="absolute bottom-6 left-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-white drop-shadow-md">
@@ -1264,6 +777,7 @@ function ProjectDetailModal({
 }
 
 function PackagesModal({ onClose }: { onClose: () => void }) {
+  const dialogRef = useDialogFocus<HTMLElement>();
   return (
     <motion.div
       className="fixed inset-0 z-[160] flex items-center justify-center overflow-hidden bg-ink/45 backdrop-blur-sm sm:p-4"
@@ -1274,6 +788,8 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
       onClick={onClose}
     >
       <motion.section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="packages-dialog-title"
@@ -1285,6 +801,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
         onClick={(event) => event.stopPropagation()}
       >
         <button
+          data-dialog-close
           type="button"
           className="absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/30 sm:right-6 sm:top-6"
           aria-label="Close packages"
@@ -1305,7 +822,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <div className="mt-8 grid min-w-0 gap-4 sm:mt-14 lg:grid-cols-3">
-            {packages.map((item, index) => {
+            {PACKAGES.map((item, index) => {
               const featured = index === 1;
               return (
                 <article
@@ -1323,7 +840,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
                     {item.bestFor}
                   </p>
                   <a
-                    href={contact.whatsapp}
+                    href={CONTACT.whatsapp}
                     target="_blank"
                     rel="noreferrer"
                     className={`my-7 block rounded-xl border px-3 py-3 text-center text-sm font-semibold transition-colors duration-[320ms] sm:px-4 ${
@@ -1361,7 +878,7 @@ function PackagesModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function FaqItem({ faq, index }: { faq: (typeof faqs)[number]; index: number }) {
+function FaqItem({ faq, index }: { faq: (typeof FAQS)[number]; index: number }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -1412,7 +929,7 @@ function ServiceItem({
   onToggle,
   onHover
 }: {
-  service: (typeof services)[number];
+  service: Service;
   index: number;
   open: boolean;
   onToggle: (target: HTMLButtonElement) => void;
@@ -1498,7 +1015,7 @@ function ServiceItem({
 
 export default function Home() {
   const reducedMotion = useReducedMotion();
-  const [selectedProject, setSelectedProject] = useState<(typeof showcaseCards)[number] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [packagesOpen, setPackagesOpen] = useState(false);
   const [navOnDark, setNavOnDark] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
@@ -1603,7 +1120,7 @@ export default function Home() {
     []
   );
 
-  const openProject = useCallback((card: (typeof showcaseCards)[number]) => {
+  const openProject = useCallback((card: Project) => {
     if (!projectHistoryEntry.current) {
       window.history.pushState(
         { ...(window.history.state ?? {}), portfolioProjectDetail: true },
@@ -1695,23 +1212,6 @@ export default function Home() {
     };
   }, []);
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    name: "Bilal Asif",
-    url: "https://bilalasif.com",
-    email: contact.email,
-    areaServed: ["United States", "Europe"],
-    sameAs: [contact.instagram, contact.linkedin],
-    serviceType: [
-      "Website design for small businesses",
-      "SEO services for small businesses",
-      "Google Ads landing pages",
-      "Ecommerce website development",
-      "Digital marketing for restaurants"
-    ]
-  };
-
   return (
     <MotionConfig reducedMotion="user">
       <main className="relative min-h-screen bg-white text-ink">
@@ -1729,7 +1229,7 @@ export default function Home() {
         <div className="noise" aria-hidden="true" />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(PROFESSIONAL_SERVICE_SCHEMA) }}
         />
 
         <header className="pointer-events-none fixed inset-x-0 top-0 z-40 px-3 pt-4 sm:px-6">
@@ -1743,7 +1243,7 @@ export default function Home() {
               aria-label="Main navigation"
             >
               <div className="flex items-center justify-center gap-3 sm:gap-8">
-                {[...navItems, "Contact"].map((item, index) => {
+                {[...NAV_ITEMS, "Contact"].map((item, index) => {
                   const isActive =
                     item === "Packages" ? packagesOpen : activeNavItem === item.toLowerCase();
 
@@ -1822,21 +1322,23 @@ export default function Home() {
                 portraitY.set(0);
               }}
             >
-              <h2
+              <p
                 className="intro-hey-light pointer-events-none absolute inset-x-[-0.75rem] -top-1 z-20 flex items-center justify-between text-[clamp(3.9rem,18vw,6rem)] leading-none text-ink sm:inset-x-0 sm:top-8 sm:pl-[10%] sm:pr-[7%] sm:text-[clamp(6rem,13vw,8.5rem)] lg:pl-[16%] lg:pr-[11%] lg:text-[9rem]"
               >
                 <span className="inline-block">Hey,</span>
                 <span className="inline-block">there</span>
-              </h2>
+              </p>
 
               <div className="absolute bottom-7 left-1/2 z-10 w-[min(140vw,580px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
-                  <img
+                  <Image
                     src="/bilal-asif-portrait-2026-v4.webp"
                     alt="Bilal Asif, freelance website designer and digital growth partner"
+                    width={1254}
+                    height={1254}
+                    priority
+                    sizes="(min-width: 1024px) 700px, (min-width: 640px) min(115vw, 760px), min(140vw, 580px)"
                     className="portrait-image w-full object-contain"
-                    loading="eager"
-                    decoding="async"
                   />
                 </motion.div>
               </div>
@@ -1928,7 +1430,7 @@ export default function Home() {
                   </Magnetic>
                   <Magnetic>
                     <a
-                      href={contact.whatsapp}
+                      href={CONTACT.whatsapp}
                       target="_blank"
                       rel="noreferrer"
                       className="crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-all duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
@@ -1996,7 +1498,7 @@ export default function Home() {
               <div className="flex h-full min-h-0 items-center bg-transparent px-5 sm:px-8 md:sticky md:top-0 md:h-[24svh] md:translate-y-[12svh] lg:px-12">
                 <Reveal y={18} blur={2} className="w-full">
                   <dl className="grid w-full grid-cols-4 py-5 sm:py-7 lg:py-6">
-                    {projectMetrics.map((metric, index) => (
+                    {PROJECT_METRICS.map((metric, index) => (
                       <div
                         key={metric.label}
                         className="flex min-w-0 flex-col items-center justify-center px-1 py-3 text-center sm:min-h-28 sm:px-4 sm:py-4 lg:min-h-36 lg:px-12"
@@ -2036,7 +1538,7 @@ export default function Home() {
               </div>
 
               <div>
-                {services.map((service, index) => (
+                {SERVICES.map((service, index) => (
                   <ServiceItem
                     key={service.title}
                     service={service}
@@ -2078,7 +1580,7 @@ export default function Home() {
               </div>
 
               <div className="space-y-9 lg:pt-8">
-                {approachSteps.map((step, index) => (
+                {APPROACH_STEPS.map((step, index) => (
                   <Reveal key={step.title} delay={index * 0.08} y={22} blur={2}>
                     <div className="grid grid-cols-[2rem_1fr] gap-4 sm:grid-cols-[2.5rem_1fr] sm:gap-6">
                       <span className="pt-1 text-sm font-medium tabular-nums text-ink/30 sm:text-base">
@@ -2118,7 +1620,7 @@ export default function Home() {
               </Reveal>
 
               <div className="mx-auto mt-14 max-w-3xl border-t border-white/15 sm:mt-20">
-                {faqs.map((faq, index) => (
+                {FAQS.map((faq, index) => (
                   <FaqItem key={faq.question} faq={faq} index={index} />
                 ))}
               </div>
@@ -2156,10 +1658,10 @@ export default function Home() {
 
               <Reveal delay={0.24} y={18} blur={2}>
                 <a
-                  href={`mailto:${contact.email}?subject=Business%20growth%20project%20with%20Bilal`}
+                  href={`mailto:${CONTACT.email}?subject=Business%20growth%20project%20with%20Bilal`}
                   className="group mt-10 inline-flex items-center gap-3 font-sans text-2xl font-extrabold tracking-normal text-white transition-colors duration-[320ms] hover:text-white/70 sm:text-4xl"
                 >
-                  {contact.email}
+                  {CONTACT.email}
                   <ArrowUpRight className="h-6 w-6 transition-transform duration-[320ms] ease-out-expo group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-8 sm:w-8" />
                 </a>
               </Reveal>
@@ -2167,7 +1669,7 @@ export default function Home() {
               <Reveal delay={0.32} y={18} blur={2}>
                 <Magnetic>
                   <a
-                    href={contact.whatsapp}
+                    href={CONTACT.whatsapp}
                     target="_blank"
                     rel="noreferrer"
                     className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-[320ms] ease-out-expo hover:scale-[1.015] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:px-10"
@@ -2183,36 +1685,22 @@ export default function Home() {
                   {[
                     {
                       label: "WhatsApp",
-                      href: contact.whatsapp,
+                      href: CONTACT.whatsapp,
                       icon: <WhatsAppIcon />
                     },
                     {
                       label: "Instagram",
-                      href: contact.instagram,
-                      icon: (
-                        <img
-                          src="https://cdn.simpleicons.org/instagram/FFFFFF"
-                          alt=""
-                          className="h-5 w-5 group-hover:invert"
-                        />
-                      )
+                      href: CONTACT.instagram,
+                      icon: <InstagramIcon />
                     },
                     {
                       label: "LinkedIn",
-                      href: contact.linkedin,
-                      icon: (
-                        <svg
-                          viewBox="0 0 24 24"
-                          aria-hidden="true"
-                          className="h-5 w-5 fill-current"
-                        >
-                          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286ZM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065Zm1.782 13.019H3.555V9h3.564v11.452ZM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003Z" />
-                        </svg>
-                      )
+                      href: CONTACT.linkedin,
+                      icon: <LinkedInIcon />
                     },
                     {
                       label: "Email",
-                      href: `mailto:${contact.email}`,
+                      href: `mailto:${CONTACT.email}`,
                       icon: <Mail className="h-5 w-5" />
                     }
                   ].map((item) => {
