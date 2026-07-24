@@ -1415,8 +1415,8 @@ function ServiceItem({
   service: (typeof services)[number];
   index: number;
   open: boolean;
-  onToggle: () => void;
-  onHover: () => void;
+  onToggle: (target: HTMLButtonElement) => void;
+  onHover: (target: HTMLButtonElement) => void;
 }) {
   return (
     <Reveal delay={index * 0.04} y={18} blur={0}>
@@ -1431,8 +1431,8 @@ function ServiceItem({
             open ? "bg-white" : ""
           }`}
           aria-expanded={open}
-          onMouseEnter={onHover}
-          onClick={onToggle}
+          onMouseEnter={(event) => onHover(event.currentTarget)}
+          onClick={(event) => onToggle(event.currentTarget)}
         >
           <span
             className={`service-row-number text-xs font-medium tabular-nums transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm ${
@@ -1477,7 +1477,7 @@ function ServiceItem({
               className="overflow-hidden bg-white"
             >
               <div className="pb-8 pl-[3.25rem] pr-5 sm:pb-10 sm:pl-[5.5rem] sm:pr-8 lg:pl-[6.5rem] lg:pr-12">
-                <div className="grid max-w-5xl gap-4 border-t border-black/10 pt-6 sm:grid-cols-3 sm:gap-6">
+                <div className="grid w-full gap-5 border-t border-black/10 pt-6 sm:grid-cols-3 sm:gap-8 lg:gap-12">
                   {service.details.map((detail) => (
                     <p
                       key={detail}
@@ -1504,9 +1504,104 @@ export default function Home() {
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
   const [openServiceIndex, setOpenServiceIndex] = useState<number | null>(null);
   const projectHistoryEntry = useRef(false);
+  const serviceAnchorFrame = useRef<number | null>(null);
 
   const portraitX = useMotionValueSpring(0);
   const portraitY = useMotionValueSpring(0);
+
+  const scrollImmediatelyBy = useCallback((delta: number) => {
+    if (Math.abs(delta) <= 0.25) return;
+
+    const nextScrollTop = Math.max(0, window.scrollY + delta);
+    const lenis = getLenis();
+
+    if (lenis) {
+      lenis.scrollTo(nextScrollTop, { immediate: true, force: true });
+    } else {
+      window.scrollTo({ top: nextScrollTop, behavior: "auto" });
+    }
+  }, []);
+
+  const handleServiceToggle = useCallback(
+    (index: number, target: HTMLButtonElement) => {
+      if (serviceAnchorFrame.current !== null) {
+        window.cancelAnimationFrame(serviceAnchorFrame.current);
+        serviceAnchorFrame.current = null;
+      }
+
+      if (openServiceIndex === index) {
+        setOpenServiceIndex(null);
+        return;
+      }
+
+      const serviceCard = target.parentElement;
+      setOpenServiceIndex(index);
+      if (!serviceCard) return;
+
+      const startedAt = window.performance.now();
+      const keepExpandedCardVisible = (now: number) => {
+        const bounds = serviceCard.getBoundingClientRect();
+        const viewportBottom = window.innerHeight - 24;
+
+        if (bounds.bottom > viewportBottom) {
+          scrollImmediatelyBy(bounds.bottom - viewportBottom);
+        }
+
+        if (now - startedAt < 560) {
+          serviceAnchorFrame.current = window.requestAnimationFrame(
+            keepExpandedCardVisible
+          );
+        } else {
+          serviceAnchorFrame.current = null;
+        }
+      };
+
+      serviceAnchorFrame.current = window.requestAnimationFrame(keepExpandedCardVisible);
+    },
+    [openServiceIndex, scrollImmediatelyBy]
+  );
+
+  const handleServiceHover = useCallback(
+    (index: number, target: HTMLButtonElement) => {
+      if (openServiceIndex === null || openServiceIndex === index) return;
+
+      if (serviceAnchorFrame.current !== null) {
+        window.cancelAnimationFrame(serviceAnchorFrame.current);
+      }
+
+      const anchoredTop = target.getBoundingClientRect().top;
+      const startedAt = window.performance.now();
+      setOpenServiceIndex(null);
+
+      const maintainPointerAnchor = (now: number) => {
+        const topDelta = target.getBoundingClientRect().top - anchoredTop;
+
+        scrollImmediatelyBy(topDelta);
+
+        if (now - startedAt < 520) {
+          serviceAnchorFrame.current = window.requestAnimationFrame(
+            maintainPointerAnchor
+          );
+        } else {
+          serviceAnchorFrame.current = null;
+        }
+      };
+
+      serviceAnchorFrame.current = window.requestAnimationFrame(
+        maintainPointerAnchor
+      );
+    },
+    [openServiceIndex, scrollImmediatelyBy]
+  );
+
+  useEffect(
+    () => () => {
+      if (serviceAnchorFrame.current !== null) {
+        window.cancelAnimationFrame(serviceAnchorFrame.current);
+      }
+    },
+    []
+  );
 
   const openProject = useCallback((card: (typeof showcaseCards)[number]) => {
     if (!projectHistoryEntry.current) {
@@ -1947,14 +2042,8 @@ export default function Home() {
                     service={service}
                     index={index}
                     open={openServiceIndex === index}
-                    onToggle={() =>
-                      setOpenServiceIndex((current) => (current === index ? null : index))
-                    }
-                    onHover={() =>
-                      setOpenServiceIndex((current) =>
-                        current !== null && current !== index ? null : current
-                      )
-                    }
+                    onToggle={(target) => handleServiceToggle(index, target)}
+                    onHover={(target) => handleServiceHover(index, target)}
                   />
                 ))}
                 <div className="h-24 bg-black sm:h-28" aria-hidden="true" />
