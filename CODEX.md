@@ -120,9 +120,9 @@ navigation item opens the existing packages modal.
 ## Contact Details
 
 - Email: `bilalasif1024@gmail.com`
-- WhatsApp: `+92307998854`
+- WhatsApp: `+923207998854`
 - Instagram: `https://www.instagram.com/bilal.asif__/`
-- LinkedIn: `https://www.linkedin.com/in/bilal-asif/`
+- LinkedIn: `https://www.linkedin.com/in/bilal-asif-034272320/`
 
 ## Do Not Restore
 
@@ -134,4 +134,3 @@ navigation item opens the existing packages modal.
 - Large footer copy listing every tool.
 - USA/Europe serving tagline.
 - Automatic or sound-enabled project carousel.
-

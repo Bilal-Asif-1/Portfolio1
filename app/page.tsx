@@ -1374,7 +1374,7 @@ export default function Home() {
 
           <StackedScene
             layer={2}
-            className="relative flex min-h-[100svh] items-center overflow-hidden bg-transparent px-5 py-20 text-ink sm:px-8 sm:py-24 lg:px-12"
+            className="growth-hero relative flex min-h-[100svh] items-center overflow-hidden bg-transparent px-5 py-20 text-ink sm:px-8 sm:py-24 lg:px-12"
           >
             <div className="relative z-10 mx-auto w-full max-w-7xl text-center">
               <motion.p
@@ -1382,12 +1382,12 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.7 }}
                 transition={{ duration: MOTION.duration.reveal, ease: EASE }}
-                className="font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
+                className="growth-hero-kicker font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
               >
                 Freelance Digital Growth Partner
               </motion.p>
 
-              <h1 className="font-sans text-5xl font-semibold leading-[0.86] tracking-normal sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[9.5rem]">
+              <h1 className="growth-hero-title font-sans text-5xl font-semibold leading-[0.86] tracking-normal sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[9.5rem]">
                 <span className="block overflow-hidden pb-2">
                   <motion.span
                     className="block text-black"
@@ -1411,18 +1411,18 @@ export default function Home() {
               </h1>
 
               <Reveal delay={0.3} y={22} blur={3}>
-                <p className="mx-auto mt-7 max-w-3xl text-base leading-7 text-ink/60 sm:text-lg sm:leading-8">
+                <p className="growth-hero-copy mx-auto mt-7 max-w-3xl text-base leading-7 text-ink/60 sm:text-lg sm:leading-8">
                   I help small businesses in the USA &amp; Europe turn clicks into customers through
                   websites, e-commerce, SEO, and paid ads. Friendly, reliable, and results-driven.
                 </p>
               </Reveal>
 
               <Reveal delay={0.42} y={20} blur={2}>
-                <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+                <div className="growth-hero-actions mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
                   <Magnetic>
                     <a
                       href="#projects"
-                      className="crystal-border inline-flex min-h-14 items-center justify-center border border-ink px-8 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                      className="growth-hero-button crystal-border inline-flex min-h-14 items-center justify-center border border-ink px-8 text-xs font-semibold uppercase tracking-[0.2em] text-ink transition-colors duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                     >
                       <span aria-hidden="true" className="crystal-border-orbit" />
                       View My Work
@@ -1433,7 +1433,7 @@ export default function Home() {
                       href={CONTACT.whatsapp}
                       target="_blank"
                       rel="noreferrer"
-                      className="crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-all duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+                      className="growth-hero-button crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-all duration-[320ms] hover:bg-ink hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
                     >
                       <span aria-hidden="true" className="crystal-border-orbit" />
                       <span className="grid h-9 w-9 place-items-center rounded-full border border-ink text-ink transition-colors duration-[320ms] group-hover:border-white group-hover:text-white">
@@ -1447,7 +1447,7 @@ export default function Home() {
             </div>
 
             <motion.div
-              className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/40 sm:flex"
+              className="growth-hero-scroll-cue absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/40 sm:flex"
               style={{ x: "-50%" }}
               animate={{ y: [0, 4, 0], opacity: [0.42, 0.72, 0.42] }}
               transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}

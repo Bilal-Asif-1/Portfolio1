@@ -12,9 +12,9 @@ import type {
 export const CONTACT: ContactDetails = {
   email: "bilalasif1024@gmail.com",
   whatsapp:
-    "https://wa.me/92307998854?text=Hi%20Bilal%2C%20I%20want%20to%20grow%20my%20business%20online.",
+    "https://wa.me/923207998854?text=Hi%20Bilal%2C%20I%20want%20to%20grow%20my%20business%20online.",
   instagram: "https://www.instagram.com/bilal.asif__/",
-  linkedin: "https://www.linkedin.com/in/bilal-asif/"
+  linkedin: "https://www.linkedin.com/in/bilal-asif-034272320/"
 };
 
 // Match the navigation order to the actual vertical order of page sections.

@@ -518,6 +518,42 @@ body.scroll-input-active #services .service-row-arrow {
   }
 }
 
+/* Preserve the complete growth-hero composition in short or minimized
+   desktop windows. Only the vertical rhythm and type scale respond to height;
+   regular laptop and mobile layouts keep their existing proportions. */
+@media (min-width: 768px) and (max-height: 850px) {
+  .growth-hero {
+    padding-block: clamp(1.5rem, 5svh, 3rem) !important;
+  }
+
+  .growth-hero-kicker {
+    margin-bottom: clamp(0.75rem, 2svh, 1.5rem) !important;
+  }
+
+  .growth-hero-title {
+    font-size: clamp(4rem, 16svh, 8rem) !important;
+    line-height: 0.84 !important;
+  }
+
+  .growth-hero-copy {
+    margin-top: clamp(0.75rem, 2svh, 1.25rem) !important;
+    font-size: clamp(0.9rem, 2.1svh, 1.125rem) !important;
+    line-height: 1.55 !important;
+  }
+
+  .growth-hero-actions {
+    margin-top: clamp(1rem, 3svh, 1.75rem) !important;
+  }
+
+  .growth-hero-button {
+    min-height: clamp(2.75rem, 7svh, 3.5rem) !important;
+  }
+
+  .growth-hero-scroll-cue {
+    display: none !important;
+  }
+}
+
 @keyframes crystal-border-orbit {
   from {
     offset-distance: 0%;
