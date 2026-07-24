@@ -944,7 +944,7 @@ function ServiceItem({
       >
         <button
           type="button"
-          className={`service-row group grid h-[196px] w-full grid-cols-[2rem_1fr_auto] items-center gap-3 px-5 py-5 text-left transition-colors duration-[180ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 sm:h-auto sm:gap-4 sm:px-8 sm:py-7 lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12 ${
+          className={`service-row group grid h-[196px] w-full grid-cols-[2rem_1fr_auto] items-center gap-3 px-5 py-5 text-left transition-colors duration-[180ms] hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 sm:h-auto sm:min-h-[156px] sm:gap-4 sm:px-8 sm:py-7 lg:min-h-[140px] lg:grid-cols-[2.5rem_minmax(0,1fr)_minmax(18rem,0.72fr)_2rem] lg:gap-8 lg:px-12 xl:min-h-[112px] ${
             open ? "bg-white" : ""
           }`}
           aria-expanded={open}
@@ -1329,7 +1329,7 @@ export default function Home() {
                 <span className="inline-block">there</span>
               </p>
 
-              <div className="absolute bottom-7 left-1/2 z-10 w-[min(140vw,580px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
+              <div className="portrait-wrap absolute bottom-7 left-1/2 z-10 w-[min(140vw,580px)] -translate-x-1/2 sm:bottom-7 sm:w-[min(115vw,760px)] lg:bottom-6 lg:w-[700px]">
                 <motion.div style={{ x: portraitX.spring, y: portraitY.spring }}>
                   <Image
                     src="/bilal-asif-portrait-2026-v4.webp"
@@ -1337,7 +1337,7 @@ export default function Home() {
                     width={1254}
                     height={1254}
                     priority
-                    sizes="(min-width: 1024px) 700px, (min-width: 640px) min(115vw, 760px), min(140vw, 580px)"
+                    sizes="(min-width: 1024px) 700px, (min-width: 640px) min(115vw, 760px), min(155vw, 660px)"
                     className="portrait-image w-full object-contain"
                   />
                 </motion.div>
