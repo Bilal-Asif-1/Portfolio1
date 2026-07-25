@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/"
     },
-    sitemap: "https://bilalasif.com/sitemap.xml"
+    sitemap: "https://www.bilalasiftech.com/sitemap.xml"
   };
 }

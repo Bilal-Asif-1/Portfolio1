@@ -37,7 +37,7 @@ const petrona = Petrona({
   display: "swap"
 });
 
-const siteUrl = "https://bilalasif.com";
+const siteUrl = "https://www.bilalasiftech.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -110,7 +110,7 @@ export default function RootLayout({
       lang="en"
       className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable} ${petrona.variable}`}
     >
-      <body className="bg-white font-sans text-ink antialiased">
+      <body className="intro-pending bg-white font-sans text-ink antialiased">
         <IntroSplash />
         {children}
       </body>

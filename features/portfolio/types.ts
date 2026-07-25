@@ -21,7 +21,7 @@ export type Project = {
   eyebrow: string;
   metric: string;
   description: string;
-  image: string;
+  image: StaticImageData;
 };
 
 export type ProjectDetail = {
@@ -46,3 +46,4 @@ export type Faq = {
   question: string;
   answer: string;
 };
+import type { StaticImageData } from "next/image";

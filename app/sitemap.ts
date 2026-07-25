@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   return routes.map((route) => ({
-    url: `https://bilalasif.com${route.path}`,
+    url: `https://www.bilalasiftech.com${route.path}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: route.priority

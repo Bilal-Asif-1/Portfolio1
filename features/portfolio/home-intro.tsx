@@ -10,6 +10,7 @@ import {
 } from "framer-motion";
 import { MOTION } from "@/components/motion";
 import { ExperienceLink } from "@/components/experience-link";
+import portraitImage from "@/public/bilal-asif-portrait-2026-v4.webp";
 
 export function HomeIntro() {
   const reducedMotion = useReducedMotion();
@@ -55,11 +56,11 @@ export function HomeIntro() {
           >
             <motion.div style={{ x: springX, y: springY }}>
               <Image
-                src="/bilal-asif-portrait-2026-v4.webp"
+                src={portraitImage}
                 alt="Bilal Asif, freelance website designer and digital growth partner"
-                width={1254}
-                height={1254}
                 priority
+                fetchPriority="high"
+                placeholder="blur"
                 sizes="(min-width: 1024px) min(700px, 70vw), (min-width: 640px) min(84vw, 760px), min(145vw, 650px)"
                 className="portrait-image w-full object-contain"
               />

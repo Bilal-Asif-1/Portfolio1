@@ -8,6 +8,13 @@ import type {
   ProjectMetric,
   Service
 } from "./types";
+import aquaGalleryImage from "@/public/portfolio-cards/light/aqua-gallery-v2.webp";
+import azureCoastImage from "@/public/portfolio-cards/light/azure-coast-v2.webp";
+import cocoaCraftedImage from "@/public/portfolio-cards/light/cocoa-crafted-mixed.webp";
+import nestRealtyImage from "@/public/portfolio-cards/light/nest-realty-mixed.webp";
+import pawPalaceImage from "@/public/portfolio-cards/light/paw-palace-mixed.webp";
+import pulseFitImage from "@/public/portfolio-cards/light/pulse-fit-mixed.webp";
+import spiceTableImage from "@/public/portfolio-cards/light/spice-table-mixed.webp";
 
 export const CONTACT: ContactDetails = {
   email: "bilalasif1024@gmail.com",
@@ -124,7 +131,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "New members",
     description:
       "A focused fitness landing page that turns motivation into memberships and enquiries.",
-    image: "/portfolio-cards/light/pulse-fit-mixed.jpg"
+    image: pulseFitImage
   },
   {
     title: "Paw Palace",
@@ -132,7 +139,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "New clients",
     description:
       "A friendly pet care experience that makes trusted grooming simple to discover and book.",
-    image: "/portfolio-cards/light/paw-palace-mixed.jpg"
+    image: pawPalaceImage
   },
   {
     title: "Cocoa Crafted",
@@ -140,7 +147,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "Online sweets",
     description:
       "A warm ecommerce experience crafted to turn chocolate lovers into loyal customers.",
-    image: "/portfolio-cards/light/cocoa-crafted-mixed.jpg"
+    image: cocoaCraftedImage
   },
   {
     title: "Aqua Gallery",
@@ -148,7 +155,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "Visitor journeys",
     description:
       "A bright aquarium experience designed around discovery, calm and effortless visits.",
-    image: "/portfolio-cards/light/aqua-gallery-v2.jpg"
+    image: aquaGalleryImage
   },
   {
     title: "Spice Table",
@@ -156,7 +163,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "Table orders",
     description:
       "A vibrant restaurant website built to make every dish irresistible and easy to order.",
-    image: "/portfolio-cards/light/spice-table-mixed.jpg"
+    image: spiceTableImage
   },
   {
     title: "Nest Realty",
@@ -164,7 +171,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "Buyer leads",
     description:
       "A polished property experience that helps serious buyers find their perfect home.",
-    image: "/portfolio-cards/light/nest-realty-mixed.jpg"
+    image: nestRealtyImage
   },
   {
     title: "Azure Coast",
@@ -172,7 +179,7 @@ export const FEATURED_PROJECTS: readonly Project[] = [
     metric: "Luxury stays",
     description:
       "An airy coastal experience created to turn peaceful escapes into premium bookings.",
-    image: "/portfolio-cards/light/azure-coast-v2.jpg"
+    image: azureCoastImage
   }
 ];
 
@@ -332,7 +339,7 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
   "@context": "https://schema.org",
   "@type": "ProfessionalService",
   name: "Bilal Asif",
-  url: "https://bilalasif.com",
+  url: "https://www.bilalasiftech.com",
   email: CONTACT.email,
   areaServed: ["United States", "Europe"],
   sameAs: [CONTACT.instagram, CONTACT.linkedin],

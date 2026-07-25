@@ -19,7 +19,12 @@ export function IntroSplash() {
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (!visible || reducedMotion) return;
+    if (!visible) return;
+    if (reducedMotion) {
+      document.body.classList.remove("intro-pending");
+      setVisible(false);
+      return;
+    }
 
     document.body.style.overflow = "hidden";
     getLenis()?.stop();
@@ -32,6 +37,7 @@ export function IntroSplash() {
       phraseDuration * INTRO_PHRASES.length
     );
     const hideTimer = window.setTimeout(() => {
+      document.body.classList.remove("intro-pending");
       setVisible(false);
       document.body.style.overflow = "";
       getLenis()?.start();
@@ -41,6 +47,7 @@ export function IntroSplash() {
       phraseTimers.forEach((timer) => window.clearTimeout(timer));
       window.clearTimeout(exitTimer);
       window.clearTimeout(hideTimer);
+      document.body.classList.remove("intro-pending");
       document.body.style.overflow = "";
       getLenis()?.start();
     };
@@ -50,6 +57,7 @@ export function IntroSplash() {
 
   return (
     <motion.div
+      data-intro-splash="true"
       className="fixed inset-0 z-[100] grid place-items-center bg-white px-6 text-center text-ink"
       initial={{ opacity: 1 }}
       animate={{ opacity: exiting ? 0 : 1 }}

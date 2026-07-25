@@ -42,6 +42,7 @@ function ProjectCard({
   total,
   rotation,
   didDrag,
+  loadPriority,
   onCenter,
   onOpen
 }: {
@@ -50,6 +51,7 @@ function ProjectCard({
   total: number;
   rotation: MotionValue<number>;
   didDrag: { current: boolean };
+  loadPriority: "high" | "eager" | "lazy";
   onCenter: (index: number) => void;
   onOpen: (card: Project) => void;
 }) {
@@ -89,6 +91,7 @@ function ProjectCard({
       <ProjectPoster
         card={FEATURED_PROJECTS[cardIndex]}
         didDrag={didDrag}
+        loadPriority={loadPriority}
         onOpen={onOpen}
       />
     </motion.div>
@@ -98,10 +101,12 @@ function ProjectCard({
 function ProjectPoster({
   card,
   didDrag,
+  loadPriority,
   onOpen
 }: {
   card: Project;
   didDrag: { current: boolean };
+  loadPriority: "high" | "eager" | "lazy";
   onOpen: (card: Project) => void;
 }) {
   return (
@@ -110,6 +115,10 @@ function ProjectPoster({
         src={card.image}
         alt={`${card.title} ${card.eyebrow} poster visual`}
         fill
+        priority={loadPriority === "high"}
+        loading={loadPriority === "high" ? undefined : loadPriority}
+        fetchPriority={loadPriority === "high" ? "high" : "auto"}
+        placeholder="blur"
         sizes="(min-width: 1024px) 258px, (min-width: 640px) 218px, 176px"
         className="object-cover"
       />
@@ -147,7 +156,8 @@ function ProjectsCarousel({
   reducedMotion: boolean;
 }) {
   const carouselCards = [...FEATURED_PROJECTS, ...FEATURED_PROJECTS];
-  const rotation = useMotionValue(FEATURED_PROJECTS.length + 3);
+  const initialRotation = FEATURED_PROJECTS.length + 3;
+  const rotation = useMotionValue(initialRotation);
   const [activeCard, setActiveCard] = useState(
     Math.round(rotation.get()) % FEATURED_PROJECTS.length
   );
@@ -373,6 +383,13 @@ function ProjectsCarousel({
             total={carouselCards.length}
             rotation={rotation}
             didDrag={didDrag}
+            loadPriority={
+              index === initialRotation
+                ? "high"
+                : Math.abs(index - initialRotation) === 1
+                  ? "eager"
+                  : "lazy"
+            }
             onCenter={centerCard}
             onOpen={onOpen}
           />
@@ -500,6 +517,7 @@ function ProjectModal({
               src={card.image}
               alt={`${card.title} project visual`}
               fill
+              placeholder="blur"
               sizes="(min-width: 1024px) 44vw, 100vw"
               className="object-cover"
             />
