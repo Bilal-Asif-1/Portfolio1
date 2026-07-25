@@ -1,0 +1,107 @@
+"use client";
+
+import Image from "next/image";
+import { ArrowDown } from "lucide-react";
+import {
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useSpring
+} from "framer-motion";
+import { MOTION } from "@/components/motion";
+import { ExperienceLink } from "@/components/experience-link";
+
+export function HomeIntro() {
+  const reducedMotion = useReducedMotion();
+  const portraitX = useMotionValue(0);
+  const portraitY = useMotionValue(0);
+  const springX = useSpring(portraitX, MOTION.spring.subtle);
+  const springY = useSpring(portraitY, MOTION.spring.subtle);
+
+  return (
+    <section className="relative isolate min-h-[100svh] overflow-hidden bg-transparent px-5 pt-20 sm:px-8 sm:pt-24 lg:px-12">
+      <div
+        className="relative mx-auto min-h-[calc(100svh-5rem)] max-w-7xl sm:min-h-[calc(100svh-6rem)]"
+        onMouseMove={(event) => {
+          if (reducedMotion) return;
+          const bounds = event.currentTarget.getBoundingClientRect();
+          portraitX.set(
+            ((event.clientX - bounds.left) / bounds.width - 0.5) * 12
+          );
+          portraitY.set(
+            ((event.clientY - bounds.top) / bounds.height - 0.5) * 8
+          );
+        }}
+        onMouseLeave={() => {
+          portraitX.set(0);
+          portraitY.set(0);
+        }}
+      >
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.28 }}
+          className="intro-hey-light pointer-events-none absolute inset-x-[-0.9rem] top-[clamp(9.5rem,26svh,19rem)] z-30 flex items-center justify-between overflow-visible px-[clamp(0.25rem,4vw,4rem)] text-[clamp(4rem,19vw,6.2rem)] leading-none text-ink sm:inset-x-0 sm:top-[13%] sm:justify-center sm:gap-[clamp(10rem,24vw,22rem)] sm:px-0 sm:text-[clamp(6rem,13vw,8.5rem)] lg:text-[9rem]"
+        >
+          <span>Hey,</span>
+          <span>there</span>
+        </motion.p>
+
+        <div className="absolute bottom-0 left-1/2 z-20 w-[min(145vw,650px,calc(100svh-5.5rem))] -translate-x-1/2 sm:w-[min(84vw,760px,calc(100svh-5.5rem))] lg:w-[min(700px,70vw,calc(100svh-5.5rem))]">
+          <motion.div
+            initial={{ opacity: 0, y: 28, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.9, delay: 0.18 }}
+          >
+            <motion.div style={{ x: springX, y: springY }}>
+              <Image
+                src="/bilal-asif-portrait-2026-v4.webp"
+                alt="Bilal Asif, freelance website designer and digital growth partner"
+                width={1254}
+                height={1254}
+                priority
+                sizes="(min-width: 1024px) min(700px, 70vw), (min-width: 640px) min(84vw, 760px), min(145vw, 650px)"
+                className="portrait-image w-full object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.72, delay: 0.5 }}
+          className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8"
+        >
+          <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            I am
+          </p>
+          <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            Bilal Asif
+          </p>
+        </motion.div>
+
+        <ExperienceLink
+          href="/growth"
+          aria-label="Continue to Grow Your Business Online"
+          className="absolute bottom-5 right-0 z-30 flex items-center gap-2 text-ink/45 transition-colors duration-[240ms] hover:text-ink sm:bottom-7 lg:bottom-9"
+        >
+          <span className="hidden font-jetbrains text-[9px] font-medium uppercase tracking-[0.2em] sm:inline">
+            Explore the portfolio
+          </span>
+          <motion.span
+            animate={reducedMotion ? undefined : { y: [0, 5, 0] }}
+            transition={{
+              duration: 1.8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="grid h-8 w-8 place-items-center rounded-full border border-ink/20"
+          >
+            <ArrowDown className="h-3.5 w-3.5" />
+          </motion.span>
+        </ExperienceLink>
+      </div>
+    </section>
+  );
+}

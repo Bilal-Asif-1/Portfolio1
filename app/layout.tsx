@@ -5,6 +5,7 @@ import {
   JetBrains_Mono,
   Petrona
 } from "next/font/google";
+import { IntroSplash } from "@/features/intro/intro-splash";
 import "./globals.css";
 
 const hankenGrotesk = Hanken_Grotesk({
@@ -109,7 +110,10 @@ export default function RootLayout({
       lang="en"
       className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable} ${petrona.variable}`}
     >
-      <body className="bg-white font-sans text-ink antialiased">{children}</body>
+      <body className="bg-white font-sans text-ink antialiased">
+        <IntroSplash />
+        {children}
+      </body>
     </html>
   );
 }

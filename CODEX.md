@@ -21,8 +21,10 @@ automation. The primary market is the USA, followed by Europe.
 
 - Next.js App Router, TypeScript, Tailwind CSS and Framer Motion.
 - Lenis provides smooth scrolling.
-- Main page: `app/page.tsx`
-- Global styling and stacked scroll behavior: `app/globals.css`
+- Route pages: `app/*/page.tsx`
+- Shared page shell and navigation: `components/site-frame.tsx`
+- Page-specific views: `features/portfolio/*-view.tsx`
+- Global styling: `app/globals.css`
 - Shared animation helpers: `components/motion.tsx`
 - Fonts and SEO metadata: `app/layout.tsx`
 
@@ -50,26 +52,24 @@ automation. The primary market is the USA, followed by Europe.
 - Services are full-width rows, not cards.
 - Keep mobile layouts fully responsive with no horizontal page overflow.
 
-## Current Page Structure
+## Current Route Structure
 
-1. Personal intro with Bilal's portrait.
-2. Main growth hero.
-3. Featured Work / project carousel.
-4. Animated project metrics.
-5. Services: black, full-width list with eight services.
-6. The Approach / process.
-7. FAQ: black accordion section.
-8. Final black contact section and footer.
-
-Packages are not part of the normal page scroll. The centered `Packages`
-navigation item opens the existing packages modal.
+1. `/` — personal intro with Bilal's portrait.
+2. `/growth` — main growth message and primary calls to action.
+3. `/projects` — featured work carousel, case studies and metrics.
+4. `/services` — black, full-width list with eight expandable services.
+5. `/process` — the growth process.
+6. `/faq` — black accordion page.
+7. `/contact` — final “Ready to grow your business?” contact page.
+8. `/packages` — responsive service-package page.
 
 ## Navigation
 
-- Show only centered text links: Services, Projects, Packages, Process,
+- Show only centered text links: Packages, Projects, Services, Process, FAQ,
   Contact.
 - No floating capsule, logo, navbar background or separate contact pill.
 - Keep Hanken Grotesk and full opacity.
+- Navigation must use page routes, not in-page section anchors.
 
 ## Featured Work
 
@@ -92,20 +92,8 @@ navigation item opens the existing packages modal.
   Branding & Strategy, UI/UX Design.
 - Headings are bold and highly readable.
 - Hovering makes the full row white and its content black.
-- Keep the black section visible at its end while the following white section
-  moves over it. This behavior is handled by `StackedScene`, `pinAtEnd` and
-  the `.stacked-scene-*` CSS. Change it carefully and do not add scroll snap.
-
-## Stacked Scroll Behavior
-
-- Desktop sections intentionally overlap: the next section rises over the
-  previous one while the previous content fades.
-- Sections must look like full-page surfaces, not floating cards.
-- Do not add automatic scroll settling or snap-to-section behavior.
-- Preserve native user control through Lenis.
-- Avoid `overflow: hidden` on ancestors of sticky scenes; horizontal clipping
-  uses `overflow-x: clip`.
-- Keep motion lightweight and respect `prefers-reduced-motion`.
+- Clicking a row expands its explanation inside that same white row.
+- Only one service is open at a time, and clicking it again closes it.
 
 ## FAQ
 

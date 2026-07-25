@@ -18,9 +18,8 @@
   box-sizing: border-box;
 }
 
-/* clip (not hidden) so horizontal overflow is cut without creating a scroll
-   container — a scroll container here would break position: sticky, which
-   the stacked-section effect depends on. */
+/* Clip horizontal artwork and carousel overflow without introducing a
+   second page-level scroll container. */
 html {
   overflow-x: hidden;
   overflow-x: clip;
@@ -134,6 +133,17 @@ a {
   will-change: transform;
 }
 
+@media (max-width: 767px) {
+  html {
+    scrollbar-width: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @media (hover: hover) and (pointer: fine) and (min-width: 768px) {
   .smooth-cursor {
     display: block;
@@ -218,50 +228,29 @@ h3 {
   outline-color: rgba(255, 255, 255, 0.75);
 }
 
-body.scroll-input-active #services {
+body.scroll-input-active .service-row[data-service-open="false"] {
   pointer-events: none;
 }
 
-body.scroll-input-active #services .service-row {
-  background: #000000 !important;
-}
-
-body.scroll-input-active #services .service-row-number {
-  color: rgba(255, 255, 255, 0.4) !important;
-}
-
-body.scroll-input-active #services .service-row-heading,
-body.scroll-input-active #services .service-row-arrow {
-  color: #ffffff !important;
-}
-
-body.scroll-input-active #services .service-row-description {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-
-body.scroll-input-active #services .service-row-arrow {
-  transform: none !important;
-}
-
-#services .service-row.service-row--cursor-active {
+.service-row.service-row--cursor-active {
   background: #ffffff;
 }
 
-#services .service-row.service-row--cursor-active .service-row-number {
+.service-row.service-row--cursor-active .service-row-number {
   color: rgba(0, 0, 0, 0.55);
 }
 
-#services .service-row.service-row--cursor-active .service-row-heading,
-#services .service-row.service-row--cursor-active .service-row-arrow {
+.service-row.service-row--cursor-active .service-row-heading,
+.service-row.service-row--cursor-active .service-row-arrow {
   color: #000000;
 }
 
-#services .service-row.service-row--cursor-active .service-row-description {
+.service-row.service-row--cursor-active .service-row-description {
   color: rgba(0, 0, 0, 0.65);
 }
 
-#services .service-row.service-row--cursor-active .service-row-arrow {
-  transform: translate(0.125rem, -0.125rem);
+.service-row.service-row--cursor-active .service-row-arrow {
+  border-color: rgba(0, 0, 0, 0.25);
 }
 
 .noise {
@@ -309,83 +298,127 @@ body.scroll-input-active #services .service-row-arrow {
   animation: crystal-border-orbit 3.8s linear infinite;
 }
 
-.stacked-scene-track,
-.stacked-scene {
-  position: relative;
-  width: 100%;
-}
-
-.stacked-scene-track {
-  position: relative;
-  isolation: isolate;
-  z-index: var(--scene-layer);
-}
-
-/* Keep the laptop-style layered scene composition on tablets as well. */
-@media (min-width: 768px) {
-  .stacked-scene-track {
-    min-height: 200svh;
-    margin-bottom: -100svh;
-  }
-
-  .stacked-scene {
-    position: sticky;
-    top: 0;
-    isolation: isolate;
-    min-height: 100svh;
-    z-index: var(--scene-layer);
-  }
-
-  .stacked-scene-track--long {
-    min-height: 0;
-    margin-bottom: 0;
-  }
-
-  .stacked-scene-track--long.stacked-scene-track--overlap-next {
-    margin-bottom: -34svh;
-  }
-
-  .stacked-scene-track--long .stacked-scene {
-    position: relative;
-  }
-
-}
-
 @media (max-width: 767px) {
-  /* Mobile keeps the same full-bleed visual rhythm without forcing oversized
-     sticky tracks into a short touch viewport. */
-  .stacked-scene-track,
-  .stacked-scene {
-    min-height: 100svh;
-  }
-
   .noise {
     opacity: 0.16;
   }
 }
 
-.stacked-scene-track--pin-end {
-  min-height: calc(
-    var(--pin-scene-height, 100svh) + 100svh + var(--pin-hold-height, 12svh)
-  );
-  padding-bottom: 0;
+.portfolio-experience {
+  isolation: isolate;
+}
+
+.stacked-page-track,
+.stacked-page-scene {
+  position: relative;
+  width: 100%;
+}
+
+.stacked-page-track {
+  isolation: isolate;
+  z-index: var(--scene-layer);
+  min-height: 200svh;
   margin-bottom: -100svh;
 }
 
-.stacked-scene-track--pin-end .stacked-scene {
+.stacked-page-scene {
+  position: sticky;
+  top: 0;
+  isolation: isolate;
+  min-height: 100svh;
+  z-index: var(--scene-layer);
+  transform-origin: 50% 18%;
+  backface-visibility: hidden;
+}
+
+.stacked-page-scene--dark-backdrop {
+  background: #000000;
+}
+
+.stacked-page-track--long {
+  min-height: 0;
+  margin-bottom: 0;
+}
+
+.stacked-page-track--long .stacked-page-scene {
+  position: relative;
+}
+
+@media (max-width: 767px) {
+  [data-portfolio-track="/projects"] > .stacked-page-scene {
+    min-height: 0;
+  }
+
+  [data-portfolio-scene="/services"],
+  [data-portfolio-scene="/faq"] {
+    transform: none !important;
+  }
+
+  .stacked-page-track--mobile-long {
+    min-height: 0;
+    margin-bottom: 0;
+  }
+
+  .stacked-page-track--mobile-long > .stacked-page-scene {
+    position: relative;
+    top: auto;
+    min-height: 0;
+  }
+}
+
+.stacked-page-track--dark-bridge {
+  background: #000000;
+}
+
+@media (min-width: 768px) {
+  .stacked-page-track--long.stacked-page-track--overlap-next {
+    margin-bottom: -34svh;
+  }
+}
+
+.stacked-page-track--pin-end {
+  min-height: calc(
+    var(--pin-scene-height, 100svh) + 100svh + var(--pin-hold-height, 12svh)
+  );
+  margin-bottom: -100svh;
+  padding-bottom: 0;
+}
+
+.stacked-page-track--pin-end .stacked-page-scene {
   position: sticky;
   top: 0;
 }
 
-.stacked-scene--pin-viewport {
+.stacked-page-scene--pin-viewport {
   height: 100svh;
   min-height: 100svh;
   overflow: hidden;
 }
 
-.stacked-scene-pin-content {
+.stacked-page-pin-content {
   min-height: 100svh;
+  backface-visibility: hidden;
   will-change: transform;
+}
+
+.stacked-page-track--reduced,
+.stacked-page-track--reduced.stacked-page-track--pin-end,
+.stacked-page-track--reduced.stacked-page-track--long {
+  min-height: 100svh;
+  margin-bottom: 0;
+}
+
+.stacked-page-track--reduced .stacked-page-scene,
+.stacked-page-track--reduced.stacked-page-track--pin-end .stacked-page-scene {
+  position: relative;
+  top: auto;
+  height: auto;
+  min-height: 100svh;
+  overflow: visible;
+}
+
+.stacked-page-track--reduced .stacked-page-pin-content {
+  transform: none !important;
 }
 
 .stacked-carousel {
@@ -393,20 +426,6 @@ body.scroll-input-active #services .service-row-arrow {
   touch-action: pan-y;
   overscroll-behavior-x: contain;
   overscroll-behavior-y: auto;
-}
-
-@media (min-width: 768px) {
-  .project-deck-sticky {
-    position: sticky;
-    top: calc(34svh - 455px);
-    z-index: 1;
-  }
-}
-
-@media (min-width: 1024px) {
-  .project-deck-sticky {
-    top: calc(34svh - 530px);
-  }
 }
 
 .stacked-project-card {
@@ -450,40 +469,33 @@ body.scroll-input-active #services .service-row-arrow {
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 68%,
-    rgba(0, 0, 0, 0.96) 76%,
+    #000 72%,
+    rgba(0, 0, 0, 0.88) 82%,
+    rgba(0, 0, 0, 0.42) 92%,
     transparent 100%
   );
   mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    #000 68%,
-    rgba(0, 0, 0, 0.96) 76%,
+    #000 72%,
+    rgba(0, 0, 0, 0.88) 82%,
+    rgba(0, 0, 0, 0.42) 92%,
     transparent 100%
   );
 }
 
-/* Keep the mobile greeting tied to the portrait rather than to a fixed
-   viewport offset. This preserves the same hair-level overlap on phones with
-   different aspect ratios, while the portrait masks the text naturally. */
+/* Tie the mobile greeting to the responsive portrait size so it remains
+   above the hairline on phones with different aspect ratios. */
 @media (max-width: 639px) and (orientation: portrait) {
   .intro-hey-light {
     top: max(
       0rem,
       calc(100svh - min(155vw, 660px) - 112px - 3rem)
     ) !important;
-    z-index: 25 !important;
-  }
-
-  .portrait-wrap {
-    bottom: 0 !important;
-    width: min(155vw, 660px) !important;
-    z-index: 20 !important;
+    z-index: 30 !important;
   }
 }
 
-/* Short phones use a smaller portrait, so the greeting follows that exact
-   width as well instead of drifting toward the face or the navigation. */
 @media (max-width: 639px) and (max-height: 700px) and (orientation: portrait) {
   .intro-hey-light {
     inset-inline: -1rem !important;
@@ -492,29 +504,6 @@ body.scroll-input-active #services .service-row-arrow {
       calc(100svh - min(145vw, 520px) - 112px - 2rem)
     ) !important;
     font-size: clamp(3.2rem, 17vw, 4rem) !important;
-  }
-
-  .portrait-wrap {
-    bottom: 0 !important;
-    width: min(145vw, 520px) !important;
-  }
-}
-
-/* Width-based portrait sizing is too tall on landscape phones. */
-@media (orientation: landscape) and (max-width: 1023px) and (max-height: 600px) {
-  .portrait-wrap {
-    top: -3.75rem !important;
-    bottom: auto !important;
-    width: min(42vw, calc(100svh - 130px), 380px) !important;
-  }
-}
-
-/* On laptops and resized desktop windows the available height can become
-   smaller than the fixed 700px portrait. Scale it proportionally instead of
-   allowing the top of the photo to leave the viewport. */
-@media (min-width: 1024px) {
-  .portrait-wrap {
-    width: min(700px, calc(100svh - 96px)) !important;
   }
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import Lenis from "lenis";
 import clsx from "clsx";
 import {
@@ -157,15 +157,9 @@ export function SmoothCursor() {
 
 export function SmoothScroll() {
   useEffect(() => {
-    // Browsers restore the previous scroll position on reload. Since the
-    // hero fade and every whileInView reveal are keyed off scroll position
-    // at mount, loading mid-scroll left them stuck faded/hidden. Always
-    // start fresh at the top so the reveal sequence is consistent.
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-    window.scrollTo(0, 0);
-
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     // Native scrolling is more stable on touch screens (especially iOS/iPadOS)
@@ -180,37 +174,50 @@ export function SmoothScroll() {
     });
     lenisInstance = lenis;
 
-    let inputIdleTimer = 0;
-    let inputActive = false;
-    let hasPointerPosition = false;
-    let activeServiceRow: HTMLElement | null = null;
-    let servicesInViewport = false;
+    let scrollIdleTimer = 0;
     let pointerX = window.innerWidth / 2;
     let pointerY = window.innerHeight / 2;
+    let hasPointerPosition = false;
+    let forcedServiceRow: HTMLElement | null = null;
 
     const clearForcedServiceHover = () => {
-      activeServiceRow?.classList.remove("service-row--cursor-active");
-      activeServiceRow = null;
+      forcedServiceRow?.classList.remove("service-row--cursor-active");
+      forcedServiceRow = null;
     };
 
-    const updateHoverAtPointer = () => {
-      if (inputActive || !hasPointerPosition) return;
-
-      const nextServiceRow = document
-        .elementFromPoint(pointerX, pointerY)
-        ?.closest<HTMLElement>(".service-row") ?? null;
-
-      if (nextServiceRow === activeServiceRow) return;
-      clearForcedServiceHover();
-      activeServiceRow = nextServiceRow;
-      activeServiceRow?.classList.add("service-row--cursor-active");
-    };
-
-    const releaseInputHoverGate = () => {
-      inputActive = false;
+    const restoreServiceHover = () => {
       document.body.classList.remove("scroll-input-active");
-      updateHoverAtPointer();
+      if (!hasPointerPosition) return;
+      forcedServiceRow =
+        document
+          .elementFromPoint(pointerX, pointerY)
+          ?.closest<HTMLElement>(
+            '.service-row[data-service-open="false"]'
+          ) ?? null;
+      forcedServiceRow?.classList.add("service-row--cursor-active");
     };
+
+    const markScrollActive = () => {
+      clearForcedServiceHover();
+      document.body.classList.add("scroll-input-active");
+      window.clearTimeout(scrollIdleTimer);
+      scrollIdleTimer = window.setTimeout(restoreServiceHover, 24);
+    };
+
+    const trackPointer = (event: PointerEvent) => {
+      pointerX = event.clientX;
+      pointerY = event.clientY;
+      hasPointerPosition = true;
+      if (!document.body.classList.contains("scroll-input-active")) {
+        clearForcedServiceHover();
+      }
+    };
+
+    const removeVirtualScrollListener = lenis.on(
+      "virtual-scroll",
+      markScrollActive
+    );
+    window.addEventListener("pointermove", trackPointer, { passive: true });
 
     const onClick = (event: MouseEvent) => {
       const anchor = (event.target as HTMLElement | null)?.closest?.(
@@ -222,69 +229,15 @@ export function SmoothScroll() {
       const target = document.querySelector(hash);
       if (!target) return;
       event.preventDefault();
-      const isServicesTarget = hash === "#services";
-      const scrollTarget = isServicesTarget
-        ? target.closest<HTMLElement>(".stacked-scene-track") ?? target
-        : target;
-      if (isServicesTarget) {
-        const trackTop =
-          scrollTarget.getBoundingClientRect().top + window.scrollY;
-        lenis.scrollTo(trackTop, {
-          offset: 0,
-          duration: 1.3,
-          force: true
-        });
-        return;
-      }
-      lenis.scrollTo(scrollTarget as HTMLElement, { offset: -104, duration: 1.3 });
+      lenis.scrollTo(target as HTMLElement, { offset: -88, duration: 1.1 });
     };
     document.addEventListener("click", onClick);
 
-    const onVirtualScroll = ({ event }: { event: WheelEvent | TouchEvent }) => {
-      if ("clientX" in event) {
-        pointerX = event.clientX;
-        pointerY = event.clientY;
-        hasPointerPosition = true;
-      }
-
-      inputActive = true;
-      clearForcedServiceHover();
-      document.body.classList.add("scroll-input-active");
-      window.clearTimeout(inputIdleTimer);
-      inputIdleTimer = window.setTimeout(releaseInputHoverGate, 48);
-    };
-
-    const onLenisScroll = () => {
-      if (servicesInViewport || activeServiceRow) updateHoverAtPointer();
-    };
-
-    const trackPointer = (event: MouseEvent) => {
-      pointerX = event.clientX;
-      pointerY = event.clientY;
-      hasPointerPosition = true;
-      updateHoverAtPointer();
-    };
-
-    const removeVirtualScrollListener = lenis.on("virtual-scroll", onVirtualScroll);
-    const removeScrollListener = lenis.on("scroll", onLenisScroll);
-    const servicesSection = document.getElementById("services");
-    const servicesObserver = new IntersectionObserver(
-      ([entry]) => {
-        servicesInViewport = Boolean(entry?.isIntersecting);
-        if (!servicesInViewport) clearForcedServiceHover();
-      },
-      { rootMargin: "20% 0px" }
-    );
-    if (servicesSection) servicesObserver.observe(servicesSection);
-    window.addEventListener("mousemove", trackPointer);
-
     return () => {
-      window.clearTimeout(inputIdleTimer);
+      window.clearTimeout(scrollIdleTimer);
       document.removeEventListener("click", onClick);
       removeVirtualScrollListener();
-      removeScrollListener();
-      servicesObserver.disconnect();
-      window.removeEventListener("mousemove", trackPointer);
+      window.removeEventListener("pointermove", trackPointer);
       document.body.classList.remove("scroll-input-active");
       clearForcedServiceHover();
       lenis.destroy();
@@ -306,7 +259,7 @@ export function ScrollProgress() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed inset-x-0 top-0 z-[60] h-0.5 origin-left bg-ink"
+      className="fixed inset-x-0 top-0 z-[60] hidden h-0.5 origin-left bg-white mix-blend-difference md:block"
       style={{ scaleX }}
     />
   );
@@ -340,7 +293,8 @@ export function Reveal({
   delay = 0,
   y = 24,
   blur = 2,
-  once = true
+  once = true,
+  viewportMargin
 }: {
   children: ReactNode;
   className?: string;
@@ -349,14 +303,17 @@ export function Reveal({
   /** Entrance blur in pixels; settles to 0 as the element reveals. */
   blur?: number;
   once?: boolean;
+  viewportMargin?: NonNullable<
+    ComponentProps<typeof motion.div>["viewport"]
+  >["margin"];
 }) {
   return (
     <motion.div
       className={clsx("scroll-reveal-filter", className)}
       initial={{ opacity: 0, y, filter: `blur(${blur}px)` }}
       whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-      viewport={{ once, margin: "-12% 0px -8%" }}
-      transition={{ duration: MOTION.duration.reveal, ease: EASE, delay }}
+      viewport={{ once, margin: viewportMargin ?? "-8% 0px -10%" }}
+      transition={{ duration: 0.82, ease: EASE, delay }}
     >
       {children}
     </motion.div>

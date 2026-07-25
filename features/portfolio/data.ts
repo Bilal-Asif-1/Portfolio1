@@ -17,8 +17,14 @@ export const CONTACT: ContactDetails = {
   linkedin: "https://www.linkedin.com/in/bilal-asif-034272320/"
 };
 
-// Match the navigation order to the actual vertical order of page sections.
-export const NAV_ITEMS = ["Packages", "Projects", "Services", "Process"] as const;
+export const SITE_NAV_ITEMS = [
+  { label: "Packages", href: "/packages" },
+  { label: "Projects", href: "/projects" },
+  { label: "Services", href: "/services" },
+  { label: "Process", href: "/process" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" }
+] as const;
 
 export const SERVICES: readonly Service[] = [
   {
