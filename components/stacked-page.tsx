@@ -223,7 +223,7 @@ export function StackedPage({
             : pinAtEnd && linearExitFade
               ? pinnedExitOpacity
               : exitOpacity,
-          y: tone === "dark" ? darkEntryY : lightEntryY,
+          y: path === "/" ? 0 : tone === "dark" ? darkEntryY : lightEntryY,
           scale: mobileViewportActive ? 1 : exitScale,
           ...pinHeightStyle
         }}
