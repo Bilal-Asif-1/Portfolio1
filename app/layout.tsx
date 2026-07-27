@@ -101,7 +101,7 @@ export default function RootLayout({
       lang="en"
       className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable}`}
     >
-      <body className="intro-pending bg-white font-sans text-ink antialiased">
+      <body className="bg-white font-sans text-ink antialiased">
         <IntroSplash />
         {children}
       </body>

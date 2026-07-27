@@ -39,8 +39,78 @@ body {
   overflow-x: clip;
 }
 
-body.intro-pending > :not([data-intro-splash]) {
-  visibility: hidden;
+.intro-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding-inline: 1.5rem;
+  overflow: hidden;
+  pointer-events: none;
+  background: #ffffff;
+  color: #111111;
+  animation: intro-splash-exit 575ms var(--motion-ease) forwards;
+}
+
+.intro-splash-phrase {
+  --intro-index: 0;
+  position: absolute;
+  min-width: 8ch;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  transform: translate3d(0, 6px, 0);
+  animation: intro-phrase-show 105ms var(--motion-ease) both;
+  animation-delay: calc(var(--intro-index) * 95ms);
+  will-change: transform, opacity;
+}
+
+@media (min-width: 640px) {
+  .intro-splash-phrase {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .intro-splash-phrase {
+    font-size: 1.875rem;
+  }
+}
+
+@keyframes intro-phrase-show {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  20%,
+  78% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+@keyframes intro-splash-exit {
+  0%,
+  82% {
+    opacity: 1;
+    visibility: visible;
+  }
+  99% {
+    opacity: 0;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
 
 a {
@@ -300,7 +370,7 @@ body.scroll-input-active .service-row[data-service-open="false"] {
 
 @media (max-width: 767px) {
   .noise {
-    opacity: 0.16;
+    display: none;
   }
 
   .scroll-reveal-filter {
