@@ -38,22 +38,13 @@ export function HomeIntro() {
           portraitY.set(0);
         }}
       >
-        <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.28 }}
-          className="intro-hey-light pointer-events-none absolute inset-x-[-0.9rem] top-[clamp(9.5rem,26svh,19rem)] z-30 flex items-center justify-between overflow-visible px-[clamp(0.25rem,4vw,4rem)] text-[clamp(4rem,19vw,6.2rem)] leading-none text-ink sm:inset-x-0 sm:top-[13%] sm:justify-center sm:gap-[clamp(10rem,24vw,22rem)] sm:px-0 sm:text-[clamp(6rem,13vw,8.5rem)] lg:text-[9rem]"
-        >
+        <p className="intro-hey-light pointer-events-none absolute inset-x-[-0.9rem] top-[clamp(9.5rem,26svh,19rem)] z-30 flex items-center justify-between overflow-visible px-[clamp(0.25rem,4vw,4rem)] text-[clamp(4rem,19vw,6.2rem)] leading-none text-ink sm:inset-x-0 sm:top-[13%] sm:justify-center sm:gap-[clamp(10rem,24vw,22rem)] sm:px-0 sm:text-[clamp(6rem,13vw,8.5rem)] lg:text-[9rem]">
           <span>Hey,</span>
           <span>there</span>
-        </motion.p>
+        </p>
 
         <div className="absolute bottom-0 left-1/2 z-20 w-[min(145vw,650px,calc(100svh-5.5rem))] -translate-x-1/2 sm:w-[min(84vw,760px,calc(100svh-5.5rem))] lg:w-[min(700px,70vw,calc(100svh-5.5rem))]">
-          <motion.div
-            initial={{ opacity: 0, y: 28, scale: 0.985 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.18 }}
-          >
+          <div>
             <motion.div style={{ x: springX, y: springY }}>
               <Image
                 src={portraitImage}
@@ -66,22 +57,17 @@ export function HomeIntro() {
                 className="portrait-image w-full object-contain"
               />
             </motion.div>
-          </motion.div>
+          </div>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.72, delay: 0.5 }}
-          className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8"
-        >
+        <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
           <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
             I am
           </p>
           <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
             Bilal Asif
           </p>
-        </motion.div>
+        </div>
 
         <ExperienceLink
           href="/growth"
