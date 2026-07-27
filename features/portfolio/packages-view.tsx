@@ -14,7 +14,7 @@ export function PackagesView() {
               <h1 className="mt-8 max-w-xl font-sans text-[clamp(1.6rem,8vw,2rem)] font-light not-italic leading-[1.08] tracking-normal text-ink md:mt-3 md:max-w-4xl md:text-5xl lg:text-6xl">
                 No fixed prices. Just the right package for your next stage.
               </h1>
-              <p className="mt-3 hidden max-w-2xl text-sm leading-6 text-ink/55 md:block lg:text-base lg:leading-7">
+              <p className="mt-3 hidden max-w-2xl text-sm leading-6 text-ink/60 md:block lg:text-base lg:leading-7">
                 Each package is shaped around your goals, timeline and current
                 business stage, so you only pay for work that moves the project
                 forward.
@@ -42,7 +42,7 @@ export function PackagesView() {
                   >
                     <p
                       className={`hidden text-[10px] font-semibold uppercase tracking-[0.2em] md:block ${
-                        featured ? "text-white/45" : "text-ink/40"
+                        featured ? "text-white/60" : "text-ink/60"
                       }`}
                     >
                       0{index + 1}
@@ -79,7 +79,7 @@ export function PackagesView() {
                         >
                           <Check
                             className={`mt-0.5 h-4 w-4 shrink-0 md:mt-px md:h-3 md:w-3 lg:mt-0.5 lg:h-4 lg:w-4 ${
-                              featured ? "text-white/60" : "text-ink/50"
+                              featured ? "text-white/60" : "text-ink/60"
                             }`}
                           />
                           <span>{feature}</span>

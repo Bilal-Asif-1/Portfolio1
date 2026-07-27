@@ -17,7 +17,7 @@ export function GrowthView() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-8% 0px -10%" }}
             transition={{ duration: 0.82, ease: EASE }}
-            className="growth-hero-kicker font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/45 sm:mb-9 sm:text-xs"
+            className="growth-hero-kicker font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 sm:mb-9 sm:text-xs"
           >
             Freelance Digital Growth Partner
           </motion.p>
@@ -79,7 +79,7 @@ export function GrowthView() {
                   href={CONTACT.whatsapp}
                   target="_blank"
                   rel="noreferrer"
-                  className="growth-hero-button crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-all duration-[320ms] hover:bg-ink hover:text-white"
+                  className="growth-hero-button crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-colors duration-[320ms] hover:bg-ink hover:text-white"
                 >
                   <span aria-hidden="true" className="crystal-border-orbit" />
                   <span className="grid h-9 w-9 place-items-center rounded-full border border-ink text-ink transition-colors duration-[320ms] group-hover:border-white group-hover:text-white">
@@ -93,7 +93,7 @@ export function GrowthView() {
         </div>
 
         <motion.div
-          className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/40 sm:flex"
+          className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/60 sm:flex"
           style={{ x: "-50%" }}
           animate={{ y: [0, 4, 0], opacity: [0.42, 0.72, 0.42] }}
           transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}

@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import {
   Bricolage_Grotesque,
   Hanken_Grotesk,
-  JetBrains_Mono,
-  Petrona
+  JetBrains_Mono
 } from "next/font/google";
 import { IntroSplash } from "@/features/intro/intro-splash";
 import "./globals.css";
@@ -27,14 +26,6 @@ const jetBrainsMono = JetBrains_Mono({
   display: "swap",
   variable: "--font-jetbrains-mono",
   weight: "variable"
-});
-
-const petrona = Petrona({
-  subsets: ["latin"],
-  weight: ["100", "300", "400"],
-  style: "italic",
-  variable: "--font-petrona",
-  display: "swap"
 });
 
 const siteUrl = "https://www.bilalasiftech.com";
@@ -108,7 +99,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable} ${petrona.variable}`}
+      className={`${hankenGrotesk.variable} ${bricolageGrotesque.variable} ${jetBrainsMono.variable}`}
     >
       <body className="intro-pending bg-white font-sans text-ink antialiased">
         <IntroSplash />

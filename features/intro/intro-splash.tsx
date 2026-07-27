@@ -22,13 +22,13 @@ export function IntroSplash() {
     if (!visible) return;
     if (reducedMotion) {
       document.body.classList.remove("intro-pending");
-      setVisible(false);
-      return;
+      const frame = window.requestAnimationFrame(() => setVisible(false));
+      return () => window.cancelAnimationFrame(frame);
     }
 
     document.body.style.overflow = "hidden";
     getLenis()?.stop();
-    const phraseDuration = 190;
+    const phraseDuration = 110;
     const phraseTimers = INTRO_PHRASES.slice(1).map((phrase, index) =>
       window.setTimeout(() => setText(phrase), phraseDuration * (index + 1))
     );
@@ -41,7 +41,7 @@ export function IntroSplash() {
       setVisible(false);
       document.body.style.overflow = "";
       getLenis()?.start();
-    }, phraseDuration * INTRO_PHRASES.length + 160);
+    }, phraseDuration * INTRO_PHRASES.length + 120);
 
     return () => {
       phraseTimers.forEach((timer) => window.clearTimeout(timer));

@@ -124,9 +124,9 @@ function ProjectPoster({
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
       <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-4 sm:p-5 lg:p-6">
-        <h3 className="project-card-heading max-w-[88%] font-sans text-[1.15rem] font-medium not-italic leading-none tracking-[-0.01em] text-white drop-shadow-sm sm:text-[1.35rem]">
+        <h2 className="project-card-heading max-w-[88%] font-sans text-[1.15rem] font-medium not-italic leading-none tracking-[-0.01em] text-white drop-shadow-sm sm:text-[1.35rem]">
           {card.title}
-        </h3>
+        </h2>
         <button
           type="button"
           data-project-trigger="true"
@@ -395,11 +395,11 @@ function ProjectsCarousel({
           />
         ))}
       </div>
-      <p className="pointer-events-none absolute bottom-2 left-1/2 z-[220] -translate-x-1/2 whitespace-nowrap font-jetbrains text-[9px] uppercase tracking-[0.2em] text-ink/35 sm:bottom-4 sm:text-[10px]">
+      <p className="pointer-events-none absolute bottom-2 left-1/2 z-[220] -translate-x-1/2 whitespace-nowrap font-jetbrains text-[9px] uppercase tracking-[0.2em] text-ink/60 sm:bottom-4 sm:text-[10px]">
         Drag or scroll sideways
       </p>
       <p
-        className="pointer-events-none absolute bottom-2 left-5 z-[220] font-jetbrains text-[9px] font-medium tabular-nums tracking-[0.18em] text-ink/45 sm:bottom-4 sm:left-8 sm:text-[10px] lg:left-12"
+        className="pointer-events-none absolute bottom-2 left-5 z-[220] font-jetbrains text-[9px] font-medium tabular-nums tracking-[0.18em] text-ink/60 sm:bottom-4 sm:left-8 sm:text-[10px] lg:left-12"
         aria-live="polite"
       >
         {String(activeCard + 1).padStart(2, "0")} /{" "}
@@ -527,7 +527,7 @@ function ProjectModal({
             </p>
           </div>
           <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink/45">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink/60">
               Project case study
             </p>
             <h2
@@ -613,7 +613,7 @@ export function ProjectsView() {
             <Reveal delay={0.12} y={18} blur={2}>
               <ExperienceLink
                 href="/contact"
-                className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase text-ink/55 transition-colors duration-[320ms] hover:text-ink sm:text-sm"
+                className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase text-ink/60 transition-colors duration-[320ms] hover:text-ink sm:text-sm"
               >
                 Start Your Project
                 <ArrowRight className="h-4 w-4 transition-transform duration-[320ms] group-hover:translate-x-1" />

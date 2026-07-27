@@ -37,7 +37,7 @@ function ServiceRow({
         >
           <span
             className={`service-row-number text-xs font-medium tabular-nums transition-colors duration-[180ms] group-hover:text-black/55 sm:text-sm ${
-              open ? "text-black/55" : "text-white/40"
+              open ? "text-black/55" : "text-white/60"
             }`}
           >
             0{index + 1}
@@ -51,7 +51,7 @@ function ServiceRow({
           </h2>
           <p
             className={`service-row-description col-span-2 col-start-2 row-start-2 max-w-lg text-[13px] leading-5 transition-colors duration-[180ms] group-hover:text-black/65 sm:col-span-1 sm:col-start-auto sm:row-start-auto sm:text-sm sm:leading-6 lg:text-base lg:leading-7 ${
-              open ? "text-black/65" : "text-white/50"
+              open ? "text-black/65" : "text-white/60"
             }`}
           >
             {service.description}
@@ -116,7 +116,7 @@ export function ServicesView() {
       <section className="flex-1">
         <div className="grid gap-7 border-b border-white/15 px-5 pb-8 pt-4 sm:grid-cols-[1fr_auto] sm:items-end sm:px-8 sm:pb-10 sm:pt-8 lg:px-12">
           <Reveal y={22} blur={2}>
-            <p className="font-jetbrains mb-5 text-[10px] font-medium uppercase text-white/50 sm:text-xs">
+            <p className="font-jetbrains mb-5 text-[10px] font-medium uppercase text-white/60 sm:text-xs">
               What I Do
             </p>
             <h1 className="font-sans text-5xl font-extrabold leading-[0.9] tracking-normal text-white sm:text-7xl lg:text-8xl">
@@ -124,7 +124,7 @@ export function ServicesView() {
             </h1>
           </Reveal>
           <Reveal delay={0.1} y={14} blur={1}>
-            <p className="max-w-sm text-sm leading-7 text-white/45 sm:text-right sm:text-base">
+            <p className="max-w-sm text-sm leading-7 text-white/60 sm:text-right sm:text-base">
               Eight focused ways I help small businesses turn attention into
               measurable growth.
             </p>

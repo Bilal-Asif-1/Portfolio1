@@ -9,6 +9,7 @@ import {
 } from "react";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { X } from "lucide-react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   EASE,
@@ -25,18 +26,43 @@ import {
   type PortfolioNavigateDetail
 } from "@/components/experience-link";
 import { StackedPage } from "@/components/stacked-page";
-import { ContactView } from "@/features/portfolio/contact-view";
-import { FaqView } from "@/features/portfolio/faq-view";
-import { GrowthView } from "@/features/portfolio/growth-view";
 import { HomeIntro } from "@/features/portfolio/home-intro";
-import { PackagesView } from "@/features/portfolio/packages-view";
-import { ProcessView } from "@/features/portfolio/process-view";
-import { ProjectsView } from "@/features/portfolio/projects-view";
-import { ServicesView } from "@/features/portfolio/services-view";
 import {
   PROFESSIONAL_SERVICE_SCHEMA,
   SITE_NAV_ITEMS
 } from "@/features/portfolio/data";
+
+const GrowthView = dynamic(() =>
+  import("@/features/portfolio/growth-view").then((module) => module.GrowthView)
+);
+const ProjectsView = dynamic(() =>
+  import("@/features/portfolio/projects-view").then(
+    (module) => module.ProjectsView
+  )
+);
+const ServicesView = dynamic(() =>
+  import("@/features/portfolio/services-view").then(
+    (module) => module.ServicesView
+  )
+);
+const PackagesView = dynamic(() =>
+  import("@/features/portfolio/packages-view").then(
+    (module) => module.PackagesView
+  )
+);
+const ProcessView = dynamic(() =>
+  import("@/features/portfolio/process-view").then(
+    (module) => module.ProcessView
+  )
+);
+const FaqView = dynamic(() =>
+  import("@/features/portfolio/faq-view").then((module) => module.FaqView)
+);
+const ContactView = dynamic(() =>
+  import("@/features/portfolio/contact-view").then(
+    (module) => module.ContactView
+  )
+);
 
 const PORTFOLIO_PATHS = [
   "/",
@@ -75,6 +101,40 @@ function isPortfolioPath(path: string): path is (typeof PORTFOLIO_PATHS)[number]
 function getTrack(path: string) {
   return document.querySelector<HTMLElement>(
     `[data-portfolio-track="${path}"]`
+  );
+}
+
+function DeferredScene({
+  path,
+  activePath,
+  children
+}: {
+  path: (typeof PORTFOLIO_PATHS)[number];
+  activePath: (typeof PORTFOLIO_PATHS)[number];
+  children: React.ReactNode;
+}) {
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const [nearViewport, setNearViewport] = useState(path === activePath);
+  const ready = nearViewport || path === activePath;
+
+  useEffect(() => {
+    if (ready || !sceneRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNearViewport(true);
+        observer.disconnect();
+      },
+      { rootMargin: "75% 0px" }
+    );
+    observer.observe(sceneRef.current);
+    return () => observer.disconnect();
+  }, [ready]);
+
+  return (
+    <div ref={sceneRef} className={ready ? undefined : "min-h-[100svh]"}>
+      {ready ? children : null}
+    </div>
   );
 }
 
@@ -215,6 +275,10 @@ export function PortfolioExperience() {
   useLayoutEffect(() => {
     if (positionedRef.current) return;
     positionedRef.current = true;
+    if (initialPath === "/") {
+      activePathRef.current = initialPath;
+      return;
+    }
     const target = getTrack(
       initialPath === "/packages" ? underlyingPathRef.current : initialPath
     );
@@ -274,7 +338,7 @@ export function PortfolioExperience() {
       }
     };
 
-    updateActivePanel();
+    requestUpdate();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
     return () => {
@@ -367,7 +431,9 @@ export function PortfolioExperience() {
             <HomeIntro />
           </StackedPage>
           <StackedPage path="/growth" tone="light" layer={2}>
-            <GrowthView />
+            <DeferredScene path="/growth" activePath={activePath}>
+              <GrowthView />
+            </DeferredScene>
           </StackedPage>
           <StackedPage
             path="/projects"
@@ -376,7 +442,9 @@ export function PortfolioExperience() {
             long
             overlapNext
           >
-            <ProjectsView />
+            <DeferredScene path="/projects" activePath={activePath}>
+              <ProjectsView />
+            </DeferredScene>
           </StackedPage>
           <StackedPage
             path="/services"
@@ -387,7 +455,9 @@ export function PortfolioExperience() {
             pinAtEnd
             darkSceneBackdrop
           >
-            <ServicesView />
+            <DeferredScene path="/services" activePath={activePath}>
+              <ServicesView />
+            </DeferredScene>
           </StackedPage>
           <StackedPage
             path="/process"
@@ -398,7 +468,9 @@ export function PortfolioExperience() {
             preserveSurfaceOnExit
             mobileLong
           >
-            <ProcessView />
+            <DeferredScene path="/process" activePath={activePath}>
+              <ProcessView />
+            </DeferredScene>
           </StackedPage>
           <StackedPage
             path="/faq"
@@ -409,7 +481,9 @@ export function PortfolioExperience() {
             fastEntry
             lightExitOverlay
           >
-            <FaqView />
+            <DeferredScene path="/faq" activePath={activePath}>
+              <FaqView />
+            </DeferredScene>
           </StackedPage>
           <StackedPage
             path="/contact"
@@ -419,7 +493,9 @@ export function PortfolioExperience() {
             last
             fastEntry
           >
-            <ContactView />
+            <DeferredScene path="/contact" activePath={activePath}>
+              <ContactView />
+            </DeferredScene>
           </StackedPage>
         </div>
 

@@ -71,7 +71,7 @@ export function FaqView() {
         <div className="mx-auto w-full max-w-4xl">
           <Reveal y={22} blur={2} viewportMargin="35% 0px 20%">
             <div className="text-center">
-              <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.28em] text-white/45 sm:text-xs">
+              <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.28em] text-white/60 sm:text-xs">
                 ( FAQ )
               </p>
               <h1 className="mt-8 font-sans text-6xl font-extrabold leading-[0.84] tracking-normal text-white sm:text-8xl lg:text-9xl">

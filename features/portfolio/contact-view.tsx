@@ -36,7 +36,7 @@ export function ContactView() {
       <section className="flex flex-1 items-center px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
         <div className="mx-auto w-full max-w-7xl text-center">
           <Reveal y={18} blur={2}>
-            <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.34em] text-white/45 sm:text-xs">
+            <p className="font-jetbrains text-[10px] font-semibold uppercase tracking-[0.34em] text-white/60 sm:text-xs">
               Get in touch
             </p>
           </Reveal>
@@ -44,13 +44,13 @@ export function ContactView() {
           <Reveal delay={0.08} y={28} blur={3}>
             <h1 className="mt-8 font-sans text-[clamp(3.5rem,13vw,6rem)] font-extrabold leading-[0.9] tracking-normal text-white md:text-8xl lg:text-9xl">
               <span className="block">Ready to</span>
-              <span className="block text-white/20">grow your</span>
+              <span className="block text-white/50">grow your</span>
               <span className="block">business?</span>
             </h1>
           </Reveal>
 
           <Reveal delay={0.16} y={20} blur={2}>
-            <p className="mx-auto mt-9 max-w-3xl text-base leading-7 text-white/50 sm:text-lg sm:leading-8">
+            <p className="mx-auto mt-9 max-w-3xl text-base leading-7 text-white/60 sm:text-lg sm:leading-8">
               I work with small businesses across the USA and Europe. Whether
               you need a new website, better SEO or profitable ad campaigns,
               let&apos;s talk.
@@ -93,7 +93,7 @@ export function ContactView() {
                     rel={external ? "noreferrer" : undefined}
                     aria-label={item.label}
                     title={item.label}
-                    className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-all duration-[320ms] hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
+                    className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-colors duration-[320ms] hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
                   >
                     {item.icon}
                   </a>
@@ -104,7 +104,7 @@ export function ContactView() {
         </div>
       </section>
 
-      <footer className="border-t border-white/10 px-5 py-5 text-[10px] uppercase tracking-[0.18em] text-white/35 sm:px-8 lg:px-12">
+      <footer className="border-t border-white/10 px-5 py-5 text-[10px] uppercase tracking-[0.18em] text-white/60 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <p>© 2026 Bilal Asif</p>
           <p className="text-right">Digital Growth Partner</p>

@@ -33,7 +33,7 @@ export function ProcessView() {
                 blur={2}
               >
                 <div className="grid grid-cols-[2.5rem_1fr] gap-4 sm:grid-cols-[3rem_1fr] sm:gap-5 lg:grid-cols-[2.5rem_1fr] lg:gap-6 lg:border-t lg:border-ink/10 lg:py-5">
-                  <span className="pt-1 text-sm font-medium tabular-nums text-ink/30 sm:text-base">
+                  <span className="pt-1 text-sm font-medium tabular-nums text-ink/60 sm:text-base">
                     0{index + 1}
                   </span>
                   <div>

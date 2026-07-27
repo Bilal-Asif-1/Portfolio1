@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { MOTION } from "@/components/motion";
 import { ExperienceLink } from "@/components/experience-link";
-import portraitImage from "@/public/bilal-asif-portrait-2026-v4.webp";
+import portraitImage from "@/public/bilal-asif-portrait-optimized.webp";
 
 export function HomeIntro() {
   const reducedMotion = useReducedMotion();
@@ -61,6 +61,7 @@ export function HomeIntro() {
                 priority
                 fetchPriority="high"
                 placeholder="blur"
+                quality={65}
                 sizes="(min-width: 1024px) min(700px, 70vw), (min-width: 640px) min(84vw, 760px), min(145vw, 650px)"
                 className="portrait-image w-full object-contain"
               />
@@ -85,7 +86,7 @@ export function HomeIntro() {
         <ExperienceLink
           href="/growth"
           aria-label="Continue to Grow Your Business Online"
-          className="absolute bottom-5 right-0 z-30 flex items-center gap-2 text-ink/45 transition-colors duration-[240ms] hover:text-ink sm:bottom-7 lg:bottom-9"
+          className="absolute bottom-5 right-0 z-30 flex items-center gap-2 text-ink/60 transition-colors duration-[240ms] hover:text-ink sm:bottom-7 lg:bottom-9"
         >
           <span className="hidden font-jetbrains text-[9px] font-medium uppercase tracking-[0.2em] sm:inline">
             Explore the portfolio
