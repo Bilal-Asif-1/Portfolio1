@@ -335,19 +335,80 @@ export const FAQS: readonly Faq[] = [
   }
 ];
 
+const SITE_URL = "https://www.bilalasiftech.com";
+const PERSON_ID = `${SITE_URL}/#bilal-asif`;
+const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v4.webp`;
+
 export const PROFESSIONAL_SERVICE_SCHEMA = {
   "@context": "https://schema.org",
-  "@type": "ProfessionalService",
-  name: "Bilal Asif",
-  url: "https://www.bilalasiftech.com",
-  email: CONTACT.email,
-  areaServed: ["United States", "Europe"],
-  sameAs: [CONTACT.instagram, CONTACT.linkedin],
-  serviceType: [
-    "Website design for small businesses",
-    "SEO services for small businesses",
-    "Google Ads landing pages",
-    "Ecommerce website development",
-    "Digital marketing for restaurants"
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: "Bilal Asif",
+      description:
+        "Portfolio of Bilal Asif, a freelance website developer and digital growth partner for small businesses.",
+      publisher: { "@id": PERSON_ID },
+      inLanguage: "en"
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": `${SITE_URL}/#profile-page`,
+      url: SITE_URL,
+      name: "Bilal Asif — Freelance Website Developer and Digital Growth Partner",
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      primaryImageOfPage: { "@id": `${SITE_URL}/#portrait` },
+      mainEntity: { "@id": PERSON_ID },
+      inLanguage: "en"
+    },
+    {
+      "@type": "ImageObject",
+      "@id": `${SITE_URL}/#portrait`,
+      url: PORTRAIT_URL,
+      contentUrl: PORTRAIT_URL,
+      caption:
+        "Bilal Asif, freelance website developer and digital growth partner",
+      creditText: "Bilal Asif",
+      creator: { "@id": PERSON_ID }
+    },
+    {
+      "@type": "Person",
+      "@id": PERSON_ID,
+      name: "Bilal Asif",
+      url: SITE_URL,
+      image: { "@id": `${SITE_URL}/#portrait` },
+      jobTitle: "Freelance Website Developer and Digital Growth Partner",
+      description:
+        "Bilal Asif helps small businesses grow through conversion-focused websites, ecommerce, SEO, Google Ads and Meta Ads.",
+      sameAs: [CONTACT.linkedin, CONTACT.instagram],
+      knowsAbout: [
+        "Website development",
+        "Search engine optimization",
+        "Ecommerce development",
+        "Google Ads",
+        "Meta Ads",
+        "Digital marketing",
+        "UI and UX design"
+      ]
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": `${SITE_URL}/#professional-service`,
+      name: "Bilal Asif Digital Growth Services",
+      url: SITE_URL,
+      image: { "@id": `${SITE_URL}/#portrait` },
+      email: CONTACT.email,
+      founder: { "@id": PERSON_ID },
+      areaServed: ["United States", "Europe"],
+      sameAs: [CONTACT.linkedin, CONTACT.instagram],
+      serviceType: [
+        "Website design for small businesses",
+        "SEO services for small businesses",
+        "Google Ads landing pages",
+        "Ecommerce website development",
+        "Digital marketing for restaurants"
+      ]
+    }
   ]
 } as const;

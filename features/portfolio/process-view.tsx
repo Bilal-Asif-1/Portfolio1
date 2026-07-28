@@ -4,7 +4,7 @@ import { SectionLabel } from "@/features/portfolio/page-primitives";
 
 export function ProcessView() {
   return (
-    <div className="min-h-[100svh] overflow-visible rounded-t-[28px] bg-white pt-20 shadow-[0_-18px_48px_rgba(0,0,0,0.16)] sm:rounded-t-[36px] sm:pt-24 lg:h-[100svh] lg:overflow-hidden">
+    <div className="min-h-[100svh] overflow-visible pt-20 sm:pt-24 lg:h-[100svh] lg:overflow-hidden">
       <section className="flex min-h-[100svh] items-start px-5 pb-24 pt-4 sm:px-8 sm:pb-28 sm:pt-7 lg:h-full lg:min-h-0 lg:items-center lg:px-12 lg:py-8">
         <div className="mx-auto grid w-full max-w-7xl gap-20 sm:gap-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
           <div>

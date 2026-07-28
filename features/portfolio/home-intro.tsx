@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import { MOTION } from "@/components/motion";
 import { ExperienceLink } from "@/components/experience-link";
-import portraitImage from "@/public/bilal-asif-portrait-optimized.webp";
+import portraitImage from "@/public/bilal-asif-portrait-2026-v4.webp";
 
 export function HomeIntro() {
   const reducedMotion = useReducedMotion();
@@ -52,7 +52,7 @@ export function HomeIntro() {
                 priority
                 fetchPriority="high"
                 placeholder="blur"
-                quality={65}
+                quality={75}
                 sizes="(min-width: 1024px) min(700px, 70vw), (min-width: 640px) min(84vw, 760px), min(145vw, 650px)"
                 className="portrait-image w-full object-contain"
               />
@@ -61,12 +61,10 @@ export function HomeIntro() {
         </div>
 
         <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
-          <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
-            I am
-          </p>
-          <p className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
-            Bilal Asif
-          </p>
+          <h1 className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+            <span className="block">I am</span>
+            <span className="block">Bilal Asif</span>
+          </h1>
         </div>
 
         <ExperienceLink

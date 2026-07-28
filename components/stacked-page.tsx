@@ -76,7 +76,6 @@ export function StackedPage({
 
   const pinTravel = Math.max(0, pinContentHeight - viewportHeight);
   const pinHold = pinAtEnd ? viewportHeight * 0.12 : 0;
-  const pinExitDrift = pinAtEnd ? viewportHeight : 0;
   const pinScrollRange = pinContentHeight + pinHold;
   const pinCompletion =
     pinTravel > 0 && pinScrollRange > 0 ? pinTravel / pinScrollRange : 1;
@@ -84,7 +83,6 @@ export function StackedPage({
     pinScrollRange > 0
       ? Math.min((pinTravel + pinHold) / pinScrollRange, 0.999)
       : 0.999;
-  const pinFadeEnd = pinFadeStart + (1 - pinFadeStart) * fadeOutAt;
 
   const lightEntryY = useTransform(
     entryProgress,
@@ -125,18 +123,13 @@ export function StackedPage({
     [0, fadeOutAt, 1],
     reducedMotion ? [0, 0, 0] : [0, 1, 1]
   );
-  const pinnedExitOpacity = useTransform(
-    pinProgress,
-    [pinFadeStart, pinFadeEnd, 1],
-    reducedMotion ? [1, 1, 1] : [1, 0, 0]
-  );
   const pinY = useTransform(
     pinProgress,
     pinCompletion < pinFadeStart
       ? [0, pinCompletion, pinFadeStart, 1]
       : [0, 1],
     pinCompletion < pinFadeStart
-      ? [0, -pinTravel, -pinTravel, -pinTravel - pinExitDrift]
+      ? [0, -pinTravel, -pinTravel, -pinTravel]
       : [0, -pinTravel]
   );
 
@@ -220,10 +213,18 @@ export function StackedPage({
         style={{
           opacity: preserveSurfaceOnExit || lightExitOverlay
             ? 1
-            : pinAtEnd && linearExitFade
-              ? pinnedExitOpacity
+            : pinAtEnd
+              ? 1
               : exitOpacity,
-          y: path === "/" ? 0 : tone === "dark" ? darkEntryY : lightEntryY,
+          // The process surface already enters through normal document flow.
+          // Adding a second scroll-linked translation made its white edge
+          // compete with the sticky services scene and visibly tremble.
+          y:
+            path === "/" || preserveSurfaceOnExit
+              ? 0
+              : tone === "dark"
+                ? darkEntryY
+                : lightEntryY,
           scale: mobileViewportActive ? 1 : exitScale,
           ...pinHeightStyle
         }}
@@ -232,7 +233,7 @@ export function StackedPage({
           <div className="relative min-h-[100svh]">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-t-[28px] bg-white shadow-[0_-18px_48px_rgba(0,0,0,0.16)] sm:rounded-t-[36px]"
+              className="pointer-events-none absolute inset-0 rounded-t-[16px] bg-white shadow-[0_-18px_48px_rgba(0,0,0,0.16)] sm:rounded-t-[20px]"
             />
             <motion.div
               className="relative z-[1]"
