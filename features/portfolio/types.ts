@@ -3,6 +3,7 @@ export type ContactDetails = {
   whatsapp: string;
   instagram: string;
   linkedin: string;
+  github: string;
 };
 
 export type Service = {
@@ -17,11 +18,13 @@ export type ProjectMetric = {
 };
 
 export type Project = {
+  slug: string;
   title: string;
   eyebrow: string;
   metric: string;
   description: string;
   image: StaticImageData;
+  imageUrl: string;
 };
 
 export type ProjectDetail = {
@@ -29,6 +32,7 @@ export type ProjectDetail = {
   requirements: string;
   solution: string;
   result: string;
+  stack?: string;
 };
 
 export type Package = {

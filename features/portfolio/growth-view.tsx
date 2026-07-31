@@ -19,7 +19,7 @@ export function GrowthView() {
             transition={{ duration: 0.82, ease: EASE }}
             className="growth-hero-kicker font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 sm:mb-9 sm:text-xs"
           >
-            Freelance Digital Growth Partner
+            Full-Stack Development, SEO and Digital Growth
           </motion.p>
 
           <h1 className="growth-hero-title font-sans text-5xl font-semibold leading-[0.86] tracking-normal sm:text-7xl md:text-8xl lg:text-[8.5rem] xl:text-[9.5rem]">
@@ -35,7 +35,7 @@ export function GrowthView() {
                   delay: 0.06
                 }}
               >
-                Grow Your
+                Build and Grow
               </motion.span>
             </span>
             <span className="block overflow-hidden pb-3">
@@ -50,16 +50,17 @@ export function GrowthView() {
                   delay: 0.14
                 }}
               >
-                <span className="business-online-pulse">Business Online</span>
+                <span className="business-online-pulse">Your Business</span>
               </motion.span>
             </span>
           </h1>
 
           <Reveal delay={0.3} y={22} blur={3}>
             <p className="growth-hero-copy mx-auto mt-7 max-w-3xl text-base leading-7 text-ink/60 sm:text-lg sm:leading-8">
-              I help small businesses in the USA &amp; Europe turn clicks into
-              customers through websites, e-commerce, SEO, and paid ads.
-              Friendly, reliable, and results-driven.
+              From strategy, branding and full-stack website or application
+              development to SEO, digital marketing, paid advertising,
+              optimization and ongoing support. I help businesses launch
+              stronger and keep growing after go-live.
             </p>
           </Reveal>
 

@@ -13,6 +13,7 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
   EASE,
+  FocusOnClick,
   FloatingScrollbar,
   getLenis,
   MOTION,
@@ -28,7 +29,6 @@ import {
 import { StackedPage } from "@/components/stacked-page";
 import { HomeIntro } from "@/features/portfolio/home-intro";
 import {
-  PROFESSIONAL_SERVICE_SCHEMA,
   SITE_NAV_ITEMS
 } from "@/features/portfolio/data";
 
@@ -365,17 +365,14 @@ export function PortfolioExperience() {
         <SmoothCursor />
         <main className="portfolio-experience relative min-h-screen overflow-x-clip bg-white text-ink">
           <SmoothScroll />
+          <FocusOnClick />
           <ScrollProgress />
           <FloatingScrollbar />
           <div className="noise" aria-hidden="true" />
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify(PROFESSIONAL_SERVICE_SCHEMA)
-            }}
-          />
-
-        <header className="pointer-events-none fixed inset-x-0 top-0 z-50 px-2 pt-3 sm:px-6 sm:pt-4">
+        <header
+          data-focus-navigation
+          className="pointer-events-none fixed inset-x-0 top-0 z-50 px-2 pt-3 sm:px-6 sm:pt-4"
+        >
           <motion.nav
             initial={{ y: -14, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -428,7 +425,7 @@ export function PortfolioExperience() {
 
         <div className="relative">
           <StackedPage path="/" tone="light" layer={1} fadeOutAt={0.72}>
-            <HomeIntro />
+            <HomeIntro isPrimaryHeading={initialPath === "/"} />
           </StackedPage>
           <StackedPage path="/growth" tone="light" layer={2}>
             <DeferredScene path="/growth" activePath={activePath}>

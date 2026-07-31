@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { EASE, MOTION, Reveal } from "@/components/motion";
 import { SERVICES } from "@/features/portfolio/data";
@@ -68,41 +68,37 @@ function ServiceRow({
           </motion.span>
         </button>
 
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              id={`service-details-${index}`}
-              role="button"
-              tabIndex={0}
-              aria-label={`Close ${service.title} details`}
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: MOTION.duration.base, ease: EASE }}
-              className="cursor-pointer overflow-hidden bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black/40"
-              onClick={onToggle}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  onToggle();
-                }
-              }}
-            >
-              <div className="pb-9 pl-[3.25rem] pr-5 sm:pb-10 sm:pl-[6.5rem] sm:pr-8 lg:pl-[6.5rem] lg:pr-12">
-                <div className="grid gap-5 border-t border-black/10 pt-6 sm:grid-cols-3 sm:gap-8 lg:gap-12">
-                  {service.details.map((detail) => (
-                    <p
-                      key={detail}
-                      className="relative pl-4 text-sm leading-6 text-black/60 before:absolute before:left-0 before:top-[0.65rem] before:h-1 before:w-1 before:rounded-full before:bg-black/45 sm:leading-7"
-                    >
-                      {detail}
-                    </p>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <motion.div
+          id={`service-details-${index}`}
+          role="button"
+          tabIndex={open ? 0 : -1}
+          aria-label={`Close ${service.title} details`}
+          aria-hidden={!open}
+          initial={false}
+          animate={{ height: open ? "auto" : 0, opacity: open ? 1 : 0 }}
+          transition={{ duration: MOTION.duration.base, ease: EASE }}
+          className="cursor-pointer overflow-hidden bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-black/40"
+          onClick={onToggle}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onToggle();
+            }
+          }}
+        >
+          <div className="pb-9 pl-[3.25rem] pr-5 sm:pb-10 sm:pl-[6.5rem] sm:pr-8 lg:pl-[6.5rem] lg:pr-12">
+            <div className="grid gap-5 border-t border-black/10 pt-6 sm:grid-cols-3 sm:gap-8 lg:gap-12">
+              {service.details.map((detail) => (
+                <p
+                  key={detail}
+                  className="relative pl-4 text-sm leading-6 text-black/60 before:absolute before:left-0 before:top-[0.65rem] before:h-1 before:w-1 before:rounded-full before:bg-black/45 sm:leading-7"
+                >
+                  {detail}
+                </p>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </article>
     </Reveal>
   );

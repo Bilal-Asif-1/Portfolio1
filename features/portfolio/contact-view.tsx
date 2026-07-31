@@ -1,6 +1,7 @@
 import { ArrowUpRight, Mail } from "lucide-react";
 import { Magnetic, Reveal } from "@/components/motion";
 import {
+  GitHubIcon,
   InstagramIcon,
   LinkedInIcon,
   WhatsAppIcon
@@ -23,6 +24,11 @@ export function ContactView() {
       label: "LinkedIn",
       href: CONTACT.linkedin,
       icon: <LinkedInIcon />
+    },
+    {
+      label: "GitHub",
+      href: CONTACT.github,
+      icon: <GitHubIcon />
     },
     {
       label: "Email",
@@ -52,8 +58,9 @@ export function ContactView() {
           <Reveal delay={0.16} y={20} blur={2}>
             <p className="mx-auto mt-9 max-w-3xl text-base leading-7 text-white/60 sm:text-lg sm:leading-8">
               I work with small businesses across the USA and Europe. Whether
-              you need a new website, better SEO or profitable ad campaigns,
-              let&apos;s talk.
+              you need a full-stack web application, technical SEO, web
+              performance optimization or a growth-focused website, let&apos;s
+              talk.
             </p>
           </Reveal>
 
@@ -107,7 +114,7 @@ export function ContactView() {
       <footer className="border-t border-white/10 px-5 py-5 text-[10px] uppercase tracking-[0.18em] text-white/60 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <p>© 2026 Bilal Asif</p>
-          <p className="text-right">Digital Growth Partner</p>
+          <p className="text-right">Full-Stack Developer and SEO Specialist</p>
         </div>
       </footer>
     </div>

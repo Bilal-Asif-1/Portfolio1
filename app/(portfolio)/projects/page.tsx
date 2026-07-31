@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
+import { JsonLd } from "@/app/json-ld";
+import { createPageMetadata } from "@/app/seo";
+import { PROJECT_PORTFOLIO_SCHEMA } from "@/features/portfolio/data";
 
-export const metadata: Metadata = {
-  title: "Selected Work",
+export const metadata = createPageMetadata({
+  title: "Full-Stack Developer Portfolio",
   description:
-    "Selected website, ecommerce, hospitality, fitness and local business projects by Bilal Asif.",
-  alternates: { canonical: "/projects" }
-};
+    "Selected full-stack website, ecommerce, hospitality, fitness and local business projects by Bilal Asif.",
+  path: "/projects"
+});
 
 export default function ProjectsPage() {
-  return null;
+  return <JsonLd data={PROJECT_PORTFOLIO_SCHEMA} />;
 }

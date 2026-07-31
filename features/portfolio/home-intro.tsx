@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { ArrowDown } from "lucide-react";
 import {
   motion,
@@ -10,9 +11,13 @@ import {
 } from "framer-motion";
 import { MOTION } from "@/components/motion";
 import { ExperienceLink } from "@/components/experience-link";
-import portraitImage from "@/public/bilal-asif-portrait-2026-v4.webp";
+import portraitImage from "@/public/bilal-asif-portrait-2026-v5.webp";
 
-export function HomeIntro() {
+export function HomeIntro({
+  isPrimaryHeading = true
+}: {
+  isPrimaryHeading?: boolean;
+}) {
   const reducedMotion = useReducedMotion();
   const portraitX = useMotionValue(0);
   const portraitY = useMotionValue(0);
@@ -52,7 +57,7 @@ export function HomeIntro() {
                 priority
                 fetchPriority="high"
                 placeholder="blur"
-                quality={75}
+                quality={85}
                 sizes="(min-width: 1024px) min(700px, 70vw), (min-width: 640px) min(84vw, 760px), min(145vw, 650px)"
                 className="portrait-image w-full object-contain"
               />
@@ -61,10 +66,13 @@ export function HomeIntro() {
         </div>
 
         <div className="absolute bottom-4 left-0 z-30 sm:bottom-6 lg:bottom-8">
-          <h1 className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          <NameHeading
+            isPrimaryHeading={isPrimaryHeading}
+            className="intro-name-optical whitespace-nowrap text-[clamp(2.1rem,10vw,3rem)] leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl"
+          >
             <span className="block">I am</span>
             <span className="block">Bilal Asif</span>
-          </h1>
+          </NameHeading>
         </div>
 
         <ExperienceLink
@@ -90,4 +98,17 @@ export function HomeIntro() {
       </div>
     </section>
   );
+}
+
+function NameHeading({
+  isPrimaryHeading,
+  className,
+  children
+}: {
+  isPrimaryHeading: boolean;
+  className: string;
+  children: ReactNode;
+}) {
+  if (isPrimaryHeading) return <h1 className={className}>{children}</h1>;
+  return <p className={className}>{children}</p>;
 }

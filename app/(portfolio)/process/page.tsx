@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/app/seo";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "My Growth Process",
   description:
     "A strategy-first process for building and improving digital experiences that convert and keep performing.",
-  alternates: { canonical: "/process" }
-};
+  path: "/process"
+});
 
 export default function ProcessPage() {
   return null;

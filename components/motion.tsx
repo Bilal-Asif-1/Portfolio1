@@ -248,6 +248,132 @@ export function SmoothScroll() {
   return null;
 }
 
+const FOCUS_ITEM_SELECTOR =
+  '[data-focus-target], [data-focus-on-click], [data-project-trigger], [data-timeline-item], .service-row, article, section';
+const FOCUS_CONTROL_SELECTOR =
+  'a, button, [role="button"], summary, input, textarea, select, [tabindex]:not([tabindex="-1"])';
+
+function getFocusTarget(origin: Element) {
+  if (origin.closest('[data-focus-on-click="false"], [data-dialog-close]')) {
+    return null;
+  }
+
+  if (origin.closest('[role="dialog"], [aria-modal="true"], [data-intro-splash]')) {
+    return null;
+  }
+
+  const control = origin.closest<HTMLElement>(FOCUS_CONTROL_SELECTOR);
+  if (control?.closest('[data-focus-navigation]')) return null;
+
+  const link = control?.closest<HTMLAnchorElement>('a[href]');
+  if (link && !link.getAttribute('href')?.startsWith('#')) return null;
+
+  return (
+    origin.closest<HTMLElement>(FOCUS_ITEM_SELECTOR) ??
+    control ??
+    null
+  );
+}
+
+function scrollElementIntoFocus(element: HTMLElement) {
+  if (!element.isConnected) return;
+  const navbar = document.querySelector<HTMLElement>('[data-focus-navigation]');
+  const navbarBottom = Math.max(16, navbar?.getBoundingClientRect().bottom ?? 0);
+  const viewportBottom = window.innerHeight - 20;
+  const availableHeight = Math.max(1, viewportBottom - navbarBottom);
+  const bounds = element.getBoundingClientRect();
+  const isFullyVisible =
+    bounds.top >= navbarBottom && bounds.bottom <= viewportBottom;
+
+  if (isFullyVisible || bounds.height <= 0) return;
+
+  const maxScroll = Math.max(
+    0,
+    document.documentElement.scrollHeight - window.innerHeight
+  );
+  const targetTop =
+    bounds.height <= availableHeight
+      ? navbarBottom + (availableHeight - bounds.height) / 2
+      : navbarBottom + 20;
+  const destination = Math.min(
+    maxScroll,
+    Math.max(0, window.scrollY + bounds.top - targetTop)
+  );
+
+  if (Math.abs(destination - window.scrollY) < 2) return;
+
+  const reduceMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches;
+  const lenis = getLenis();
+  if (lenis && !reduceMotion) {
+    lenis.scrollTo(destination, { duration: 0.72, force: true });
+    return;
+  }
+
+  window.scrollTo({
+    top: destination,
+    behavior: reduceMotion ? 'auto' : 'smooth'
+  });
+}
+
+export function FocusOnClick() {
+  useEffect(() => {
+    let frame = 0;
+    let resizeTimer = 0;
+    let stopObservingTimer = 0;
+    let observer: ResizeObserver | null = null;
+
+    const clearPendingFocus = () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(resizeTimer);
+      window.clearTimeout(stopObservingTimer);
+      observer?.disconnect();
+      observer = null;
+    };
+
+    const focusTarget = (target: HTMLElement) => {
+      clearPendingFocus();
+      frame = window.requestAnimationFrame(() => scrollElementIntoFocus(target));
+
+      // A short-lived observer lets expanding accordions and responsive cards
+      // settle before one final alignment, without persistent per-item work.
+      if (!('ResizeObserver' in window)) return;
+      observer = new ResizeObserver(() => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(() => {
+          frame = window.requestAnimationFrame(() =>
+            scrollElementIntoFocus(target)
+          );
+        }, 90);
+      });
+      observer.observe(target);
+      stopObservingTimer = window.setTimeout(() => {
+        observer?.disconnect();
+        observer = null;
+      }, 700);
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return;
+      const origin = event.target;
+      if (!(origin instanceof Element)) return;
+      const target = getFocusTarget(origin);
+      if (!target) return;
+
+      focusTarget(target);
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => {
+      clearPendingFocus();
+      document.removeEventListener('click', handleClick);
+    };
+  }, []);
+
+  return null;
+}
+
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
@@ -279,6 +405,7 @@ export function FloatingScrollbar() {
     (value) =>
       `calc(${value} * (var(--floating-scroll-height) - var(--floating-thumb-height)))`
   );
+
   return (
     <div className="floating-scrollbar" aria-hidden="true">
       <div className="floating-scrollbar-rail" />

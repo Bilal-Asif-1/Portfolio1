@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { EASE, MOTION, Reveal } from "@/components/motion";
 import { FAQS } from "@/features/portfolio/data";
@@ -41,22 +41,21 @@ function FaqRow({
             <Plus className="h-5 w-5" />
           </motion.span>
         </button>
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              id={`faq-answer-${index}`}
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: MOTION.duration.base, ease: EASE }}
-              className="overflow-hidden"
-            >
+        <motion.div
+          id={`faq-answer-${index}`}
+          aria-hidden={!open}
+          initial={false}
+          animate={{
+            height: open ? "auto" : 0,
+            opacity: open ? 1 : 0
+          }}
+          transition={{ duration: MOTION.duration.base, ease: EASE }}
+          className="overflow-hidden"
+        >
               <p className="max-w-3xl pb-7 text-sm leading-7 text-white/55 sm:pb-8 sm:text-base sm:leading-8">
                 {answer}
               </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </motion.div>
       </div>
     </Reveal>
   );

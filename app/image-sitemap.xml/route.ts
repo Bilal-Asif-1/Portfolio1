@@ -3,11 +3,11 @@ const SITE_URL = "https://www.bilalasiftech.com";
 const projectImages = [
   "/portfolio-cards/light/pulse-fit-mixed.webp",
   "/portfolio-cards/light/paw-palace-mixed.webp",
-  "/portfolio-cards/light/cocoa-crafted-mixed.webp",
+  "/portfolio-cards/technical/agroai.webp",
   "/portfolio-cards/light/aqua-gallery-v2.webp",
   "/portfolio-cards/light/spice-table-mixed.webp",
   "/portfolio-cards/light/nest-realty-mixed.webp",
-  "/portfolio-cards/light/azure-coast-v2.webp"
+  "/portfolio-cards/technical/kickspot.webp"
 ] as const;
 
 export const dynamic = "force-static";
@@ -17,7 +17,7 @@ export function GET() {
   <url>
     <loc>${SITE_URL}/</loc>
     <image:image>
-      <image:loc>${SITE_URL}/bilal-asif-portrait-2026-v4.webp</image:loc>
+      <image:loc>${SITE_URL}/bilal-asif-portrait-2026-v5.webp</image:loc>
     </image:image>
   </url>`;
 

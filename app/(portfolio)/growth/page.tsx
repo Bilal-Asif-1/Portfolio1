@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/app/seo";
 
-export const metadata: Metadata = {
-  title: "Grow Your Business Online",
+export const metadata = createPageMetadata({
+  title: "Full-Stack Development, SEO and Digital Growth Services",
   description:
-    "Websites, ecommerce, SEO and paid advertising for small businesses ready to turn online attention into customers.",
-  alternates: { canonical: "/growth" }
-};
+    "Build and grow your business with strategy, branding, full-stack development, SEO, digital marketing, paid advertising, optimization and ongoing support.",
+  path: "/growth"
+});
 
 export default function GrowthPage() {
   return null;

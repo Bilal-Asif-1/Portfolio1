@@ -1,12 +1,14 @@
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/app/seo";
+import { JsonLd } from "@/app/json-ld";
+import { SERVICE_CATALOG_SCHEMA } from "@/features/portfolio/data";
 
-export const metadata: Metadata = {
-  title: "Digital Growth Services",
+export const metadata = createPageMetadata({
+  title: "Full-Stack Development, AI and SEO Services",
   description:
-    "Eight practical services spanning website development, mobile apps, SEO, paid ads, email automation, branding and UI/UX.",
-  alternates: { canonical: "/services" }
-};
+    "Freelance full-stack web development, AI-powered web applications, technical SEO, web performance, paid ads and digital growth services.",
+  path: "/services"
+});
 
 export default function ServicesPage() {
-  return null;
+  return <JsonLd data={SERVICE_CATALOG_SCHEMA} />;
 }

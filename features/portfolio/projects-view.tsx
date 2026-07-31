@@ -4,14 +4,12 @@ import {
   useEffect,
   useRef,
   useState,
-  useSyncExternalStore,
   type PointerEvent as ReactPointerEvent
 } from "react";
 import Image from "next/image";
-import { createPortal } from "react-dom";
-import { ArrowRight, X } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
-  AnimatePresence,
   animate,
   motion,
   type MotionValue,
@@ -23,18 +21,14 @@ import {
 import { EASE, MOTION, Reveal } from "@/components/motion";
 import {
   FEATURED_PROJECTS,
-  PROJECT_DETAILS,
   PROJECT_METRICS
 } from "@/features/portfolio/data";
 import type { Project } from "@/features/portfolio/types";
-import { useDialogFocus } from "@/hooks/use-dialog-focus";
 import { ExperienceLink } from "@/components/experience-link";
 
 function wrapDistance(value: number, total: number) {
   return ((value + total / 2) % total + total) % total - total / 2;
 }
-
-const subscribeToHydration = () => () => {};
 
 function ProjectCard({
   cardIndex,
@@ -43,8 +37,7 @@ function ProjectCard({
   rotation,
   didDrag,
   loadPriority,
-  onCenter,
-  onOpen
+  onCenter
 }: {
   cardIndex: number;
   index: number;
@@ -53,7 +46,6 @@ function ProjectCard({
   didDrag: { current: boolean };
   loadPriority: "high" | "eager" | "lazy";
   onCenter: (index: number) => void;
-  onOpen: (card: Project) => void;
 }) {
   const position = useTransform(rotation, (value) =>
     wrapDistance(index - value, total)
@@ -82,6 +74,7 @@ function ProjectCard({
 
   return (
     <motion.div
+      data-focus-target
       className="stacked-project-card absolute left-1/2 top-8 h-[255px] w-[176px] overflow-hidden rounded-card sm:top-10 sm:h-[325px] sm:w-[218px] lg:top-12 lg:h-[380px] lg:w-[258px]"
       style={{ x, y, scale, opacity, zIndex, visibility, pointerEvents }}
       onClick={() => {
@@ -90,9 +83,7 @@ function ProjectCard({
     >
       <ProjectPoster
         card={FEATURED_PROJECTS[cardIndex]}
-        didDrag={didDrag}
         loadPriority={loadPriority}
-        onOpen={onOpen}
       />
     </motion.div>
   );
@@ -100,14 +91,10 @@ function ProjectCard({
 
 function ProjectPoster({
   card,
-  didDrag,
-  loadPriority,
-  onOpen
+  loadPriority
 }: {
   card: Project;
-  didDrag: { current: boolean };
   loadPriority: "high" | "eager" | "lazy";
-  onOpen: (card: Project) => void;
 }) {
   return (
     <div className="group relative h-full w-full overflow-hidden bg-white text-ink">
@@ -127,32 +114,26 @@ function ProjectPoster({
         <h2 className="project-card-heading max-w-[88%] font-sans text-[1.15rem] font-medium not-italic leading-none tracking-[-0.01em] text-white drop-shadow-sm sm:text-[1.35rem]">
           {card.title}
         </h2>
-        <button
-          type="button"
-          data-project-trigger="true"
+        <p className="sr-only">{card.description}</p>
+        <Link
+          href={`/projects/${card.slug}`}
           className="group/btn pointer-events-auto inline-flex w-fit items-center gap-2 rounded-full border border-white/85 bg-transparent py-1.5 pl-3.5 pr-1.5 text-left text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition-colors duration-[320ms] hover:bg-white hover:text-ink focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          aria-label={`Open ${card.title} project details`}
-          onClick={(event) => {
-            if (didDrag.current) return;
-            event.stopPropagation();
-            onOpen(card);
-          }}
+          aria-label={`Open ${card.title} case study`}
+          onClick={(event) => event.stopPropagation()}
         >
           <span>Details</span>
           <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full border border-white/85 bg-transparent text-white transition-colors duration-[320ms] group-hover/btn:border-ink group-hover/btn:bg-ink group-hover/btn:text-white">
             <ArrowRight className="h-3.5 w-3.5 transition-transform duration-[320ms] group-hover/btn:translate-x-0.5" />
           </span>
-        </button>
+        </Link>
       </div>
     </div>
   );
 }
 
 function ProjectsCarousel({
-  onOpen,
   reducedMotion
 }: {
-  onOpen: (card: Project) => void;
   reducedMotion: boolean;
 }) {
   const carouselCards = [...FEATURED_PROJECTS, ...FEATURED_PROJECTS];
@@ -391,7 +372,6 @@ function ProjectsCarousel({
                   : "lazy"
             }
             onCenter={centerCard}
-            onOpen={onOpen}
           />
         ))}
       </div>
@@ -461,144 +441,11 @@ function AnimatedMetric({
   );
 }
 
-function ProjectModal({
-  card,
-  onClose
-}: {
-  card: Project;
-  onClose: () => void;
-}) {
-  const dialogRef = useDialogFocus<HTMLElement>();
-  const details = PROJECT_DETAILS[card.title] ?? {
-    problem: `The business needed a clearer digital experience that could communicate its value and convert attention into ${card.metric.toLowerCase()}.`,
-    requirements:
-      "A fast mobile experience, clear information architecture, strong trust signals and an obvious next action.",
-    solution:
-      "A focused website concept combining premium visual direction, conversion-led content and an SEO-ready page structure.",
-    result:
-      "A stronger first impression, a simpler customer journey and more opportunities for qualified enquiries."
-  };
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-[150] flex items-center justify-center bg-ink/60 p-3 backdrop-blur-sm sm:p-6 lg:p-10"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: MOTION.duration.fast, ease: EASE }}
-      onClick={onClose}
-    >
-      <motion.article
-        ref={dialogRef}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="project-detail-title"
-        className="relative max-h-full w-full max-w-6xl overflow-hidden rounded-panel bg-white shadow-lift"
-        initial={{ opacity: 0, scale: 0.96, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.97, y: 18 }}
-        transition={{ duration: MOTION.duration.base, ease: EASE }}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <button
-          data-dialog-close
-          type="button"
-          className="fixed right-5 top-5 z-20 grid h-11 w-11 place-items-center rounded-full border border-ink/10 bg-white text-ink shadow-sm transition-colors duration-[320ms] hover:bg-ink hover:text-white sm:absolute sm:right-4 sm:top-4"
-          aria-label="Close project details"
-          onClick={onClose}
-        >
-          <X className="h-5 w-5" />
-        </button>
-
-        <div className="grid max-h-[calc(100svh-1.5rem)] overflow-y-auto overscroll-contain sm:max-h-[calc(100svh-3rem)] lg:max-h-[calc(100svh-5rem)] lg:grid-cols-[0.88fr_1.12fr]">
-          <div className="relative min-h-[280px] overflow-hidden bg-paper sm:min-h-[380px] lg:min-h-[680px]">
-            <Image
-              src={card.image}
-              alt={`${card.title} project visual`}
-              fill
-              placeholder="blur"
-              sizes="(min-width: 1024px) 44vw, 100vw"
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
-            <p className="absolute bottom-6 left-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
-              {card.eyebrow}
-            </p>
-          </div>
-          <div className="flex flex-col justify-center p-6 sm:p-9 lg:p-12">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-ink/60">
-              Project case study
-            </p>
-            <h2
-              id="project-detail-title"
-              className="mt-3 font-sans text-5xl font-light not-italic leading-[0.92] tracking-normal text-ink sm:text-6xl"
-            >
-              {card.title}
-            </h2>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-ink/60">
-              {card.description}
-            </p>
-            <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-2">
-              {[
-                ["Problem statement", details.problem],
-                ["User requirements", details.requirements],
-                ["Solution", details.solution],
-                ["Results", details.result]
-              ].map(([title, copy]) => (
-                <section key={title} className="border-t border-ink/10 pt-4">
-                  <h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink">
-                    {title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-6 text-ink/60">{copy}</p>
-                </section>
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.article>
-    </motion.div>
-  );
-}
-
 export function ProjectsView() {
   const reducedMotion = useReducedMotion();
-  const [selected, setSelected] = useState<Project | null>(null);
-  const hydrated = useSyncExternalStore(
-    subscribeToHydration,
-    () => true,
-    () => false
-  );
-
-  useEffect(() => {
-    if (!selected) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.history.pushState({ projectModal: true }, "");
-    const handlePopState = () => setSelected(null);
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") window.history.back();
-    };
-    window.addEventListener("popstate", handlePopState);
-    window.addEventListener("keydown", handleKey);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("popstate", handlePopState);
-      window.removeEventListener("keydown", handleKey);
-    };
-  }, [selected]);
-
-  const closeModal = () => {
-    if (window.history.state?.projectModal) {
-      window.history.back();
-    } else {
-      setSelected(null);
-    }
-  };
 
   return (
-    <>
-      <div className="min-h-0 bg-transparent pt-20 sm:pt-24 md:min-h-[100svh]">
+    <div className="min-h-0 bg-transparent pt-20 sm:pt-24 md:min-h-[100svh]">
         <section className="flex-1 overflow-x-clip px-5 pb-10 sm:px-8 lg:px-12">
           <div className="mx-auto grid max-w-7xl gap-8 sm:grid-cols-[1fr_auto] sm:items-end">
             <Reveal y={24} blur={3}>
@@ -621,10 +468,7 @@ export function ProjectsView() {
             </Reveal>
           </div>
 
-          <ProjectsCarousel
-            onOpen={setSelected}
-            reducedMotion={Boolean(reducedMotion)}
-          />
+          <ProjectsCarousel reducedMotion={Boolean(reducedMotion)} />
 
           <Reveal y={14} blur={1}>
             <dl className="mx-auto grid max-w-7xl grid-cols-4 py-9 sm:py-9 lg:py-10">
@@ -641,16 +485,9 @@ export function ProjectsView() {
               ))}
             </dl>
           </Reveal>
-        </section>
-      </div>
 
-      {hydrated &&
-        createPortal(
-          <AnimatePresence>
-            {selected && <ProjectModal card={selected} onClose={closeModal} />}
-          </AnimatePresence>,
-          document.body
-        )}
-    </>
+
+        </section>
+    </div>
   );
 }

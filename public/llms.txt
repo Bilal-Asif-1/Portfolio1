@@ -1,6 +1,6 @@
-# Bilal Asif — Digital Growth Portfolio
+# Bilal Asif Digital Growth Portfolio
 
-Bilal Asif is a freelance website designer and digital growth partner helping small businesses in the USA and Europe gain customers through conversion-focused websites, ecommerce, SEO, Google Ads, and Meta Ads.
+Bilal Asif is a freelance full-stack developer and SEO specialist helping small businesses in the USA and Europe through conversion-focused React, Next.js and Node.js websites, ecommerce, technical SEO, web performance optimization, Google Ads and Meta Ads.
 
 ## Main pages
 

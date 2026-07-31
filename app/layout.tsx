@@ -4,7 +4,9 @@ import {
   Hanken_Grotesk,
   JetBrains_Mono
 } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { IntroSplash } from "@/features/intro/intro-splash";
+import { createSocialImageUrl, SITE_URL } from "@/app/seo";
 import "./globals.css";
 
 const hankenGrotesk = Hanken_Grotesk({
@@ -28,56 +30,62 @@ const jetBrainsMono = JetBrains_Mono({
   weight: "variable"
 });
 
-const siteUrl = "https://www.bilalasiftech.com";
-
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Bilal Asif | Websites, SEO and Ads for Small Business Growth",
+    default: "Bilal Asif | Full-Stack Development, SEO and Digital Growth",
     template: "%s | Bilal Asif"
   },
   description:
-    "Friendly freelance website designer and digital growth partner helping USA and European restaurants, food brands, local businesses and ecommerce stores get more customers with websites, SEO, Google Ads and Meta Ads.",
+    "Bilal Asif helps businesses plan, brand, build and grow with full-stack web development, applications, SEO, digital marketing, paid advertising, performance optimization and ongoing support.",
   keywords: [
-    "freelance website designer for small business",
-    "restaurant website designer",
-    "food business website design",
-    "ecommerce website developer",
-    "SEO services for small business",
-    "Google Ads for restaurants",
-    "local business digital marketing",
-    "Meta Ads freelancer",
-    "keyword research for small businesses",
-    "website and SEO freelancer"
+    "freelance full stack developer",
+    "MERN stack developer",
+    "React developer",
+    "Next.js developer",
+    "Node.js developer",
+    "TypeScript developer",
+    "AI full stack developer",
+    "technical SEO specialist",
+    "web performance optimization",
+    "freelance web developer"
   ],
-  authors: [{ name: "Bilal Asif", url: siteUrl }],
+  authors: [{ name: "Bilal Asif", url: SITE_URL }],
   creator: "Bilal Asif",
   publisher: "Bilal Asif",
-  alternates: {
-    canonical: "/"
-  },
+  alternates: { canonical: "/" },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: siteUrl,
+    url: SITE_URL,
     siteName: "Bilal Asif",
-    title: "Bilal Asif | Scale Your Business With Websites, SEO and Ads",
+    title: "Bilal Asif | Complete Digital Solutions for Business Growth",
     description:
-      "Conversion-focused websites, local SEO, ecommerce launch support and ad campaigns for small businesses in the USA and Europe.",
+      "A full digital partner for strategy, branding, full-stack development, SEO, paid advertising, optimization and ongoing support.",
     images: [
       {
-        url: "/opengraph-image",
+        url: createSocialImageUrl(
+          "Complete Digital Solutions for Business Growth",
+          "Strategy, branding, full-stack development, SEO, paid advertising and ongoing support."
+        ),
         width: 1200,
         height: 630,
-        alt: "Bilal Asif business growth portfolio"
+        alt: "Bilal Asif digital solutions portfolio"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bilal Asif | Websites, SEO and Ads for Business Growth",
+    title: "Bilal Asif | Full-Stack Development, SEO and Digital Growth",
     description:
-      "Helping small businesses get more orders, calls and customers with better websites, SEO and ads."
+      "From website development and applications to SEO, paid advertising, optimization and long-term digital growth support.",
+    images: [
+      createSocialImageUrl(
+        "Full-Stack Development, SEO and Digital Growth",
+        "From website development and applications to SEO, paid advertising, optimization and long-term digital growth support."
+      )
+    ]
   },
   robots: {
     index: true,
@@ -89,6 +97,11 @@ export const metadata: Metadata = {
       "max-snippet": -1
     }
   }
+};
+
+export const viewport = {
+  themeColor: "#f4f3ef",
+  colorScheme: "light"
 };
 
 export default function RootLayout({
@@ -105,6 +118,7 @@ export default function RootLayout({
         <IntroSplash />
         {children}
       </body>
+      <GoogleAnalytics gaId="G-EFJST279S8" />
     </html>
   );
 }

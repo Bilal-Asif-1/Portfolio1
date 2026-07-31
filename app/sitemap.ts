@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { FEATURED_PROJECTS } from "@/features/portfolio/data";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -12,10 +13,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/contact", priority: 0.9 }
   ];
 
-  return routes.map((route) => ({
-    url: `https://www.bilalasiftech.com${route.path}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly",
-    priority: route.priority
-  }));
+  return [
+    ...routes.map((route) => ({
+      url: `https://www.bilalasiftech.com${route.path}`,
+      changeFrequency: "weekly" as const,
+      priority: route.priority
+    })),
+    ...FEATURED_PROJECTS.map((project) => ({
+      url: `https://www.bilalasiftech.com/projects/${project.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7
+    }))
+  ];
 }

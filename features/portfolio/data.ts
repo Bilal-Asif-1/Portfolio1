@@ -8,9 +8,9 @@ import type {
   ProjectMetric,
   Service
 } from "./types";
+import agroAiImage from "@/public/portfolio-cards/technical/agroai.webp";
+import kickSpotImage from "@/public/portfolio-cards/technical/kickspot.webp";
 import aquaGalleryImage from "@/public/portfolio-cards/light/aqua-gallery-v2.webp";
-import azureCoastImage from "@/public/portfolio-cards/light/azure-coast-v2.webp";
-import cocoaCraftedImage from "@/public/portfolio-cards/light/cocoa-crafted-mixed.webp";
 import nestRealtyImage from "@/public/portfolio-cards/light/nest-realty-mixed.webp";
 import pawPalaceImage from "@/public/portfolio-cards/light/paw-palace-mixed.webp";
 import pulseFitImage from "@/public/portfolio-cards/light/pulse-fit-mixed.webp";
@@ -21,7 +21,8 @@ export const CONTACT: ContactDetails = {
   whatsapp:
     "https://wa.me/923207998854?text=Hi%20Bilal%2C%20I%20want%20to%20grow%20my%20business%20online.",
   instagram: "https://www.instagram.com/bilal.asif__/",
-  linkedin: "https://www.linkedin.com/in/bilal-asif-034272320/"
+  linkedin: "https://www.linkedin.com/in/bilal-asif-034272320/",
+  github: "https://github.com/Bilal-Asif-1"
 };
 
 export const SITE_NAV_ITEMS = [
@@ -35,23 +36,23 @@ export const SITE_NAV_ITEMS = [
 
 export const SERVICES: readonly Service[] = [
   {
-    title: "Website Development",
+    title: "Full-Stack Web Development",
     description:
-      "Fast, responsive, SEO-friendly websites engineered to turn visitors into customers.",
+      "Fast, responsive web applications built with React, Next.js, Node.js and TypeScript.",
     details: [
-      "A focused website gives your business a credible home, explains the offer clearly and guides visitors toward calling, booking or buying.",
-      "Responsive layouts, strong performance and a clean SEO foundation make it easier to reach and convert customers across every device.",
-      "It delivers the best long-term value when content, security and key pages are kept current after launch."
+      "I build conversion-focused websites and full-stack applications with clear user journeys, responsive interfaces and reliable front-end and back-end foundations.",
+      "React, Next.js, Node.js and TypeScript support maintainable interfaces, API integrations and the practical features a growing business needs.",
+      "Responsive layouts, strong performance and a clean SEO foundation make it easier to reach and convert customers across every device."
     ]
   },
   {
-    title: "Mobile App Development",
+    title: "AI-Powered Web Applications",
     description:
-      "FlutterFlow-powered Android and iOS applications designed to scale with your business.",
+      "Full-stack web applications that connect AI/ML capabilities, APIs and real business workflows.",
     details: [
-      "An app keeps your service close to customers through faster repeat actions, personalized experiences and useful notifications.",
-      "One thoughtfully planned product can serve both Android and iOS while remaining easier to improve as the business grows.",
-      "For simple information or occasional visits, a responsive website can be more efficient than asking customers to install an app."
+      "I design practical web applications that connect intelligent features, third-party APIs and responsive interfaces around a clear business use case.",
+      "Experience with MERN applications, REST APIs, real-time data and role-based workflows supports products that need more than a marketing website.",
+      "The right solution starts with the workflow: AI should solve a useful problem, not become an unnecessary layer of complexity."
     ]
   },
   {
@@ -85,7 +86,7 @@ export const SERVICES: readonly Service[] = [
     ]
   },
   {
-    title: "Email Marketing & Automation",
+    title: "Email Marketing and Automation",
     description:
       "Email automation, customer journeys, lead nurturing and CRM integration.",
     details: [
@@ -95,7 +96,7 @@ export const SERVICES: readonly Service[] = [
     ]
   },
   {
-    title: "Branding & Strategy",
+    title: "Branding and Strategy",
     description:
       "Brand identity, positioning, digital strategy and practical growth planning.",
     details: [
@@ -120,141 +121,164 @@ export const PROJECT_METRICS: readonly ProjectMetric[] = [
   { value: "10+", label: "Projects delivered" },
   { value: "95+", label: "Avg. Lighthouse score" },
   { value: "4.9/5", label: "Client satisfaction" },
-  { value: "3yrs", label: "Digital growth experience" }
+  { value: "3+", label: "Years of hands-on experience" }
 ];
 
-// This is the exact visible carousel order from the original indexed list.
 export const FEATURED_PROJECTS: readonly Project[] = [
   {
+    slug: "pulse-fit",
     title: "Pulse Fit",
     eyebrow: "Fitness Landing",
     metric: "New members",
     description:
-      "A focused fitness landing page that turns motivation into memberships and enquiries.",
-    image: pulseFitImage
+      "A conversion-focused fitness website designed to turn program discovery into membership enquiries across mobile and desktop.",
+    image: pulseFitImage,
+    imageUrl: "/portfolio-cards/light/pulse-fit-mixed.webp"
   },
   {
-    title: "Paw Palace",
-    eyebrow: "Pet Care Booking",
-    metric: "New clients",
+    slug: "pet-connect",
+    title: "PetConnect",
+    eyebrow: "Pet Adoption and Care Platform",
+    metric: "Care journeys",
     description:
-      "A friendly pet care experience that makes trusted grooming simple to discover and book.",
-    image: pawPalaceImage
+      "A responsive full-stack platform for pet listings, adoption requests, image uploads and secure user accounts.",
+    image: pawPalaceImage,
+    imageUrl: "/portfolio-cards/light/paw-palace-mixed.webp"
   },
   {
-    title: "Cocoa Crafted",
-    eyebrow: "Chocolate Website",
-    metric: "Online sweets",
+    slug: "agro-ai",
+    title: "AgroAI",
+    eyebrow: "AI-Powered Smart Farming",
+    metric: "AI workflows",
     description:
-      "A warm ecommerce experience crafted to turn chocolate lovers into loyal customers.",
-    image: cocoaCraftedImage
+      "A full-stack MERN application for AI-driven pest detection, crop recommendations and data-informed farm decisions.",
+    image: agroAiImage,
+    imageUrl: "/portfolio-cards/technical/agroai.webp"
   },
   {
+    slug: "aqua-gallery",
     title: "Aqua Gallery",
     eyebrow: "Aquarium Website",
     metric: "Visitor journeys",
     description:
-      "A bright aquarium experience designed around discovery, calm and effortless visits.",
-    image: aquaGalleryImage
+      "An accessible aquarium website that helps visitors discover exhibits, plan their visit and find ticket information with ease.",
+    image: aquaGalleryImage,
+    imageUrl: "/portfolio-cards/light/aqua-gallery-v2.webp"
   },
   {
+    slug: "spice-table",
     title: "Spice Table",
     eyebrow: "Restaurant Site",
     metric: "Table orders",
     description:
-      "A vibrant restaurant website built to make every dish irresistible and easy to order.",
-    image: spiceTableImage
+      "A restaurant website designed for menu discovery, online ordering, table bookings and stronger local search visibility.",
+    image: spiceTableImage,
+    imageUrl: "/portfolio-cards/light/spice-table-mixed.webp"
   },
   {
+    slug: "nest-realty",
     title: "Nest Realty",
     eyebrow: "Real Estate Leads",
     metric: "Buyer leads",
     description:
-      "A polished property experience that helps serious buyers find their perfect home.",
-    image: nestRealtyImage
+      "A real-estate lead-generation website that helps buyers explore listings, understand locations and contact the right agent.",
+    image: nestRealtyImage,
+    imageUrl: "/portfolio-cards/light/nest-realty-mixed.webp"
   },
   {
-    title: "Azure Coast",
-    eyebrow: "Ocean Retreat",
-    metric: "Luxury stays",
+    slug: "kickspot",
+    title: "KickSpot",
+    eyebrow: "Multi-Vendor Sports Marketplace",
+    metric: "Real-time commerce",
     description:
-      "An airy coastal experience created to turn peaceful escapes into premium bookings.",
-    image: azureCoastImage
+      "A TypeScript-based MERN marketplace with secure multi-role workflows, real-time notifications and optimized data access.",
+    image: kickSpotImage,
+    imageUrl: "/portfolio-cards/technical/kickspot.webp"
   }
 ];
 
 export const PROJECT_DETAILS: Readonly<Record<string, ProjectDetail>> = {
-  "Cocoa Crafted": {
+  AgroAI: {
     problem:
-      "The chocolate brand needed to feel premium online while making gifting and product discovery simple.",
+      "Farmers need timely, practical guidance when pests, crop conditions and changing weather affect day-to-day decisions.",
     requirements:
-      "A mobile-first store, clear gift categories, delivery information and product pages that build trust.",
+      "AI-powered pest detection, crop recommendations, real-time weather data, inventory support and secure workflows for different user roles.",
     solution:
-      "An editorial ecommerce experience with collection-led navigation, product storytelling and strong purchase calls to action.",
+      "A full-stack MERN application that combines AI/ML integration, REST APIs, responsive React interfaces and role-based access for farmers, agronomists and administrators.",
     result:
-      "A clearer path from discovery to checkout, stronger premium positioning and better repeat-order potential."
+      "A single workflow for turning field observations and real-time data into more informed farm-management decisions.",
+    stack:
+      "MongoDB, Express.js, React, Node.js, REST APIs, AI/ML integration and Weather API"
+  },
+  KickSpot: {
+    problem:
+      "A multi-vendor sports marketplace needs separate buyer, seller and administrator workflows without compromising speed, access control or real-time visibility.",
+    requirements:
+      "Secure authentication, role-based access control, REST APIs, real-time order and inventory notifications, and efficient database access.",
+    solution:
+      "A TypeScript-based MERN application with JWT authentication, Redux Toolkit state management, Socket.IO notifications and MySQL indexing and query optimization.",
+    result:
+      "A production-grade marketplace workflow with real-time updates and an approximately 35% reduction in average API response time.",
+    stack:
+      "MongoDB, Express.js, React, Node.js, TypeScript, Redux Toolkit, Socket.IO, MySQL and JWT"
+  },
+  PetConnect: {
+    problem:
+      "Pet adoption needs a clear, trustworthy path from discovering a pet to securely submitting an adoption request.",
+    requirements:
+      "Responsive pet listings, image uploads, adoption-request workflows and secure user accounts.",
+    solution:
+      "A full-stack web application with a responsive React interface, Node.js and Express APIs, MongoDB data storage and JWT authentication.",
+    result:
+      "A focused platform that brings discovery, requests and care-related interactions into one responsive experience.",
+    stack:
+      "React, Node.js, Express.js, MongoDB, Tailwind CSS and JWT authentication"
   },
   "Aqua Gallery": {
     problem:
-      "Visitors needed an easier way to discover exhibits, plan a visit and understand the aquarium experience.",
+      "Aquarium visitors needed an easier way to explore exhibits, understand the experience and plan a visit before arriving.",
     requirements:
-      "Simple visit planning, exhibit highlights, ticket calls to action and a calm visual experience across devices.",
+      "A mobile-friendly aquarium website with exhibit highlights, ticket prompts, practical visit information and clear navigation.",
     solution:
-      "A bright content system that prioritizes key attractions, visit information and conversion-focused ticket journeys.",
+      "A bright, accessible content experience that prioritizes attractions, visit planning and conversion-focused ticket journeys across devices.",
     result:
-      "Faster access to essential information, stronger visitor confidence and a smoother route to ticket booking."
+      "A clearer visitor journey, faster access to essential information and a smoother path to ticket booking."
   },
   "Spice Table": {
     problem:
-      "The restaurant needed its food quality and atmosphere to translate online without slowing down ordering.",
+      "The restaurant needed its food quality and atmosphere to translate online while keeping ordering and reservations friction-free.",
     requirements:
-      "A visual menu, location details, mobile ordering, reservations and search-friendly restaurant pages.",
+      "A visually led restaurant website with menu discovery, location details, online ordering, table booking and local SEO-ready pages.",
     solution:
-      "A vibrant restaurant experience with dish-led storytelling and direct paths to orders and table bookings.",
+      "A vibrant, mobile-first restaurant experience that uses dish-led storytelling and direct paths to orders and reservations.",
     result:
-      "More appetizing product discovery, fewer steps to order and stronger local search visibility."
+      "More engaging menu discovery, fewer steps to order and a stronger foundation for restaurant local search visibility."
   },
   "Pulse Fit": {
     problem:
-      "Potential members were interested but lacked a clear reason and simple next step to join the fitness program.",
+      "Potential members needed a clearer reason to join and a simpler next step from fitness-program interest to enquiry.",
     requirements:
-      "Clear membership value, class information, trainer trust signals and an easy mobile enquiry flow.",
+      "A high-converting fitness landing page with membership value, class information, trainer trust signals and a simple mobile enquiry flow.",
     solution:
-      "A focused landing experience that connects fitness goals with programs, proof and high-intent membership calls to action.",
+      "A responsive fitness website experience that connects goals with programs, proof points and high-intent membership calls to action.",
     result:
-      "A more persuasive membership journey with clearer choices and stronger enquiry potential."
+      "A more persuasive membership journey with clearer choices and stronger potential for qualified fitness enquiries."
   },
   "Nest Realty": {
     problem:
-      "Property buyers needed a polished way to explore listings and contact the right agent without friction.",
+      "Property buyers needed a polished way to explore listings, understand location context and contact the right agent without friction.",
     requirements:
-      "Searchable properties, clear location context, agent credibility and fast lead capture on mobile.",
+      "A responsive real-estate website with searchable properties, clear location context, agent credibility and fast mobile lead capture.",
     solution:
-      "A clean property experience with focused listing content, lifestyle imagery and strategically placed enquiry actions.",
+      "A clean property-search experience with focused listing content, lifestyle imagery and strategically placed enquiry actions.",
     result:
-      "Higher-quality buyer journeys, stronger agent trust and easier conversion from browsing to enquiry."
-  },
-  "Azure Coast": {
-    problem:
-      "The retreat needed to communicate its premium atmosphere while making availability and booking feel effortless.",
-    requirements:
-      "Immersive accommodation pages, amenities, location context, availability prompts and mobile-first booking.",
-    solution:
-      "An airy hospitality experience combining editorial imagery with concise information and clear booking pathways.",
-    result:
-      "Stronger luxury positioning, better-informed guests and a shorter path from inspiration to reservation."
-  },
-  "Paw Palace": {
-    problem:
-      "Pet owners needed reassurance, transparent service choices and a convenient way to request grooming appointments.",
-    requirements:
-      "Service details, trust signals, pet-friendly branding, location information and quick appointment requests.",
-    solution:
-      "A warm booking experience that presents services clearly and keeps the appointment action visible throughout.",
-    result:
-      "Greater customer confidence, easier service selection and more direct booking opportunities."
+      "A stronger buyer journey, clearer agent trust signals and an easier route from browsing property listings to enquiry."
   }
 };
+
+export function getProjectBySlug(slug: string) {
+  return FEATURED_PROJECTS.find((project) => project.slug === slug);
+}
 
 export const PACKAGES: readonly Package[] = [
   {
@@ -337,7 +361,7 @@ export const FAQS: readonly Faq[] = [
 
 const SITE_URL = "https://www.bilalasiftech.com";
 const PERSON_ID = `${SITE_URL}/#bilal-asif`;
-const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v4.webp`;
+const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v5.webp`;
 
 export const PROFESSIONAL_SERVICE_SCHEMA = {
   "@context": "https://schema.org",
@@ -348,7 +372,7 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       url: SITE_URL,
       name: "Bilal Asif",
       description:
-        "Portfolio of Bilal Asif, a freelance website developer and digital growth partner for small businesses.",
+        "Portfolio of Bilal Asif, a freelance full-stack developer and SEO specialist for growing businesses.",
       publisher: { "@id": PERSON_ID },
       inLanguage: "en"
     },
@@ -356,7 +380,7 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       "@type": "ProfilePage",
       "@id": `${SITE_URL}/#profile-page`,
       url: SITE_URL,
-      name: "Bilal Asif — Freelance Website Developer and Digital Growth Partner",
+      name: "Bilal Asif, Full-Stack Developer and Digital Growth Specialist",
       isPartOf: { "@id": `${SITE_URL}/#website` },
       primaryImageOfPage: { "@id": `${SITE_URL}/#portrait` },
       mainEntity: { "@id": PERSON_ID },
@@ -368,7 +392,7 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       url: PORTRAIT_URL,
       contentUrl: PORTRAIT_URL,
       caption:
-        "Bilal Asif, freelance website developer and digital growth partner",
+        "Bilal Asif, freelance full-stack developer and SEO specialist",
       creditText: "Bilal Asif",
       creator: { "@id": PERSON_ID }
     },
@@ -378,12 +402,19 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       name: "Bilal Asif",
       url: SITE_URL,
       image: { "@id": `${SITE_URL}/#portrait` },
-      jobTitle: "Freelance Website Developer and Digital Growth Partner",
+      jobTitle: "Freelance Full-Stack Developer and Digital Growth Specialist",
       description:
-        "Bilal Asif helps small businesses grow through conversion-focused websites, ecommerce, SEO, Google Ads and Meta Ads.",
-      sameAs: [CONTACT.linkedin, CONTACT.instagram],
+        "Bilal Asif helps businesses plan, build, launch and grow through full-stack development, SEO, digital marketing, paid advertising and ongoing optimization.",
+      sameAs: [CONTACT.github, CONTACT.linkedin, CONTACT.instagram],
       knowsAbout: [
-        "Website development",
+        "Full-stack web development",
+        "React",
+        "Next.js",
+        "Node.js",
+        "TypeScript",
+        "MERN stack",
+        "REST API development",
+        "Web performance optimization",
         "Search engine optimization",
         "Ecommerce development",
         "Google Ads",
@@ -401,9 +432,13 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       email: CONTACT.email,
       founder: { "@id": PERSON_ID },
       areaServed: ["United States", "Europe"],
-      sameAs: [CONTACT.linkedin, CONTACT.instagram],
+      sameAs: [CONTACT.github, CONTACT.linkedin, CONTACT.instagram],
       serviceType: [
-        "Website design for small businesses",
+        "Full-stack web development",
+        "React and Next.js development",
+        "Node.js web application development",
+        "AI-powered web applications",
+        "Technical SEO and web performance optimization",
         "SEO services for small businesses",
         "Google Ads landing pages",
         "Ecommerce website development",
@@ -411,4 +446,61 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       ]
     }
   ]
+} as const;
+
+export const FAQ_PAGE_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${SITE_URL}/faq#faq`,
+  url: `${SITE_URL}/faq`,
+  mainEntity: FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer
+    }
+  }))
+} as const;
+
+export const SERVICE_CATALOG_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": `${SITE_URL}/services#service-catalog`,
+  url: `${SITE_URL}/services`,
+  name: "Bilal Asif Digital Services",
+  description:
+    "Full-stack development, SEO, digital marketing, paid advertising, branding and ongoing digital support services.",
+  itemListElement: SERVICES.map((service, position) => ({
+    "@type": "ListItem",
+    position: position + 1,
+    item: {
+      "@type": "Service",
+      name: service.title,
+      description: service.description,
+      provider: { "@id": `${SITE_URL}/#professional-service` },
+      areaServed: ["United States", "Europe"]
+    }
+  }))
+} as const;
+
+export const PROJECT_PORTFOLIO_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": `${SITE_URL}/projects#portfolio`,
+  name: "Bilal Asif Full-Stack Development Portfolio",
+  description:
+    "Selected full-stack, AI-powered and ecommerce web application projects by Bilal Asif.",
+  itemListElement: FEATURED_PROJECTS.map((project, position) => ({
+    "@type": "ListItem",
+    position: position + 1,
+    item: {
+      "@type": "CreativeWork",
+      name: project.title,
+      url: `${SITE_URL}/projects/${project.slug}`,
+      description: project.description,
+      image: `${SITE_URL}${project.imageUrl}`,
+      keywords: PROJECT_DETAILS[project.title]?.stack
+    }
+  }))
 } as const;
