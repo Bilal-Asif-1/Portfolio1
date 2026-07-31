@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { CONTACT, PACKAGES } from "@/features/portfolio/data";
 import { SectionLabel } from "@/features/portfolio/page-primitives";
 import { Reveal } from "@/components/motion";
+import { LeadLink } from "@/components/lead-link";
 
 export function PackagesView() {
   return (
@@ -57,8 +58,9 @@ export function PackagesView() {
                     >
                       {item.bestFor}
                     </p>
-                    <a
+                    <LeadLink
                       href={CONTACT.whatsapp}
+                      leadSource="whatsapp"
                       target="_blank"
                       rel="noreferrer"
                       className={`my-7 block rounded-2xl border px-4 py-4 text-center text-sm font-semibold transition-colors duration-[320ms] md:my-3 md:rounded-lg md:px-3 md:py-2 md:text-xs lg:rounded-xl lg:px-4 lg:py-2.5 lg:text-sm ${
@@ -68,7 +70,7 @@ export function PackagesView() {
                       }`}
                     >
                       Contact for a custom package
-                    </a>
+                    </LeadLink>
                     <ul className="mt-auto grid grid-cols-1 gap-y-5 md:grid-cols-2 md:gap-x-3 md:gap-y-2 lg:gap-x-4">
                       {item.includes.map((feature) => (
                         <li

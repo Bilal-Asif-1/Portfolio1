@@ -10,6 +10,10 @@ export type Service = {
   title: string;
   description: string;
   details: readonly string[];
+  relatedCaseStudies?: readonly {
+    title: string;
+    slug: string;
+  }[];
 };
 
 export type ProjectMetric = {

@@ -43,6 +43,10 @@ export const SERVICES: readonly Service[] = [
       "I build conversion-focused websites and full-stack applications with clear user journeys, responsive interfaces and reliable front-end and back-end foundations.",
       "React, Next.js, Node.js and TypeScript support maintainable interfaces, API integrations and the practical features a growing business needs.",
       "Responsive layouts, strong performance and a clean SEO foundation make it easier to reach and convert customers across every device."
+    ],
+    relatedCaseStudies: [
+      { title: "PetConnect", slug: "pet-connect" },
+      { title: "KickSpot", slug: "kickspot" }
     ]
   },
   {
@@ -53,7 +57,8 @@ export const SERVICES: readonly Service[] = [
       "I design practical web applications that connect intelligent features, third-party APIs and responsive interfaces around a clear business use case.",
       "Experience with MERN applications, REST APIs, real-time data and role-based workflows supports products that need more than a marketing website.",
       "The right solution starts with the workflow: AI should solve a useful problem, not become an unnecessary layer of complexity."
-    ]
+    ],
+    relatedCaseStudies: [{ title: "AgroAI", slug: "agro-ai" }]
   },
   {
     title: "SEO Services",
@@ -63,6 +68,10 @@ export const SERVICES: readonly Service[] = [
       "SEO connects your pages with the searches potential customers already make, bringing in traffic with stronger intent.",
       "Technical improvements, useful content and local optimization can compound into a dependable source of leads over time.",
       "Results are rarely instant and sustainable growth needs consistent work rather than shortcuts that risk future rankings."
+    ],
+    relatedCaseStudies: [
+      { title: "Spice Table", slug: "spice-table" },
+      { title: "Nest Realty", slug: "nest-realty" }
     ]
   },
   {

@@ -6,6 +6,7 @@ import {
 } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { IntroSplash } from "@/features/intro/intro-splash";
+import { WebVitals } from "@/components/web-vitals";
 import { createSocialImageUrl, SITE_URL } from "@/app/seo";
 import "./globals.css";
 
@@ -30,6 +31,8 @@ const jetBrainsMono = JetBrains_Mono({
   weight: "variable"
 });
 
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -53,6 +56,9 @@ export const metadata: Metadata = {
   authors: [{ name: "Bilal Asif", url: SITE_URL }],
   creator: "Bilal Asif",
   publisher: "Bilal Asif",
+  ...(googleSiteVerification
+    ? { verification: { google: googleSiteVerification } }
+    : {}),
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
   openGraph: {
@@ -116,6 +122,7 @@ export default function RootLayout({
     >
       <body className="bg-white font-sans text-ink antialiased">
         <IntroSplash />
+        <WebVitals />
         {children}
       </body>
       <GoogleAnalytics gaId="G-EFJST279S8" />

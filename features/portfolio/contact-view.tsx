@@ -7,12 +7,14 @@ import {
   WhatsAppIcon
 } from "@/components/icons";
 import { CONTACT } from "@/features/portfolio/data";
+import { LeadLink } from "@/components/lead-link";
 
 export function ContactView() {
   const socialLinks = [
     {
       label: "WhatsApp",
       href: CONTACT.whatsapp,
+      leadSource: "whatsapp" as const,
       icon: <WhatsAppIcon />
     },
     {
@@ -33,6 +35,7 @@ export function ContactView() {
     {
       label: "Email",
       href: `mailto:${CONTACT.email}`,
+      leadSource: "email" as const,
       icon: <Mail className="h-5 w-5" />
     }
   ];
@@ -65,26 +68,28 @@ export function ContactView() {
           </Reveal>
 
           <Reveal delay={0.24} y={18} blur={2}>
-            <a
+            <LeadLink
               href={`mailto:${CONTACT.email}?subject=Business%20growth%20project%20with%20Bilal`}
+              leadSource="email"
               className="group mt-10 inline-flex max-w-full items-center gap-3 break-all font-sans text-xl font-extrabold tracking-normal text-white transition-colors duration-[320ms] hover:text-white/70 sm:text-4xl"
             >
               {CONTACT.email}
               <ArrowUpRight className="h-6 w-6 shrink-0 transition-transform duration-[320ms] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 sm:h-8 sm:w-8" />
-            </a>
+            </LeadLink>
           </Reveal>
 
           <Reveal delay={0.32} y={18} blur={2}>
             <Magnetic>
-              <a
+              <LeadLink
                 href={CONTACT.whatsapp}
+                leadSource="whatsapp"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-10 inline-flex min-h-14 items-center justify-center gap-4 rounded-full bg-white px-8 text-xs font-bold uppercase tracking-[0.2em] text-black transition-transform duration-[320ms] hover:scale-[1.015] sm:px-10"
               >
                 <WhatsAppIcon />
                 Message on WhatsApp
-              </a>
+              </LeadLink>
             </Magnetic>
           </Reveal>
 
@@ -92,6 +97,22 @@ export function ContactView() {
             <div className="mt-12 flex items-center justify-center gap-3">
               {socialLinks.map((item) => {
                 const external = item.href.startsWith("http");
+                if (item.leadSource) {
+                  return (
+                    <LeadLink
+                      key={item.label}
+                      href={item.href}
+                      leadSource={item.leadSource}
+                      target={external ? "_blank" : undefined}
+                      rel={external ? "noreferrer" : undefined}
+                      aria-label={item.label}
+                      title={item.label}
+                      className="group grid h-12 w-12 place-items-center rounded-full border border-white/15 text-white/55 transition-colors duration-[320ms] hover:border-white/50 hover:bg-white hover:text-black sm:h-14 sm:w-14"
+                    >
+                      {item.icon}
+                    </LeadLink>
+                  );
+                }
                 return (
                   <a
                     key={item.label}

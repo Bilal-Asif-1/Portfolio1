@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { EASE, MOTION, Reveal } from "@/components/motion";
 import { SERVICES } from "@/features/portfolio/data";
 import type { Service } from "@/features/portfolio/types";
@@ -97,6 +98,23 @@ function ServiceRow({
                 </p>
               ))}
             </div>
+            {service.relatedCaseStudies?.length ? (
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/50">
+                  Related case studies
+                </span>
+                {service.relatedCaseStudies.map((caseStudy) => (
+                  <Link
+                    key={caseStudy.slug}
+                    href={`/projects/${caseStudy.slug}`}
+                    className="rounded-full border border-black/15 px-3 py-1.5 text-[11px] font-semibold text-black/70 transition-colors duration-[240ms] hover:border-black hover:bg-black hover:text-white"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    {caseStudy.title}
+                  </Link>
+                ))}
+              </div>
+            ) : null}
           </div>
         </motion.div>
       </article>

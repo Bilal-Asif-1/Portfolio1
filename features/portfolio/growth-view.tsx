@@ -6,6 +6,7 @@ import { EASE, Magnetic, MOTION, Reveal } from "@/components/motion";
 import { WhatsAppIcon } from "@/components/icons";
 import { CONTACT } from "@/features/portfolio/data";
 import { ExperienceLink } from "@/components/experience-link";
+import { LeadLink } from "@/components/lead-link";
 
 export function GrowthView() {
   return (
@@ -76,8 +77,9 @@ export function GrowthView() {
                 </ExperienceLink>
               </Magnetic>
               <Magnetic>
-                <a
+                <LeadLink
                   href={CONTACT.whatsapp}
+                  leadSource="whatsapp"
                   target="_blank"
                   rel="noreferrer"
                   className="growth-hero-button crystal-border crystal-border--pill group inline-flex min-h-14 items-center justify-center gap-4 rounded-full border border-ink px-6 text-xs font-semibold uppercase tracking-[0.16em] text-ink/70 transition-colors duration-[320ms] hover:bg-ink hover:text-white"
@@ -87,7 +89,7 @@ export function GrowthView() {
                     <WhatsAppIcon className="h-4 w-4" />
                   </span>
                   Chat on WhatsApp
-                </a>
+                </LeadLink>
               </Magnetic>
             </div>
           </Reveal>

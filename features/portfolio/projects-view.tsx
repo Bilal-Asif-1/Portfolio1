@@ -25,6 +25,7 @@ import {
 } from "@/features/portfolio/data";
 import type { Project } from "@/features/portfolio/types";
 import { ExperienceLink } from "@/components/experience-link";
+import { trackLead } from "@/components/lead-link";
 
 function wrapDistance(value: number, total: number) {
   return ((value + total / 2) % total + total) % total - total / 2;
@@ -460,6 +461,7 @@ export function ProjectsView() {
             <Reveal delay={0.12} y={18} blur={2}>
               <ExperienceLink
                 href="/contact"
+                onClick={() => trackLead("project_cta")}
                 className="font-jetbrains group inline-flex items-center gap-4 text-xs font-semibold uppercase text-ink/60 transition-colors duration-[320ms] hover:text-ink sm:text-sm"
               >
                 Start Your Project
