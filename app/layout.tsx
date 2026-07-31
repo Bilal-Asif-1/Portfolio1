@@ -118,7 +118,7 @@ export default function RootLayout({
         <IntroSplash />
         {children}
       </body>
-      <GoogleAnalytics gaId="G-EFJST279S8" />
+      <GoogleAnalytics gaId="G-KKV8ENH0WB" />
     </html>
   );
 }
