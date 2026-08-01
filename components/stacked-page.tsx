@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -64,11 +65,16 @@ export function StackedPage({
   const [viewportHeight, setViewportHeight] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
   const [isClickFocused, setIsClickFocused] = useState(false);
+  const clickFocusUntilRef = useRef(0);
   const clickFocusProgress = useMotionValue(0);
   const reducedMotion = useReducedMotion();
   const mobileViewportActive = viewportWidth > 0 && viewportWidth < 768;
   const mobileLongActive =
     mobileLong && mobileViewportActive;
+  const activateClickFocus = useCallback(() => {
+    clickFocusUntilRef.current = Date.now() + 1200;
+    setIsClickFocused(true);
+  }, []);
 
   const { scrollYProgress: entryProgress } = useScroll({
     target: trackRef,
@@ -137,6 +143,11 @@ export function StackedPage({
     ([overlayOpacity, focusProgress]) =>
       Number(overlayOpacity) * (1 - Number(focusProgress))
   );
+  const focusedExitOpacity = useTransform(
+    [exitOpacity, clickFocusProgress],
+    ([sceneOpacity, focusProgress]) =>
+      Number(sceneOpacity) + (1 - Number(sceneOpacity)) * Number(focusProgress)
+  );
   const pinY = useTransform(
     pinProgress,
     pinCompletion < pinFadeStart
@@ -188,9 +199,12 @@ export function StackedPage({
   useEffect(() => {
     const handleSceneFocus = (event: Event) => {
       const detail = (event as CustomEvent<{ path?: string }>).detail;
-      if (detail?.path === path) setIsClickFocused(true);
+      if (detail?.path === path) activateClickFocus();
     };
-    const clearClickFocus = () => setIsClickFocused(false);
+    const clearClickFocus = () => {
+      if (Date.now() < clickFocusUntilRef.current) return;
+      setIsClickFocused(false);
+    };
 
     document.addEventListener(PORTFOLIO_SCENE_FOCUS_EVENT, handleSceneFocus);
     window.addEventListener("wheel", clearClickFocus, { passive: true });
@@ -206,7 +220,7 @@ export function StackedPage({
       window.removeEventListener("touchstart", clearClickFocus);
       window.removeEventListener("keydown", clearClickFocus);
     };
-  }, [path]);
+  }, [activateClickFocus, path]);
 
   useEffect(() => {
     const controls = animate(clickFocusProgress, isClickFocused ? 1 : 0, {
@@ -250,7 +264,7 @@ export function StackedPage({
         ref={sceneRef}
         data-portfolio-scene={path}
         data-portfolio-tone={tone}
-        onPointerDown={() => setIsClickFocused(true)}
+        onPointerDown={activateClickFocus}
         className={`stacked-page-scene ${
           pinAtEnd ? "stacked-page-scene--pin-viewport" : ""
         } ${tone === "dark" ? "on-dark" : ""} ${
@@ -291,7 +305,7 @@ export function StackedPage({
             />
             <motion.div
               className="relative z-[1]"
-              style={{ opacity: mobileLongActive ? 1 : exitOpacity }}
+              style={{ opacity: mobileLongActive ? 1 : focusedExitOpacity }}
             >
               {children}
             </motion.div>

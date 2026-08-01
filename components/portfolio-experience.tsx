@@ -17,6 +17,7 @@ import {
   FloatingScrollbar,
   getLenis,
   MOTION,
+  PORTFOLIO_SCENE_FOCUS_EVENT,
   ScrollProgress,
   SmoothCursor,
   SmoothScroll
@@ -234,6 +235,11 @@ export function PortfolioExperience() {
       setPackagesOpen(false);
       getLenis()?.start();
       setCurrentPath(path, history);
+      document.dispatchEvent(
+        new CustomEvent(PORTFOLIO_SCENE_FOCUS_EVENT, {
+          detail: { path }
+        })
+      );
       const top = target.getBoundingClientRect().top + window.scrollY;
       const lenis = getLenis();
       if (lenis) {
