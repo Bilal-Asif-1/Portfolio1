@@ -317,7 +317,7 @@ function scrollElementIntoFocus(
     '(prefers-reduced-motion: reduce)'
   ).matches;
   const lenis = getLenis();
-  if (lenis && !reduceMotion) {
+  if (lenis && !reduceMotion && !alignToTop) {
     const distance = Math.abs(destination - window.scrollY);
     const duration = Math.min(
       1.45,
@@ -340,12 +340,48 @@ function scrollElementIntoFocus(
     0.9,
     Math.max(0.68, 0.58 + (distance / Math.max(window.innerHeight, 1)) * 0.18)
   );
-  const controls = animate(window.scrollY, destination, {
+  const startScroll = window.scrollY;
+  const previousOverflowAnchor =
+    document.documentElement.style.overflowAnchor;
+  document.documentElement.style.overflowAnchor = 'none';
+  let anchorRestored = false;
+  const restoreScrollAnchoring = () => {
+    if (anchorRestored) return;
+    anchorRestored = true;
+    document.documentElement.style.overflowAnchor = previousOverflowAnchor;
+  };
+  const controls = animate(0, 1, {
     duration,
     ease: [0.25, 0.1, 0.25, 1],
-    onUpdate: (value) => window.scrollTo(0, value)
+    onUpdate: (progress) => {
+      if (!element.isConnected) return;
+
+      // Another open accordion can collapse above this target while the new
+      // one expands. Follow the target's live document position so that
+      // layout change cannot pull its top past the viewport margin.
+      const liveBounds = element.getBoundingClientRect();
+      const liveMaxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight
+      );
+      const liveFocusTop =
+        alignToTop || liveBounds.height > availableHeight
+          ? navbarBottom + viewportPadding
+          : navbarBottom + (availableHeight - liveBounds.height) / 2;
+      const liveDestination = Math.min(
+        liveMaxScroll,
+        Math.max(0, window.scrollY + liveBounds.top - liveFocusTop)
+      );
+      const nextScroll =
+        startScroll + (liveDestination - startScroll) * progress;
+      window.scrollTo(0, nextScroll);
+    },
+    onComplete: restoreScrollAnchoring
   });
-  return () => controls.stop();
+  return () => {
+    controls.stop();
+    restoreScrollAnchoring();
+  };
 }
 
 export function FocusOnClick() {
