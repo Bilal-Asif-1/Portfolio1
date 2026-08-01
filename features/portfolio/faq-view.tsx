@@ -21,7 +21,11 @@ function FaqRow({
 }) {
   return (
     <Reveal delay={index * 0.045} y={16} blur={1}>
-      <div className="border-b border-white/15">
+      <div
+        data-focus-target
+        data-focus-expand
+        className="border-b border-white/15"
+      >
         <button
           type="button"
           className="flex w-full items-center justify-between gap-6 py-7 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/45 sm:py-8"

@@ -2,10 +2,12 @@
 
 import { sendGAEvent } from "@next/third-parties/google";
 import type { AnchorHTMLAttributes, MouseEvent } from "react";
+import { hasAnalyticsConsent } from "@/components/analytics-consent";
 
 export type LeadSource = "whatsapp" | "email" | "project_cta";
 
 export function trackLead(source: LeadSource) {
+  if (!hasAnalyticsConsent()) return;
   sendGAEvent("event", "generate_lead", {
     lead_source: source,
     lead_page: window.location.pathname

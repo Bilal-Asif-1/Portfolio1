@@ -157,14 +157,10 @@ function PackagesOverlay({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   return (
-    <motion.section
+    <section
       role="region"
       aria-label="Service packages"
-      className="fixed inset-0 z-40 overflow-y-auto bg-white text-ink md:overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: MOTION.duration.fast, ease: EASE }}
+      className="fixed inset-0 z-[60] overflow-y-auto bg-white text-ink"
     >
       <button
         autoFocus
@@ -175,16 +171,10 @@ function PackagesOverlay({ onClose }: { onClose: () => void }) {
       >
         <X className="h-4 w-4" />
       </button>
-      <motion.div
-        className="min-h-full md:h-full"
-        initial={{ y: 18, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 12, opacity: 0 }}
-        transition={{ duration: MOTION.duration.base, ease: EASE }}
-      >
+      <div className="min-h-full md:h-full">
         <PackagesView />
-      </motion.div>
-    </motion.section>
+      </div>
+    </section>
   );
 }
 
@@ -367,7 +357,7 @@ export function PortfolioExperience() {
           <SmoothScroll />
           <FocusOnClick />
           <ScrollProgress />
-          <FloatingScrollbar />
+          {!packagesOpen && <FloatingScrollbar />}
           <div className="noise" aria-hidden="true" />
         <header
           data-focus-navigation
@@ -448,8 +438,7 @@ export function PortfolioExperience() {
             tone="dark"
             layer={4}
             long
-            linearExitFade
-            pinAtEnd
+            disableExitFade
             darkSceneBackdrop
           >
             <DeferredScene path="/services" activePath={activePath}>
@@ -463,6 +452,7 @@ export function PortfolioExperience() {
             fadeOutAt={0.8}
             darkBackdrop
             preserveSurfaceOnExit
+            surfaceRounded={false}
             mobileLong
           >
             <DeferredScene path="/process" activePath={activePath}>

@@ -27,12 +27,28 @@ import type { Project } from "@/features/portfolio/types";
 import { ExperienceLink } from "@/components/experience-link";
 import { trackLead } from "@/components/lead-link";
 
+const CAROUSEL_PROJECT_SLUGS = [
+  "agro-ai",
+  "pet-connect",
+  "kickspot",
+  "pulse-fit",
+  "aqua-gallery",
+  "spice-table",
+  "nest-realty"
+] as const;
+
+const CAROUSEL_PROJECTS = CAROUSEL_PROJECT_SLUGS.map((slug) => {
+  const project = FEATURED_PROJECTS.find((item) => item.slug === slug);
+  if (!project) throw new Error(`Missing carousel project: ${slug}`);
+  return project;
+});
+
 function wrapDistance(value: number, total: number) {
   return ((value + total / 2) % total + total) % total - total / 2;
 }
 
 function ProjectCard({
-  cardIndex,
+  card,
   index,
   total,
   rotation,
@@ -40,7 +56,7 @@ function ProjectCard({
   loadPriority,
   onCenter
 }: {
-  cardIndex: number;
+  card: Project;
   index: number;
   total: number;
   rotation: MotionValue<number>;
@@ -83,7 +99,7 @@ function ProjectCard({
       }}
     >
       <ProjectPoster
-        card={FEATURED_PROJECTS[cardIndex]}
+        card={card}
         loadPriority={loadPriority}
       />
     </motion.div>
@@ -137,15 +153,13 @@ function ProjectsCarousel({
 }: {
   reducedMotion: boolean;
 }) {
-  const carouselCards = [...FEATURED_PROJECTS, ...FEATURED_PROJECTS];
-  const initialRotation = FEATURED_PROJECTS.length + 3;
+  const carouselCards = [...CAROUSEL_PROJECTS, ...CAROUSEL_PROJECTS];
+  const initialRotation = CAROUSEL_PROJECTS.length + 1;
   const rotation = useMotionValue(initialRotation);
   const [activeCard, setActiveCard] = useState(
-    Math.round(rotation.get()) % FEATURED_PROJECTS.length
+    Math.round(rotation.get()) % CAROUSEL_PROJECTS.length
   );
   const stageRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(stageRef, { amount: 0.3 });
-  const entered = useRef(false);
   const dragStartX = useRef(0);
   const dragStartY = useRef(0);
   const dragStartRotation = useRef(0);
@@ -165,9 +179,9 @@ function ProjectsCarousel({
     () =>
       rotation.on("change", (latest) => {
         const nextIndex =
-          ((Math.round(latest) % FEATURED_PROJECTS.length) +
-            FEATURED_PROJECTS.length) %
-          FEATURED_PROJECTS.length;
+          ((Math.round(latest) % CAROUSEL_PROJECTS.length) +
+            CAROUSEL_PROJECTS.length) %
+          CAROUSEL_PROJECTS.length;
         setActiveCard(nextIndex);
       }),
     [rotation]
@@ -225,19 +239,6 @@ function ProjectsCarousel({
   };
 
   useEffect(() => () => stopAnimation(), []);
-
-  useEffect(() => {
-    if (!isInView || entered.current || reducedMotion || dragging.current) return;
-    entered.current = true;
-    stopAnimation();
-    rotationAnimation.current = animate(rotation, rotation.get() + 0.28, {
-      duration: 1.05,
-      ease: EASE,
-      onComplete: () => {
-        rotationAnimation.current = null;
-      }
-    });
-  }, [isInView, reducedMotion, rotation]);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -360,7 +361,7 @@ function ProjectsCarousel({
         {carouselCards.map((card, index) => (
           <ProjectCard
             key={`${card.title}-${index}`}
-            cardIndex={index % FEATURED_PROJECTS.length}
+            card={card}
             index={index}
             total={carouselCards.length}
             rotation={rotation}
@@ -384,7 +385,7 @@ function ProjectsCarousel({
         aria-live="polite"
       >
         {String(activeCard + 1).padStart(2, "0")} /{" "}
-        {String(FEATURED_PROJECTS.length).padStart(2, "0")}
+        {String(CAROUSEL_PROJECTS.length).padStart(2, "0")}
       </p>
     </motion.div>
   );

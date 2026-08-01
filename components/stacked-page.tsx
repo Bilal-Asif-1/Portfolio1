@@ -8,11 +8,14 @@ import {
   type ReactNode
 } from "react";
 import {
+  animate,
   motion,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useTransform
 } from "framer-motion";
+import { EASE, PORTFOLIO_SCENE_FOCUS_EVENT } from "@/components/motion";
 
 export function StackedPage({
   children,
@@ -29,8 +32,10 @@ export function StackedPage({
   darkBackdrop = false,
   darkSceneBackdrop = false,
   preserveSurfaceOnExit = false,
+  surfaceRounded = true,
   lightExitOverlay = false,
-  mobileLong = false
+  mobileLong = false,
+  disableExitFade = false
 }: {
   children: ReactNode;
   path: string;
@@ -46,8 +51,10 @@ export function StackedPage({
   darkBackdrop?: boolean;
   darkSceneBackdrop?: boolean;
   preserveSurfaceOnExit?: boolean;
+  surfaceRounded?: boolean;
   lightExitOverlay?: boolean;
   mobileLong?: boolean;
+  disableExitFade?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLElement>(null);
@@ -56,6 +63,8 @@ export function StackedPage({
   const [pinContentHeight, setPinContentHeight] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
   const [viewportWidth, setViewportWidth] = useState(0);
+  const [isClickFocused, setIsClickFocused] = useState(false);
+  const clickFocusProgress = useMotionValue(0);
   const reducedMotion = useReducedMotion();
   const mobileViewportActive = viewportWidth > 0 && viewportWidth < 768;
   const mobileLongActive =
@@ -123,6 +132,11 @@ export function StackedPage({
     [0, fadeOutAt, 1],
     reducedMotion ? [0, 0, 0] : [0, 1, 1]
   );
+  const focusedLightExitOverlayOpacity = useTransform(
+    [lightExitOverlayOpacity, clickFocusProgress],
+    ([overlayOpacity, focusProgress]) =>
+      Number(overlayOpacity) * (1 - Number(focusProgress))
+  );
   const pinY = useTransform(
     pinProgress,
     pinCompletion < pinFadeStart
@@ -171,6 +185,37 @@ export function StackedPage({
     };
   }, [pinAtEnd]);
 
+  useEffect(() => {
+    const handleSceneFocus = (event: Event) => {
+      const detail = (event as CustomEvent<{ path?: string }>).detail;
+      if (detail?.path === path) setIsClickFocused(true);
+    };
+    const clearClickFocus = () => setIsClickFocused(false);
+
+    document.addEventListener(PORTFOLIO_SCENE_FOCUS_EVENT, handleSceneFocus);
+    window.addEventListener("wheel", clearClickFocus, { passive: true });
+    window.addEventListener("touchstart", clearClickFocus, { passive: true });
+    window.addEventListener("keydown", clearClickFocus);
+
+    return () => {
+      document.removeEventListener(
+        PORTFOLIO_SCENE_FOCUS_EVENT,
+        handleSceneFocus
+      );
+      window.removeEventListener("wheel", clearClickFocus);
+      window.removeEventListener("touchstart", clearClickFocus);
+      window.removeEventListener("keydown", clearClickFocus);
+    };
+  }, [path]);
+
+  useEffect(() => {
+    const controls = animate(clickFocusProgress, isClickFocused ? 1 : 0, {
+      duration: 0.32,
+      ease: EASE
+    });
+    return () => controls.stop();
+  }, [clickFocusProgress, isClickFocused]);
+
   const pinHeightStyle =
     pinAtEnd && pinContentHeight
       ? ({
@@ -205,17 +250,22 @@ export function StackedPage({
         ref={sceneRef}
         data-portfolio-scene={path}
         data-portfolio-tone={tone}
+        onPointerDown={() => setIsClickFocused(true)}
         className={`stacked-page-scene ${
           pinAtEnd ? "stacked-page-scene--pin-viewport" : ""
         } ${tone === "dark" ? "on-dark" : ""} ${
           darkSceneBackdrop ? "stacked-page-scene--dark-backdrop" : ""
         }`}
         style={{
-          opacity: preserveSurfaceOnExit || lightExitOverlay
-            ? 1
-            : pinAtEnd
+          opacity:
+            disableExitFade ||
+            isClickFocused ||
+            preserveSurfaceOnExit ||
+            lightExitOverlay
               ? 1
-              : exitOpacity,
+              : pinAtEnd
+                ? 1
+                : exitOpacity,
           // The process surface already enters through normal document flow.
           // Adding a second scroll-linked translation made its white edge
           // compete with the sticky services scene and visibly tremble.
@@ -233,7 +283,11 @@ export function StackedPage({
           <div className="relative min-h-[100svh]">
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 rounded-t-[16px] bg-white shadow-[0_-18px_48px_rgba(0,0,0,0.16)] sm:rounded-t-[20px]"
+              className={`pointer-events-none absolute inset-0 bg-white shadow-[0_-18px_48px_rgba(0,0,0,0.16)] ${
+                surfaceRounded
+                  ? "rounded-t-[16px] sm:rounded-t-[20px]"
+                  : "rounded-none"
+              }`}
             />
             <motion.div
               className="relative z-[1]"
@@ -257,7 +311,7 @@ export function StackedPage({
           <motion.div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 z-[2] bg-white"
-            style={{ opacity: lightExitOverlayOpacity }}
+            style={{ opacity: focusedLightExitOverlayOpacity }}
           />
         )}
       </motion.section>

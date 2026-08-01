@@ -4,9 +4,8 @@ import {
   Hanken_Grotesk,
   JetBrains_Mono
 } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import { AnalyticsConsent } from "@/components/analytics-consent";
 import { IntroSplash } from "@/features/intro/intro-splash";
-import { WebVitals } from "@/components/web-vitals";
 import { createSocialImageUrl, SITE_URL } from "@/app/seo";
 import "./globals.css";
 
@@ -61,6 +60,13 @@ export const metadata: Metadata = {
     : {}),
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon.ico", sizes: "64x64", type: "image/x-icon" }
+    ],
+    apple: [{ url: "/icon.png", sizes: "512x512", type: "image/png" }]
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -122,10 +128,9 @@ export default function RootLayout({
     >
       <body className="bg-white font-sans text-ink antialiased">
         <IntroSplash />
-        <WebVitals />
+        <AnalyticsConsent />
         {children}
       </body>
-      <GoogleAnalytics gaId="G-EFJST279S8" />
     </html>
   );
 }

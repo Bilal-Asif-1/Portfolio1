@@ -22,6 +22,8 @@ function ServiceRow({
   return (
     <Reveal delay={index * 0.035} y={16} blur={0}>
       <article
+        data-focus-target
+        data-focus-expand
         className={`overflow-hidden border-b transition-colors duration-[320ms] ${
           open ? "border-black/10 bg-white" : "border-white/15 bg-black"
         }`}

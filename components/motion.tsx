@@ -249,9 +249,10 @@ export function SmoothScroll() {
 }
 
 const FOCUS_ITEM_SELECTOR =
-  '[data-focus-target], [data-focus-on-click], [data-project-trigger], [data-timeline-item], .service-row, article, section';
+  '[data-focus-target], [data-focus-on-click], [data-project-trigger], [data-timeline-item], [data-focus-expand], .service-row';
 const FOCUS_CONTROL_SELECTOR =
   'a, button, [role="button"], summary, input, textarea, select, [tabindex]:not([tabindex="-1"])';
+export const PORTFOLIO_SCENE_FOCUS_EVENT = "portfolio:scene-focus";
 
 function getFocusTarget(origin: Element) {
   if (origin.closest('[data-focus-on-click="false"], [data-dialog-close]')) {
@@ -279,25 +280,30 @@ function scrollElementIntoFocus(element: HTMLElement) {
   if (!element.isConnected) return;
   const navbar = document.querySelector<HTMLElement>('[data-focus-navigation]');
   const navbarBottom = Math.max(16, navbar?.getBoundingClientRect().bottom ?? 0);
-  const viewportBottom = window.innerHeight - 20;
+  const viewportPadding = 16;
+  const viewportBottom = window.innerHeight - viewportPadding;
   const availableHeight = Math.max(1, viewportBottom - navbarBottom);
   const bounds = element.getBoundingClientRect();
-  const isFullyVisible =
-    bounds.top >= navbarBottom && bounds.bottom <= viewportBottom;
+  const visibleHeight = Math.max(
+    0,
+    Math.min(bounds.bottom, viewportBottom) -
+      Math.max(bounds.top, navbarBottom + viewportPadding)
+  );
+  const visibleRatio = visibleHeight / Math.min(bounds.height, availableHeight);
 
-  if (isFullyVisible || bounds.height <= 0) return;
+  if (bounds.height <= 0 || visibleRatio >= 0.76) return;
 
   const maxScroll = Math.max(
     0,
     document.documentElement.scrollHeight - window.innerHeight
   );
-  const targetTop =
+  const centeredTop =
     bounds.height <= availableHeight
       ? navbarBottom + (availableHeight - bounds.height) / 2
-      : navbarBottom + 20;
+      : navbarBottom + viewportPadding;
   const destination = Math.min(
     maxScroll,
-    Math.max(0, window.scrollY + bounds.top - targetTop)
+    Math.max(0, window.scrollY + bounds.top - centeredTop)
   );
 
   if (Math.abs(destination - window.scrollY) < 2) return;
@@ -307,7 +313,15 @@ function scrollElementIntoFocus(element: HTMLElement) {
   ).matches;
   const lenis = getLenis();
   if (lenis && !reduceMotion) {
-    lenis.scrollTo(destination, { duration: 0.72, force: true });
+    const distance = Math.abs(destination - window.scrollY);
+    const duration = Math.min(
+      1.45,
+      Math.max(
+        0.9,
+        0.8 + (distance / Math.max(window.innerHeight, 1)) * 0.2
+      )
+    );
+    lenis.scrollTo(destination, { duration, force: true });
     return;
   }
 
@@ -320,38 +334,43 @@ function scrollElementIntoFocus(element: HTMLElement) {
 export function FocusOnClick() {
   useEffect(() => {
     let frame = 0;
-    let resizeTimer = 0;
-    let stopObservingTimer = 0;
-    let observer: ResizeObserver | null = null;
+    let settleTimer = 0;
 
     const clearPendingFocus = () => {
       window.cancelAnimationFrame(frame);
-      window.clearTimeout(resizeTimer);
-      window.clearTimeout(stopObservingTimer);
-      observer?.disconnect();
-      observer = null;
+      window.clearTimeout(settleTimer);
     };
 
     const focusTarget = (target: HTMLElement) => {
       clearPendingFocus();
       frame = window.requestAnimationFrame(() => scrollElementIntoFocus(target));
 
-      // A short-lived observer lets expanding accordions and responsive cards
-      // settle before one final alignment, without persistent per-item work.
-      if (!('ResizeObserver' in window)) return;
-      observer = new ResizeObserver(() => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(() => {
-          frame = window.requestAnimationFrame(() =>
-            scrollElementIntoFocus(target)
-          );
-        }, 90);
-      });
-      observer.observe(target);
-      stopObservingTimer = window.setTimeout(() => {
-        observer?.disconnect();
-        observer = null;
-      }, 700);
+      // Expandable items need one final alignment after their own Framer Motion
+      // transition completes. Other clicks receive just one continuous scroll.
+      const expandableItem = target.closest<HTMLElement>(
+        '[data-focus-expand]'
+      );
+      if (!expandableItem) return;
+
+      let alignmentPass = 0;
+      const alignAfterExpansion = () => {
+        frame = window.requestAnimationFrame(() => {
+          scrollElementIntoFocus(expandableItem);
+          alignmentPass += 1;
+
+          // Pinned scenes translate their content more slowly than the page
+          // itself. Verify twice after expansion so an end-of-list item can
+          // reach the viewport before the following scene enters.
+          if (alignmentPass < 3) {
+            settleTimer = window.setTimeout(alignAfterExpansion, 620);
+          }
+        });
+      };
+
+      settleTimer = window.setTimeout(
+        alignAfterExpansion,
+        MOTION.duration.base * 1000 + 70
+      );
     };
 
     const handleClick = (event: MouseEvent) => {
@@ -361,6 +380,14 @@ export function FocusOnClick() {
       const target = getFocusTarget(origin);
       if (!target) return;
 
+      const scene = target.closest<HTMLElement>('[data-portfolio-scene]');
+      if (scene?.dataset.portfolioScene) {
+        document.dispatchEvent(
+          new CustomEvent(PORTFOLIO_SCENE_FOCUS_EVENT, {
+            detail: { path: scene.dataset.portfolioScene }
+          })
+        );
+      }
       focusTarget(target);
     };
 
