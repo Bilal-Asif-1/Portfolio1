@@ -264,7 +264,6 @@ export function StackedPage({
         ref={sceneRef}
         data-portfolio-scene={path}
         data-portfolio-tone={tone}
-        onPointerDown={activateClickFocus}
         className={`stacked-page-scene ${
           pinAtEnd ? "stacked-page-scene--pin-viewport" : ""
         } ${tone === "dark" ? "on-dark" : ""} ${

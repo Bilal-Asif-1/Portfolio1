@@ -334,43 +334,14 @@ function scrollElementIntoFocus(element: HTMLElement) {
 export function FocusOnClick() {
   useEffect(() => {
     let frame = 0;
-    let settleTimer = 0;
 
     const clearPendingFocus = () => {
       window.cancelAnimationFrame(frame);
-      window.clearTimeout(settleTimer);
     };
 
     const focusTarget = (target: HTMLElement) => {
       clearPendingFocus();
       frame = window.requestAnimationFrame(() => scrollElementIntoFocus(target));
-
-      // Expandable items need one final alignment after their own Framer Motion
-      // transition completes. Other clicks receive just one continuous scroll.
-      const expandableItem = target.closest<HTMLElement>(
-        '[data-focus-expand]'
-      );
-      if (!expandableItem) return;
-
-      let alignmentPass = 0;
-      const alignAfterExpansion = () => {
-        frame = window.requestAnimationFrame(() => {
-          scrollElementIntoFocus(expandableItem);
-          alignmentPass += 1;
-
-          // Pinned scenes translate their content more slowly than the page
-          // itself. Verify twice after expansion so an end-of-list item can
-          // reach the viewport before the following scene enters.
-          if (alignmentPass < 3) {
-            settleTimer = window.setTimeout(alignAfterExpansion, 620);
-          }
-        });
-      };
-
-      settleTimer = window.setTimeout(
-        alignAfterExpansion,
-        MOTION.duration.base * 1000 + 70
-      );
     };
 
     const handleClick = (event: MouseEvent) => {
