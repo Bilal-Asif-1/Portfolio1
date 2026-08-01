@@ -17,6 +17,7 @@ import {
   FloatingScrollbar,
   getLenis,
   MOTION,
+  PORTFOLIO_PAGE_CHANGE_EVENT,
   PORTFOLIO_SCENE_FOCUS_EVENT,
   ScrollProgress,
   SmoothCursor,
@@ -191,16 +192,26 @@ export function PortfolioExperience() {
   );
   const positionedRef = useRef(false);
   const frameRef = useRef(0);
+  const sceneFocusUntilRef = useRef(0);
 
   const setCurrentPath = useCallback(
     (
       path: (typeof PORTFOLIO_PATHS)[number],
       history: "push" | "replace" | "none"
     ) => {
+      const pathChanged = activePathRef.current !== path;
       activePathRef.current = path;
       if (path !== "/packages") underlyingPathRef.current = path;
       setActivePath(path);
       document.title = PAGE_TITLES[path];
+
+      if (pathChanged) {
+        document.dispatchEvent(
+          new CustomEvent(PORTFOLIO_PAGE_CHANGE_EVENT, {
+            detail: { path }
+          })
+        );
+      }
 
       if (history === "none" || window.location.pathname === path) return;
       const state = {
@@ -308,9 +319,34 @@ export function PortfolioExperience() {
   }, [scrollToPath]);
 
   useEffect(() => {
+    const holdFocusedScene = () => {
+      sceneFocusUntilRef.current = Date.now() + 1100;
+    };
+    const releaseFocusedScene = () => {
+      sceneFocusUntilRef.current = 0;
+    };
+
+    document.addEventListener(PORTFOLIO_SCENE_FOCUS_EVENT, holdFocusedScene);
+    window.addEventListener("wheel", releaseFocusedScene, { passive: true });
+    window.addEventListener("touchstart", releaseFocusedScene, {
+      passive: true
+    });
+
+    return () => {
+      document.removeEventListener(
+        PORTFOLIO_SCENE_FOCUS_EVENT,
+        holdFocusedScene
+      );
+      window.removeEventListener("wheel", releaseFocusedScene);
+      window.removeEventListener("touchstart", releaseFocusedScene);
+    };
+  }, []);
+
+  useEffect(() => {
     const updateActivePanel = () => {
       frameRef.current = 0;
       if (packagesOpen) return;
+      if (Date.now() < sceneFocusUntilRef.current) return;
       const x = Math.round(window.innerWidth / 2);
       const y = Math.round(window.innerHeight * 0.52);
       const scene = document

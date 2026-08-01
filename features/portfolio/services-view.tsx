@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { EASE, MOTION, Reveal } from "@/components/motion";
+import {
+  EASE,
+  MOTION,
+  PORTFOLIO_PAGE_CHANGE_EVENT,
+  Reveal
+} from "@/components/motion";
 import { SERVICES } from "@/features/portfolio/data";
 import type { Service } from "@/features/portfolio/types";
 
@@ -126,9 +131,37 @@ function ServiceRow({
 
 export function ServicesView() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const closeForAnotherPage = (event: Event) => {
+      const detail = (event as CustomEvent<{ path?: string }>).detail;
+      if (detail?.path && detail.path !== "/services") setOpenIndex(null);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) setOpenIndex(null);
+    });
+
+    document.addEventListener(
+      PORTFOLIO_PAGE_CHANGE_EVENT,
+      closeForAnotherPage
+    );
+    if (viewRef.current) observer.observe(viewRef.current);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener(
+        PORTFOLIO_PAGE_CHANGE_EVENT,
+        closeForAnotherPage
+      );
+    };
+  }, []);
 
   return (
-    <div className="flex min-h-[100svh] flex-col bg-black pt-20 text-white sm:pt-24">
+    <div
+      ref={viewRef}
+      className="flex min-h-[100svh] flex-col bg-black pt-20 text-white sm:pt-24"
+    >
       <section className="flex-1">
         <div className="grid gap-7 border-b border-white/15 px-5 pb-8 pt-4 sm:grid-cols-[1fr_auto] sm:items-end sm:px-8 sm:pb-10 sm:pt-8 lg:px-12">
           <Reveal y={22} blur={2}>

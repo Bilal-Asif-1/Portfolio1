@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
-import { EASE, MOTION, Reveal } from "@/components/motion";
+import {
+  EASE,
+  MOTION,
+  PORTFOLIO_PAGE_CHANGE_EVENT,
+  Reveal
+} from "@/components/motion";
 import { FAQS } from "@/features/portfolio/data";
 
 function FaqRow({
@@ -67,9 +72,37 @@ function FaqRow({
 
 export function FaqView() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const closeForAnotherPage = (event: Event) => {
+      const detail = (event as CustomEvent<{ path?: string }>).detail;
+      if (detail?.path && detail.path !== "/faq") setOpenIndex(null);
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) setOpenIndex(null);
+    });
+
+    document.addEventListener(
+      PORTFOLIO_PAGE_CHANGE_EVENT,
+      closeForAnotherPage
+    );
+    if (viewRef.current) observer.observe(viewRef.current);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener(
+        PORTFOLIO_PAGE_CHANGE_EVENT,
+        closeForAnotherPage
+      );
+    };
+  }, []);
 
   return (
-    <div className="flex min-h-[100svh] flex-col bg-black pt-24 text-white">
+    <div
+      ref={viewRef}
+      className="flex min-h-[100svh] flex-col bg-black pt-24 text-white"
+    >
       <section className="flex flex-1 items-center px-5 py-14 sm:px-8 sm:py-20 lg:px-12">
         <div className="mx-auto w-full max-w-4xl">
           <Reveal y={22} blur={2} viewportMargin="35% 0px 20%">

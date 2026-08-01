@@ -5,6 +5,7 @@ import type { ComponentProps, ReactNode } from "react";
 import Lenis from "lenis";
 import clsx from "clsx";
 import {
+  animate,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -253,6 +254,7 @@ const FOCUS_ITEM_SELECTOR =
 const FOCUS_CONTROL_SELECTOR =
   'a, button, [role="button"], summary, input, textarea, select, [tabindex]:not([tabindex="-1"])';
 export const PORTFOLIO_SCENE_FOCUS_EVENT = "portfolio:scene-focus";
+export const PORTFOLIO_PAGE_CHANGE_EVENT = "portfolio:page-change";
 
 function getFocusTarget(origin: Element) {
   if (origin.closest('[data-focus-on-click="false"], [data-dialog-close]')) {
@@ -276,7 +278,10 @@ function getFocusTarget(origin: Element) {
   );
 }
 
-function scrollElementIntoFocus(element: HTMLElement) {
+function scrollElementIntoFocus(
+  element: HTMLElement,
+  alignToTop = false
+): (() => void) | undefined {
   if (!element.isConnected) return;
   const navbar = document.querySelector<HTMLElement>('[data-focus-navigation]');
   const navbarBottom = Math.max(16, navbar?.getBoundingClientRect().bottom ?? 0);
@@ -291,19 +296,19 @@ function scrollElementIntoFocus(element: HTMLElement) {
   );
   const visibleRatio = visibleHeight / Math.min(bounds.height, availableHeight);
 
-  if (bounds.height <= 0 || visibleRatio >= 0.76) return;
+  if (bounds.height <= 0 || (!alignToTop && visibleRatio >= 0.76)) return;
 
   const maxScroll = Math.max(
     0,
     document.documentElement.scrollHeight - window.innerHeight
   );
-  const centeredTop =
-    bounds.height <= availableHeight
-      ? navbarBottom + (availableHeight - bounds.height) / 2
-      : navbarBottom + viewportPadding;
+  const focusTop =
+    alignToTop || bounds.height > availableHeight
+      ? navbarBottom + viewportPadding
+      : navbarBottom + (availableHeight - bounds.height) / 2;
   const destination = Math.min(
     maxScroll,
-    Math.max(0, window.scrollY + bounds.top - centeredTop)
+    Math.max(0, window.scrollY + bounds.top - focusTop)
   );
 
   if (Math.abs(destination - window.scrollY) < 2) return;
@@ -325,23 +330,47 @@ function scrollElementIntoFocus(element: HTMLElement) {
     return;
   }
 
-  window.scrollTo({
-    top: destination,
-    behavior: reduceMotion ? 'auto' : 'smooth'
+  if (reduceMotion) {
+    window.scrollTo({ top: destination, behavior: 'auto' });
+    return;
+  }
+
+  const distance = Math.abs(destination - window.scrollY);
+  const duration = Math.min(
+    0.9,
+    Math.max(0.68, 0.58 + (distance / Math.max(window.innerHeight, 1)) * 0.18)
+  );
+  const controls = animate(window.scrollY, destination, {
+    duration,
+    ease: [0.25, 0.1, 0.25, 1],
+    onUpdate: (value) => window.scrollTo(0, value)
   });
+  return () => controls.stop();
 }
 
 export function FocusOnClick() {
   useEffect(() => {
     let frame = 0;
+    let cancelScroll: (() => void) | null = null;
 
     const clearPendingFocus = () => {
       window.cancelAnimationFrame(frame);
+      cancelScroll?.();
+      cancelScroll = null;
     };
 
     const focusTarget = (target: HTMLElement) => {
       clearPendingFocus();
-      frame = window.requestAnimationFrame(() => scrollElementIntoFocus(target));
+      const expandableItem = target.closest<HTMLElement>(
+        '[data-focus-expand]'
+      );
+      frame = window.requestAnimationFrame(() => {
+        const opening = Boolean(
+          expandableItem?.querySelector('[aria-expanded="true"]')
+        );
+        cancelScroll =
+          scrollElementIntoFocus(expandableItem ?? target, opening) ?? null;
+      });
     };
 
     const handleClick = (event: MouseEvent) => {
@@ -363,9 +392,15 @@ export function FocusOnClick() {
     };
 
     document.addEventListener('click', handleClick);
+    window.addEventListener('wheel', clearPendingFocus, { passive: true });
+    window.addEventListener('touchstart', clearPendingFocus, { passive: true });
+    window.addEventListener('keydown', clearPendingFocus);
     return () => {
       clearPendingFocus();
       document.removeEventListener('click', handleClick);
+      window.removeEventListener('wheel', clearPendingFocus);
+      window.removeEventListener('touchstart', clearPendingFocus);
+      window.removeEventListener('keydown', clearPendingFocus);
     };
   }, []);
 
