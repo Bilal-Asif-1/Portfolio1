@@ -69,14 +69,6 @@ body {
   will-change: transform, opacity;
 }
 
-/* Mobile visitors see the real hero immediately. The decorative language
-   splash remains a desktop-only flourish and no longer delays mobile LCP. */
-@media (max-width: 767px) {
-  .intro-splash {
-    display: none;
-  }
-}
-
 @media (min-width: 640px) {
   .intro-splash-phrase {
     font-size: 1.5rem;
