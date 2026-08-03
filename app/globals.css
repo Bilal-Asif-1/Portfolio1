@@ -50,7 +50,7 @@ body {
   pointer-events: none;
   background: #ffffff;
   color: #111111;
-  animation: intro-splash-exit 575ms var(--motion-ease) forwards;
+  animation: intro-splash-exit 1000ms var(--motion-ease) forwards;
 }
 
 .intro-splash-phrase {
@@ -64,8 +64,8 @@ body {
   letter-spacing: -0.01em;
   opacity: 0;
   transform: translate3d(0, 6px, 0);
-  animation: intro-phrase-show 105ms var(--motion-ease) both;
-  animation-delay: calc(var(--intro-index) * 95ms);
+  animation: intro-phrase-show 190ms var(--motion-ease) both;
+  animation-delay: calc(var(--intro-index) * 160ms);
   will-change: transform, opacity;
 }
 
