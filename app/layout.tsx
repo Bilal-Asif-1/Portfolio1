@@ -26,6 +26,7 @@ const bricolageGrotesque = Bricolage_Grotesque({
 const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
+  preload: false,
   variable: "--font-jetbrains-mono",
   weight: "variable"
 });

@@ -32,7 +32,9 @@ export function AnalyticsConsent() {
   const consent = useSyncExternalStore(
     subscribeToConsent,
     readConsent,
-    () => undefined
+    // Render the first-visit banner in the initial HTML instead of adding it
+    // after hydration, which avoids a late visual update in Speed Index.
+    () => null
   );
 
   const setAnalyticsConsent = (nextConsent: Exclude<Consent, null>) => {

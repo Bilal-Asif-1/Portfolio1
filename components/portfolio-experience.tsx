@@ -7,16 +7,14 @@ import {
   useRef,
   useState
 } from "react";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
+import { AnimatePresence, MotionConfig } from "framer-motion";
 import { X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import {
-  EASE,
   FocusOnClick,
   FloatingScrollbar,
   getLenis,
-  MOTION,
   PORTFOLIO_PAGE_CHANGE_EVENT,
   PORTFOLIO_SCENE_FOCUS_EVENT,
   ScrollProgress,
@@ -185,6 +183,7 @@ export function PortfolioExperience() {
   const initialPath = isPortfolioPath(pathname) ? pathname : "/";
   const [activePath, setActivePath] = useState(initialPath);
   const [packagesOpen, setPackagesOpen] = useState(initialPath === "/packages");
+  const [enhancementsReady, setEnhancementsReady] = useState(false);
   const navOnDark = DARK_PATHS.has(activePath);
   const activePathRef = useRef(initialPath);
   const underlyingPathRef = useRef<(typeof PORTFOLIO_PATHS)[number]>(
@@ -193,6 +192,17 @@ export function PortfolioExperience() {
   const positionedRef = useRef(false);
   const frameRef = useRef(0);
   const sceneFocusUntilRef = useRef(0);
+
+  useEffect(() => {
+    const timeoutHandle = window.setTimeout(
+      () => setEnhancementsReady(true),
+      1200
+    );
+
+    return () => {
+      window.clearTimeout(timeoutHandle);
+    };
+  }, []);
 
   const setCurrentPath = useCallback(
     (
@@ -394,25 +404,18 @@ export function PortfolioExperience() {
   return (
     <MotionConfig reducedMotion="user">
       <>
-        <SmoothCursor />
+        {enhancementsReady && <SmoothCursor />}
         <main className="portfolio-experience relative min-h-screen overflow-x-clip bg-white text-ink">
-          <SmoothScroll />
-          <FocusOnClick />
-          <ScrollProgress />
-          {!packagesOpen && <FloatingScrollbar />}
+          {enhancementsReady && <SmoothScroll />}
+          {enhancementsReady && <FocusOnClick />}
+          {enhancementsReady && <ScrollProgress />}
+          {enhancementsReady && !packagesOpen && <FloatingScrollbar />}
           <div className="noise" aria-hidden="true" />
         <header
           data-focus-navigation
           className="pointer-events-none fixed inset-x-0 top-0 z-50 px-2 pt-3 sm:px-6 sm:pt-4"
         >
-          <motion.nav
-            initial={{ y: -14, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{
-              duration: MOTION.duration.reveal,
-              ease: EASE,
-              delay: 0.08
-            }}
+          <nav
             className={`pointer-events-auto mx-auto flex h-12 max-w-full items-center justify-center gap-[clamp(0.65rem,2.6vw,2rem)] whitespace-nowrap font-sans transition-colors duration-[320ms] ${
               navOnDark ? "text-white" : "text-black"
             }`}
@@ -421,19 +424,10 @@ export function PortfolioExperience() {
             <ExperienceLink href="/" className="sr-only">
               Home
             </ExperienceLink>
-            {SITE_NAV_ITEMS.map((item, index) => {
+            {SITE_NAV_ITEMS.map((item) => {
               const active = activePath === item.href;
               return (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: MOTION.duration.base,
-                    ease: EASE,
-                    delay: 0.18 + index * 0.035
-                  }}
-                >
+                <div key={item.href}>
                   <ExperienceLink
                     href={item.href}
                     aria-current={active ? "page" : undefined}
@@ -441,18 +435,17 @@ export function PortfolioExperience() {
                   >
                     {item.label}
                     {active && (
-                      <motion.span
-                        layoutId="active-route-dot"
+                      <span
                         className={`absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full ${
                           navOnDark ? "bg-white" : "bg-black"
                         }`}
                       />
                     )}
                   </ExperienceLink>
-                </motion.div>
+                </div>
               );
             })}
-          </motion.nav>
+          </nav>
         </header>
 
         <div className="relative">
