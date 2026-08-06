@@ -62,7 +62,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: [{ url: "/favicon.ico", sizes: "64x64", type: "image/x-icon" }],
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" }
+    ],
     apple: [
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" }
     ]

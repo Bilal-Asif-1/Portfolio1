@@ -135,7 +135,17 @@ export function ContactView() {
       <footer className="border-t border-white/10 px-5 py-5 text-[10px] uppercase tracking-[0.18em] text-white/60 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
           <p>© 2026 Bilal Asif</p>
-          <p className="text-right">Full-Stack Developer and SEO Specialist</p>
+          <div className="flex items-center gap-4 text-right">
+            <a
+              href="/image-licensing"
+              className="underline decoration-white/30 underline-offset-4 transition-colors hover:text-white"
+            >
+              Image licensing
+            </a>
+            <p className="hidden sm:block">
+              Full-Stack Developer and SEO Specialist
+            </p>
+          </div>
         </div>
       </footer>
     </div>

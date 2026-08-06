@@ -370,6 +370,7 @@ export const FAQS: readonly Faq[] = [
 const SITE_URL = "https://www.bilalasiftech.com";
 const PERSON_ID = `${SITE_URL}/#bilal-asif`;
 const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v5.webp`;
+const IMAGE_LICENSE_URL = `${SITE_URL}/image-licensing`;
 
 export const PROFESSIONAL_SERVICE_SCHEMA = {
   "@context": "https://schema.org",
@@ -402,6 +403,9 @@ export const PROFESSIONAL_SERVICE_SCHEMA = {
       caption:
         "Bilal Asif, freelance full-stack developer and SEO specialist",
       creditText: "Bilal Asif",
+      copyrightNotice: "© 2026 Bilal Asif",
+      license: `${IMAGE_LICENSE_URL}#license`,
+      acquireLicensePage: `${IMAGE_LICENSE_URL}#request-permission`,
       creator: { "@id": PERSON_ID }
     },
     {
