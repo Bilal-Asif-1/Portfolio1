@@ -1,4 +1,3 @@
-//Hello
 No,Category,Issue,Keywords,Platform,Description,Do,Don't,Code Example Good,Code Example Bad,Severity
 1,Accessibility,Icon Button Labels,icon button accessibilityLabel,iOS/Android/React Native,Icon-only buttons must expose an accessible label,Set accessibilityLabel or label prop on icon buttons,Icon buttons without accessible names,"<Pressable accessibilityLabel=""Close""><XIcon /></Pressable>","<Pressable><XIcon /></Pressable>",Critical
 2,Accessibility,Form Control Labels,form input label accessibilityLabel,iOS/Android/React Native,All inputs must have a visible label and an accessibility label,Pair Text label with input and set accessibilityLabel,Inputs with placeholder only,"<View><Text>Email</Text><TextInput accessibilityLabel=""Email address"" /></View>","<TextInput placeholder=""Email"" /></View>",Critical
