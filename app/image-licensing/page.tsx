@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { createPageMetadata } from "@/app/seo";
 import { CONTACT } from "@/features/portfolio/data";
-import portrait from "@/public/bilal-asif-portrait-2026-v5.webp";
+import portrait from "@/public/bilal-asif-portrait-2026-v6.webp";
 
 export const metadata = createPageMetadata({
   title: "Image Licensing",

@@ -17,7 +17,7 @@ export function GET() {
   <url>
     <loc>${SITE_URL}/</loc>
     <image:image>
-      <image:loc>${SITE_URL}/bilal-asif-portrait-2026-v5.webp</image:loc>
+      <image:loc>${SITE_URL}/bilal-asif-portrait-2026-v6.webp</image:loc>
     </image:image>
   </url>`;
 
