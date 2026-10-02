@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  startTransition,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -28,6 +29,7 @@ import {
 } from "@/components/experience-link";
 import { StackedPage } from "@/components/stacked-page";
 import { HomeIntro } from "@/features/portfolio/home-intro";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 import {
   SITE_NAV_ITEMS
 } from "@/features/portfolio/data";
@@ -122,17 +124,19 @@ function DeferredScene({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        setNearViewport(true);
+        startTransition(() => setNearViewport(true));
         observer.disconnect();
       },
-      { rootMargin: "75% 0px" }
+      { rootMargin: `${Math.round(window.innerHeight * 0.75)}px 0px` }
     );
     observer.observe(sceneRef.current);
     return () => observer.disconnect();
   }, [ready]);
 
   return (
-    <div ref={sceneRef} className={ready ? undefined : "min-h-[100svh]"}>
+    // Keep the reserved height while the dynamic import resolves. Removing
+    // it on intersection briefly collapsed the section to zero while scrolling.
+    <div ref={sceneRef} className="min-h-[100svh]">
       {ready ? children : null}
     </div>
   );
@@ -183,8 +187,9 @@ export function PortfolioExperience() {
   const initialPath = isPortfolioPath(pathname) ? pathname : "/";
   const [activePath, setActivePath] = useState(initialPath);
   const [packagesOpen, setPackagesOpen] = useState(initialPath === "/packages");
-  const [enhancementsReady, setEnhancementsReady] = useState(false);
-  const navOnDark = DARK_PATHS.has(activePath);
+  const enhancedMotion = useEnhancedMotion();
+  const [nativeNavOnDark, setNativeNavOnDark] = useState(DARK_PATHS.has(initialPath));
+  const navOnDark = enhancedMotion ? DARK_PATHS.has(activePath) : nativeNavOnDark;
   const activePathRef = useRef(initialPath);
   const underlyingPathRef = useRef<(typeof PORTFOLIO_PATHS)[number]>(
     initialPath === "/packages" ? "/" : initialPath
@@ -192,15 +197,17 @@ export function PortfolioExperience() {
   const positionedRef = useRef(false);
   const frameRef = useRef(0);
   const sceneFocusUntilRef = useRef(0);
+  const pendingAlignmentRef = useRef<string | null>(
+    initialPath === "/" || initialPath === "/packages" ? null : initialPath
+  );
 
   useEffect(() => {
-    const timeoutHandle = window.setTimeout(
-      () => setEnhancementsReady(true),
-      1200
-    );
-
+    // Route history is positioned by scrollToPath on every device. Do not
+    // let the browser also restore an offset from before a section loaded.
+    const previous = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
     return () => {
-      window.clearTimeout(timeoutHandle);
+      window.history.scrollRestoration = previous;
     };
   }, []);
 
@@ -244,6 +251,7 @@ export function PortfolioExperience() {
       immediate = false
     ) => {
       if (!isPortfolioPath(path)) return;
+      pendingAlignmentRef.current = null;
       if (path === "/packages") {
         setPackagesOpen(true);
         setCurrentPath(path, history);
@@ -252,6 +260,7 @@ export function PortfolioExperience() {
 
       const target = getTrack(path);
       if (!target) return;
+      if (!enhancedMotion || immediate) pendingAlignmentRef.current = path;
 
       setPackagesOpen(false);
       getLenis()?.start();
@@ -279,14 +288,14 @@ export function PortfolioExperience() {
         window.scrollTo({
           top,
           behavior:
-            immediate ||
+            immediate || !enhancedMotion ||
             window.matchMedia("(prefers-reduced-motion: reduce)").matches
               ? "auto"
               : "smooth"
         });
       }
     },
-    [setCurrentPath]
+    [enhancedMotion, setCurrentPath]
   );
 
   useLayoutEffect(() => {
@@ -304,6 +313,48 @@ export function PortfolioExperience() {
     window.scrollTo(0, top);
     activePathRef.current = initialPath;
   }, [initialPath]);
+
+  useEffect(() => {
+    const container = document.querySelector<HTMLElement>(".portfolio-experience");
+    if (!container) return;
+    let frame = 0;
+    const alignPendingRoute = () => {
+      frame = 0;
+      const path = pendingAlignmentRef.current;
+      const target = path ? getTrack(path) : null;
+      if (!target) return;
+      const offset = target.getBoundingClientRect().top;
+      if (Math.abs(offset) > 1) window.scrollTo(0, window.scrollY + offset);
+    };
+    const scheduleAlignment = () => {
+      if (pendingAlignmentRef.current && !frame) {
+        frame = window.requestAnimationFrame(alignPendingRoute);
+      }
+    };
+    const releaseAlignment = () => {
+      pendingAlignmentRef.current = null;
+      window.cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    // Lazy sections above a direct-link destination can grow after hydration.
+    // Follow that layout change only until the visitor starts interacting.
+    const observer = new ResizeObserver(scheduleAlignment);
+    observer.observe(container);
+    scheduleAlignment();
+    window.addEventListener("wheel", releaseAlignment, { passive: true });
+    window.addEventListener("touchstart", releaseAlignment, { passive: true });
+    window.addEventListener("pointerdown", releaseAlignment, { passive: true });
+    window.addEventListener("keydown", releaseAlignment);
+    return () => {
+      observer.disconnect();
+      releaseAlignment();
+      window.removeEventListener("wheel", releaseAlignment);
+      window.removeEventListener("touchstart", releaseAlignment);
+      window.removeEventListener("pointerdown", releaseAlignment);
+      window.removeEventListener("keydown", releaseAlignment);
+    };
+  }, []);
 
   useEffect(() => {
     const handleNavigate = (event: Event) => {
@@ -329,6 +380,7 @@ export function PortfolioExperience() {
   }, [scrollToPath]);
 
   useEffect(() => {
+    if (!enhancedMotion) return;
     const holdFocusedScene = () => {
       sceneFocusUntilRef.current = Date.now() + 1100;
     };
@@ -350,9 +402,65 @@ export function PortfolioExperience() {
       window.removeEventListener("wheel", releaseFocusedScene);
       window.removeEventListener("touchstart", releaseFocusedScene);
     };
-  }, []);
+  }, [enhancedMotion]);
 
   useEffect(() => {
+    if (!enhancedMotion) {
+      if (packagesOpen) return;
+      const scenes = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-portfolio-scene]")
+      );
+      const visibleScenes = new Set<HTMLElement>();
+      const navigationScenes = new Set<HTMLElement>();
+      let observer: IntersectionObserver;
+      let navigationObserver: IntersectionObserver;
+      const observeScenes = () => {
+        observer?.disconnect();
+        navigationObserver?.disconnect();
+        visibleScenes.clear();
+        navigationScenes.clear();
+        const middle = Math.floor(window.innerHeight * 0.52);
+        observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) visibleScenes.add(entry.target as HTMLElement);
+              else visibleScenes.delete(entry.target as HTMLElement);
+            }
+            const scene = scenes.filter((element) => visibleScenes.has(element)).pop();
+            const path = scene?.dataset.portfolioScene;
+            if (path && isPortfolioPath(path) && path !== activePathRef.current) {
+              setCurrentPath(path, "replace");
+            }
+          },
+          { rootMargin: `-${middle}px 0px -${window.innerHeight - middle - 1}px 0px` }
+        );
+        scenes.forEach((scene) => observer.observe(scene));
+
+        // Native sections no longer overlap: follow the actual background
+        // under the fixed navigation, independently of the active page.
+        const navigationY = Math.min(40, window.innerHeight - 1);
+        navigationObserver = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) navigationScenes.add(entry.target as HTMLElement);
+              else navigationScenes.delete(entry.target as HTMLElement);
+            }
+            const scene = scenes.filter((element) => navigationScenes.has(element)).pop();
+            if (scene) setNativeNavOnDark(scene.dataset.portfolioTone === "dark");
+          },
+          { rootMargin: `-${navigationY}px 0px -${window.innerHeight - navigationY - 1}px 0px` }
+        );
+        scenes.forEach((scene) => navigationObserver.observe(scene));
+      };
+      observeScenes();
+      window.addEventListener("resize", observeScenes);
+      return () => {
+        observer.disconnect();
+        navigationObserver.disconnect();
+        window.removeEventListener("resize", observeScenes);
+      };
+    }
+
     const updateActivePanel = () => {
       frameRef.current = 0;
       if (packagesOpen) return;
@@ -388,7 +496,7 @@ export function PortfolioExperience() {
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
     };
-  }, [packagesOpen, setCurrentPath]);
+  }, [enhancedMotion, packagesOpen, setCurrentPath]);
 
   const closePackages = useCallback(() => {
     if (
@@ -404,12 +512,12 @@ export function PortfolioExperience() {
   return (
     <MotionConfig reducedMotion="user">
       <>
-        {enhancementsReady && <SmoothCursor />}
+        {enhancedMotion && <SmoothCursor />}
         <main className="portfolio-experience relative min-h-screen overflow-x-clip bg-white text-ink">
-          {enhancementsReady && <SmoothScroll />}
-          {enhancementsReady && <FocusOnClick />}
-          {enhancementsReady && <ScrollProgress />}
-          {enhancementsReady && !packagesOpen && <FloatingScrollbar />}
+          {enhancedMotion && <SmoothScroll />}
+          {enhancedMotion && <FocusOnClick />}
+          {enhancedMotion && <ScrollProgress />}
+          {enhancedMotion && !packagesOpen && <FloatingScrollbar />}
           <div className="noise" aria-hidden="true" />
         <header
           data-focus-navigation

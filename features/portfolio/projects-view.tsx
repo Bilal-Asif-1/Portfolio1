@@ -26,6 +26,7 @@ import {
 import type { Project } from "@/features/portfolio/types";
 import { ExperienceLink } from "@/components/experience-link";
 import { trackLead } from "@/components/lead-link";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 
 const CAROUSEL_PROJECT_SLUGS = [
   "agro-ai",
@@ -153,6 +154,7 @@ function ProjectsCarousel({
 }: {
   reducedMotion: boolean;
 }) {
+  const enhancedMotion = useEnhancedMotion();
   const carouselCards = [...CAROUSEL_PROJECTS, ...CAROUSEL_PROJECTS];
   const initialRotation = CAROUSEL_PROJECTS.length + 1;
   const rotation = useMotionValue(initialRotation);
@@ -287,8 +289,8 @@ function ProjectsCarousel({
   return (
     <motion.div
       ref={stageRef}
-      initial={{ opacity: 0, y: 24, filter: "blur(2px)" }}
-      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={enhancedMotion ? { opacity: 0, y: 24, filter: "blur(2px)" } : false}
+      whileInView={enhancedMotion ? { opacity: 1, y: 0, filter: "blur(0px)" } : undefined}
       viewport={{ once: true, margin: "-8% 0px -10%" }}
       transition={{
         duration: 0.82,
@@ -400,15 +402,11 @@ function AnimatedMetric({
 }) {
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
-  const reducedMotion = useReducedMotion();
+  const enhancedMotion = useEnhancedMotion();
 
   useEffect(() => {
     const element = ref.current;
-    if (!inView || !element) return;
-    if (reducedMotion) {
-      element.textContent = value;
-      return;
-    }
+    if (!enhancedMotion || !inView || !element) return;
     const numberMatch = value.match(/\d+(?:\.\d+)?/);
     if (!numberMatch) {
       element.textContent = value;
@@ -431,14 +429,14 @@ function AnimatedMetric({
       }
     });
     return () => controls.stop();
-  }, [delay, inView, reducedMotion, value]);
+  }, [delay, inView, enhancedMotion, value]);
 
   return (
     <dd
       ref={ref}
       className="metric-value order-1 text-[clamp(1.5rem,7vw,2.5rem)] font-extrabold leading-none text-black sm:text-5xl lg:text-6xl"
     >
-      0
+      {value}
     </dd>
   );
 }

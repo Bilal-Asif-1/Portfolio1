@@ -10,6 +10,7 @@ import {
   Reveal
 } from "@/components/motion";
 import { FAQS } from "@/features/portfolio/data";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 
 function FaqRow({
   question,
@@ -71,10 +72,13 @@ function FaqRow({
 }
 
 export function FaqView() {
+  const enhancedMotion = useEnhancedMotion();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const viewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Preserve native scroll anchoring when moving beyond an open answer.
+    if (!enhancedMotion) return;
     const closeForAnotherPage = (event: Event) => {
       const detail = (event as CustomEvent<{ path?: string }>).detail;
       if (detail?.path && detail.path !== "/faq") setOpenIndex(null);
@@ -96,7 +100,7 @@ export function FaqView() {
         closeForAnotherPage
       );
     };
-  }, []);
+  }, [enhancedMotion]);
 
   return (
     <div

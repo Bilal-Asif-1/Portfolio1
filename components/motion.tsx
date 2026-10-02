@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { ComponentProps, ReactNode } from "react";
 import Lenis from "lenis";
 import clsx from "clsx";
+import { ENHANCED_MOTION_QUERY, useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 import {
   animate,
   motion,
@@ -161,11 +162,7 @@ export function SmoothScroll() {
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    // Native scrolling is more stable on touch screens (especially iOS/iPadOS)
-    // and avoids running a second momentum system over the browser's own one.
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
+    if (!window.matchMedia(ENHANCED_MOTION_QUERY).matches) return;
 
     const lenis = new Lenis({
       duration: 0.85,
@@ -503,6 +500,9 @@ export function Reveal({
     ComponentProps<typeof motion.div>["viewport"]
   >["margin"];
 }) {
+  const enhancedMotion = useEnhancedMotion();
+  if (!enhancedMotion) return <div className={className}>{children}</div>;
+
   return (
     <motion.div
       className={clsx("scroll-reveal-filter", className)}
@@ -516,15 +516,25 @@ export function Reveal({
   );
 }
 
-export function Magnetic({
-  children,
-  className,
-  strength = 0.14
-}: {
+type MagneticProps = {
   children: ReactNode;
   className?: string;
   strength?: number;
-}) {
+};
+
+export function Magnetic(props: MagneticProps) {
+  const enhancedMotion = useEnhancedMotion();
+  if (!enhancedMotion) {
+    return <div className={clsx("inline-block", props.className)}>{props.children}</div>;
+  }
+  return <AnimatedMagnetic {...props} />;
+}
+
+function AnimatedMagnetic({
+  children,
+  className,
+  strength = 0.14
+}: MagneticProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

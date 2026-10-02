@@ -107,6 +107,7 @@ body {
   }
   100% {
     opacity: 0;
+    visibility: hidden;
   }
 }
 
@@ -527,6 +528,43 @@ body.scroll-input-active .service-row[data-service-open="false"] {
 
 .stacked-page-track--reduced .stacked-page-pin-content {
   transform: none !important;
+}
+
+/* Native document flow avoids repainting and overlapping full-screen layers
+   during touch scrolling. Apply before hydration, not after a device check. */
+@media (max-width: 767px), (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .intro-splash,
+  .noise {
+    display: none;
+  }
+
+  .intro-splash,
+  .intro-splash-phrase,
+  .intro-explore-arrow {
+    animation: none;
+    will-change: auto;
+  }
+
+  .stacked-page-track,
+  .stacked-page-track--long.stacked-page-track--overlap-next,
+  .stacked-page-track--pin-end {
+    min-height: 0;
+    margin-bottom: 0;
+  }
+
+  .stacked-page-scene,
+  .stacked-page-track--pin-end .stacked-page-scene {
+    position: relative;
+    top: auto;
+    height: auto;
+    transform: none !important;
+    opacity: 1 !important;
+    backface-visibility: visible;
+  }
+
+  .scroll-reveal-filter {
+    filter: none !important;
+  }
 }
 
 .stacked-carousel {

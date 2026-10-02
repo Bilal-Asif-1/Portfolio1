@@ -12,6 +12,7 @@ import {
 } from "@/components/motion";
 import { SERVICES } from "@/features/portfolio/data";
 import type { Service } from "@/features/portfolio/types";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 
 function ServiceRow({
   service,
@@ -130,10 +131,14 @@ function ServiceRow({
 }
 
 export function ServicesView() {
+  const enhancedMotion = useEnhancedMotion();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const viewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Shrinking an off-screen section changes the scroll position on phones.
+    // Keep the user's open row until they close it or choose another row.
+    if (!enhancedMotion) return;
     const closeForAnotherPage = (event: Event) => {
       const detail = (event as CustomEvent<{ path?: string }>).detail;
       if (detail?.path && detail.path !== "/services") setOpenIndex(null);
@@ -155,7 +160,7 @@ export function ServicesView() {
         closeForAnotherPage
       );
     };
-  }, []);
+  }, [enhancedMotion]);
 
   return (
     <div

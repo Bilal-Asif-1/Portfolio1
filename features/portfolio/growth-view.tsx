@@ -7,15 +7,17 @@ import { WhatsAppIcon } from "@/components/icons";
 import { CONTACT } from "@/features/portfolio/data";
 import { ExperienceLink } from "@/components/experience-link";
 import { LeadLink } from "@/components/lead-link";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 
 export function GrowthView() {
+  const enhancedMotion = useEnhancedMotion();
   return (
     <div className="flex min-h-[100svh] flex-col bg-transparent">
       <section className="growth-hero relative flex min-h-[calc(100svh-5rem)] flex-1 items-center overflow-hidden px-5 pb-16 pt-24 text-ink sm:px-8 sm:pb-20 sm:pt-28 lg:px-12">
         <div className="relative z-10 mx-auto w-full max-w-7xl text-center">
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={enhancedMotion ? { opacity: 0, y: 12 } : false}
+            whileInView={enhancedMotion ? { opacity: 1, y: 0 } : undefined}
             viewport={{ once: true, margin: "-8% 0px -10%" }}
             transition={{ duration: 0.82, ease: EASE }}
             className="growth-hero-kicker font-jetbrains mb-7 text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60 sm:mb-9 sm:text-xs"
@@ -27,8 +29,8 @@ export function GrowthView() {
             <span className="block overflow-hidden pb-2">
               <motion.span
                 className="block text-black"
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={enhancedMotion ? { opacity: 0, y: 28 } : false}
+                whileInView={enhancedMotion ? { opacity: 1, y: 0 } : undefined}
                 viewport={{ once: true, margin: "-8% 0px -10%" }}
                 transition={{
                   duration: MOTION.duration.slow,
@@ -42,8 +44,8 @@ export function GrowthView() {
             <span className="block overflow-hidden pb-3">
               <motion.span
                 className="block"
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={enhancedMotion ? { opacity: 0, y: 28 } : false}
+                whileInView={enhancedMotion ? { opacity: 1, y: 0 } : undefined}
                 viewport={{ once: true, margin: "-8% 0px -10%" }}
                 transition={{
                   duration: MOTION.duration.slow,
@@ -95,7 +97,7 @@ export function GrowthView() {
           </Reveal>
         </div>
 
-        <motion.div
+        {enhancedMotion && <motion.div
           className="absolute bottom-5 left-1/2 z-10 hidden flex-col items-center gap-2 text-ink/60 sm:flex"
           style={{ x: "-50%" }}
           animate={{ y: [0, 4, 0], opacity: [0.42, 0.72, 0.42] }}
@@ -106,7 +108,7 @@ export function GrowthView() {
             Continue to selected work
           </span>
           <ArrowDown className="h-3.5 w-3.5" />
-        </motion.div>
+        </motion.div>}
       </section>
     </div>
   );

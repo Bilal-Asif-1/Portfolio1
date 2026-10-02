@@ -17,27 +17,9 @@ import {
   useTransform
 } from "framer-motion";
 import { EASE, PORTFOLIO_SCENE_FOCUS_EVENT } from "@/components/motion";
+import { useEnhancedMotion } from "@/hooks/use-enhanced-motion";
 
-export function StackedPage({
-  children,
-  path,
-  tone,
-  layer,
-  long = false,
-  overlapNext = false,
-  linearExitFade = false,
-  pinAtEnd = false,
-  last = false,
-  fadeOutAt = 0.6,
-  fastEntry = false,
-  darkBackdrop = false,
-  darkSceneBackdrop = false,
-  preserveSurfaceOnExit = false,
-  surfaceRounded = true,
-  lightExitOverlay = false,
-  mobileLong = false,
-  disableExitFade = false
-}: {
+type StackedPageProps = {
   children: ReactNode;
   path: string;
   tone: "light" | "dark";
@@ -56,7 +38,52 @@ export function StackedPage({
   lightExitOverlay?: boolean;
   mobileLong?: boolean;
   disableExitFade?: boolean;
-}) {
+};
+
+export function StackedPage(props: StackedPageProps) {
+  const enhancedMotion = useEnhancedMotion();
+  if (enhancedMotion) return <AnimatedStackedPage {...props} />;
+
+  // No scroll subscriptions, full-screen transforms or fading layers on
+  // touch devices. Retain desktop track geometry in the server-rendered HTML.
+  return (
+    <div
+      data-portfolio-track={props.path}
+      data-portfolio-tone={props.tone}
+      className={`stacked-page-track ${props.long ? "stacked-page-track--long" : ""} ${props.overlapNext ? "stacked-page-track--overlap-next" : ""} ${props.mobileLong ? "stacked-page-track--mobile-long" : ""} ${props.darkBackdrop || (props.last && props.tone === "dark") ? "stacked-page-track--dark-bridge" : ""}`}
+      style={{ "--scene-layer": props.layer } as CSSProperties}
+    >
+      <section
+        data-portfolio-scene={props.path}
+        data-portfolio-tone={props.tone}
+        className={`stacked-page-scene ${props.tone === "dark" ? "on-dark bg-black" : "bg-white"}`}
+      >
+        {props.children}
+      </section>
+    </div>
+  );
+}
+
+function AnimatedStackedPage({
+  children,
+  path,
+  tone,
+  layer,
+  long = false,
+  overlapNext = false,
+  linearExitFade = false,
+  pinAtEnd = false,
+  last = false,
+  fadeOutAt = 0.6,
+  fastEntry = false,
+  darkBackdrop = false,
+  darkSceneBackdrop = false,
+  preserveSurfaceOnExit = false,
+  surfaceRounded = true,
+  lightExitOverlay = false,
+  mobileLong = false,
+  disableExitFade = false
+}: StackedPageProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLElement>(null);
   const pinContentRef = useRef<HTMLDivElement>(null);
