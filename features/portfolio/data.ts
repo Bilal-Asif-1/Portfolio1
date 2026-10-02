@@ -369,7 +369,7 @@ export const FAQS: readonly Faq[] = [
 
 const SITE_URL = "https://www.bilalasiftech.com";
 const PERSON_ID = `${SITE_URL}/#bilal-asif`;
-const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v6.webp`;
+const PORTRAIT_URL = `${SITE_URL}/bilal-asif-portrait-2026-v7.webp`;
 const IMAGE_LICENSE_URL = `${SITE_URL}/image-licensing`;
 
 export const PROFESSIONAL_SERVICE_SCHEMA = {

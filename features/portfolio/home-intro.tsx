@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRef, type ReactNode } from "react";
 import { ArrowDown } from "lucide-react";
 import { ExperienceLink } from "@/components/experience-link";
-import portraitImage from "@/public/bilal-asif-portrait-2026-v6.webp";
+import portraitImage from "@/public/bilal-asif-portrait-2026-v7.webp";
 
 export function HomeIntro({
   isPrimaryHeading = true
